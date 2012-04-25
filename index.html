@@ -74,6 +74,12 @@ function writeStats(){
 	document.getElementById("militianum").innerHTML=militia;
 	document.getElementById("infantrynum").innerHTML=infantry;
 	document.getElementById("marinenum").innerHTML=marines;
+	document.getElementById("tanknum").innerHTML=tanks;
+	document.getElementById("ifvnum").innerHTML=IFVs;
+	document.getElementById("apcnum").innerHTML=APCs;
+	document.getElementById("fieldgunnum").innerHTML=fieldGuns;
+	document.getElementById("artillerynum").innerHTML=artillery;
+	document.getElementById("fixedgunnum").innerHTML=fixedGuns;
 }
 
 /* Function to mathematically update the stats*/
@@ -89,7 +95,9 @@ function update(){
 	//Fix some stats
 	
 	resourcePop = foodPop + fuelPop + metalPop;
+	armySize = militia + infantry + marines + tanks*4 + APCs*6 + IFVs*5 + fieldGuns*5 + artillery*8 + fixedGuns*10;
 	availablePop = population - (armySize + resourcePop + productionPop);
+
 	
 	// Now actually run the formula
 	
@@ -105,10 +113,12 @@ function update(){
 
 //builds units - duh
 function buildUnits(unitSource){
-	if (unitSource == "barracks") {
-		var dropDown = document.getElementById("barracksnumber");
+	if (true) {
+		var dropDown = document.getElementById("barrackstype");
 		var unitType = dropDown.selectedIndex;
 		var unitNumber = document.getElementById("barracksnumber").value;
+		//make sure it isn't taken as text
+		unitNumber = parseInt(unitNumber);
 		switch(unitType){
 			case 0:
 				if (food > unitNumber*50 && fuel > unitNumber*10 && metal > unitNumber*30 && population > unitNumber) {
@@ -128,6 +138,7 @@ function buildUnits(unitSource){
 				} else
 				alert("Insufficient funds.");
 			break;
+			case 2:
 			if (food > unitNumber*60 && fuel > unitNumber*40 && metal > unitNumber*30 && population > unitNumber*50) {
 					food -= unitNumber*60;
 					fuel -= unitNumber*40;
@@ -135,8 +146,6 @@ function buildUnits(unitSource){
 					marines += unitNumber;
 				} else
 				alert("Insufficient funds.");
-			case 2:
-			
 			break;
 		}
 		
@@ -157,11 +166,11 @@ update();
         <button onclick="update();">Update</button> <br />
     </td>
     <td width="75%">
-    	<img src="http://forums.civfanatics.com/images/smilies/civ4/food.gif" />
+    	<img src="http://forums.civfanatics.com/images/smilies/civ4/food.gif" alt="Food" />
         <span id="food"></span>
-    	<img src="http://forums.civfanatics.com/images/smilies/civ4/science.gif" />
+    	<img src="http://forums.civfanatics.com/images/smilies/civ4/science.gif" alt="Fuel" />
    	    <span id="fuel"></span>
-    	<img src="http://forums.civfanatics.com/images/smilies/civ4/hammer.gif" />
+    	<img src="http://forums.civfanatics.com/images/smilies/civ4/hammer.gif" alt="Metal" />
   		<span id="metal"></span>
         <br /> Population <span id="pop"></span> (<span id="available"></span> available)
         </td>
@@ -199,11 +208,12 @@ update();
 <p>Barracks <br />
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Recruit: 
 <input name="barracksnumber" id="barracksnumber" type="text" value="100" />
-<select>
+<select id="barrackstype">
   <option>Militia</option>
   <option>Infantry</option>
-  <option>Marine</option>
-</select> <button onclick="buildUnits('barracks');">Confirm</button>
+  <option>Marines</option>
+</select>
+<button onclick="buildUnits('barracks');">Confirm</button>
 </p>
 <p>&nbsp;</p>
     </td>
@@ -212,11 +222,17 @@ update();
 
 <div id="militaryscreen" align="center"><h2>Military</h2>
 <h3>Infantry</h3>
-<div id="militianum"></div>
-<div id="infantrynum"></div>
-<div id="marinenum"></div>
+<img src="http://www.civfanatics.com/images/civ4/info_center/units/paratrooper.jpg" alt="Militia" width="20" height="20" /><span id="militianum"></span> <br />
+<img src="http://www.civfanatics.com/images/civ4/info_center/units/infantry.jpg" alt="Infantry" width="20" height="20" /><span id="infantrynum"></span> <br />
+<img src="http://www.civfanatics.com/images/civ4/info_center/units/marine.jpg" alt="Marines" width="20" height="20" /> <span id="marinenum"></span> <br />
 <h3>Armor</h3>
+<img src="http://www.civfanatics.com/images/civ4/info_center/units/modernarmor.jpg" alt="Tanks" width="20" height="20" /><span id="tanknum"></span> <br />
+<img src="http://www.civfanatics.com/images/civ4/info_center/units/mechanizedinfantry.jpg" alt="Armored Personnel Carriers" width="20" height="20" /><span id="apcnum"></span> <br />
+<img src="http://www.civfanatics.com/images/civ4/info_center/units/panzer.jpg" alt="Infantry Fighting Vehicles" width="20" height="20" /> <span id="ifvnum"></span> <br />
 <h3>Artillery</h3>
+<img src="http://www.civfanatics.com/images/civ4/info_center/units/antitank.jpg" alt="Field Guns" width="20" height="20" /><span id="fieldgunnum"></span> <br />
+<img src="http://www.civfanatics.com/images/civ4/info_center/units/mobileartillery.jpg" alt="Artillery" width="20" height="20" /><span id="artillerynum"></span> <br />
+<img src="http://www.civfanatics.com/images/civ4/info_center/units/artillery.jpg" alt="Fixed Guns" width="20" height="20" /> <span id="fixedgunnum"></span> <br />
 </div>
 
 <script type="text/javascript">update();</script>
