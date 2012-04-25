@@ -70,6 +70,10 @@ function writeStats(){
 	document.getElementById("fuel").innerHTML=Math.round(fuel);
 	document.getElementById("metal").innerHTML=Math.round(metal);
 	document.getElementById("loyalty").innerHTML=Math.round(loyalty);
+	//army numbers
+	document.getElementById("militianum").innerHTML=militia;
+	document.getElementById("infantrynum").innerHTML=infantry;
+	document.getElementById("marinenum").innerHTML=marines;
 }
 
 /* Function to mathematically update the stats*/
@@ -101,13 +105,13 @@ function update(){
 
 //builds units - duh
 function buildUnits(unitSource){
-	if (unitSource == barracks) {
+	if (unitSource == "barracks") {
 		var dropDown = document.getElementById("barracksnumber");
 		var unitType = dropDown.selectedIndex;
 		var unitNumber = document.getElementById("barracksnumber").value;
 		switch(unitType){
 			case 0:
-				if (food > unitNumber*50 && fuel > unitNumber*10 && metal > unitNumber*30 && population > unitNumber*50) {
+				if (food > unitNumber*50 && fuel > unitNumber*10 && metal > unitNumber*30 && population > unitNumber) {
 					food -= unitNumber*50;
 					fuel -= unitNumber*10;
 					metal -= unitNumber*30;
@@ -116,8 +120,21 @@ function buildUnits(unitSource){
 				alert("Insufficient funds.");
 			break;
 			case 1:
-			
+			if (food > unitNumber*30 && fuel > unitNumber*70 && metal > unitNumber*30 && population > unitNumber) {
+					food -= unitNumber*30;
+					fuel -= unitNumber*70;
+					metal -= unitNumber*30;
+					infantry += unitNumber;
+				} else
+				alert("Insufficient funds.");
 			break;
+			if (food > unitNumber*60 && fuel > unitNumber*40 && metal > unitNumber*30 && population > unitNumber*50) {
+					food -= unitNumber*60;
+					fuel -= unitNumber*40;
+					metal -= unitNumber*30;
+					marines += unitNumber;
+				} else
+				alert("Insufficient funds.");
 			case 2:
 			
 			break;
@@ -186,15 +203,18 @@ update();
   <option>Militia</option>
   <option>Infantry</option>
   <option>Marine</option>
-</select> <button onclick="buildUnits(barracks);">Confirm</button>
+</select> <button onclick="buildUnits('barracks');">Confirm</button>
 </p>
 <p>&nbsp;</p>
     </td>
   </tr>
 </table>
 
-<div id="militaryscreen"><h2>Military</h2>
+<div id="militaryscreen" align="center"><h2>Military</h2>
 <h3>Infantry</h3>
+<div id="militianum"></div>
+<div id="infantrynum"></div>
+<div id="marinenum"></div>
 <h3>Armor</h3>
 <h3>Artillery</h3>
 </div>
