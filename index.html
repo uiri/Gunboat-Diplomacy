@@ -1,0 +1,204 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<script type="text/javascript">
+/* Reset all the variables */
+var x = 0;
+var y = 0;
+var cityName = "New City";
+var population = 10000;
+	var availablePop = 10000;
+	var armySize = 50;
+		//basic unit
+		var militia = 50;
+		//specialized defenders
+		var infantry = 0;
+		//general attackers
+		var marines = 0;
+		//specialized attackers
+		var tanks = 0;
+		//general defenders
+		var APCs = 0;
+		//general armor
+		var IFVs = 0;
+		//anti-fortification/offensive artillery
+		var fieldGuns = 0;
+		//general artillery
+		var artillery = 0;
+		//defensive artillery
+		var fixedGuns = 0;
+	var resourcePop = 0;
+		var foodPop = 250;
+		var fuelPop = 250;
+		var metalPop = 250;
+	var productionPop = 0;
+	var popModifier = 1;
+var food = 20000;
+var fuel = 10000;
+var metal = 10000;
+var loyalty = 100;
+
+/* If the city is new, put this time as the last update. */
+
+var lastUpdate = new Date();
+
+/* Then we replace the default variables with whatever we pull from the database (will write AJAX functions later)*/
+
+function getStats(xcoord, ycoord){
+/* DUMMY FUNCTION
+
+Will call the database, pull the statistics from it based on x and y coordinates, and replace the variables. */	
+}
+
+function uploadStats(){
+/*DUMMY FUNCTION
+
+Will call the database and update all the entries for this city, based on current variables.*/	
+}
+
+getStats(x, y);
+
+/* Function to write out the stats on the page */
+
+function writeStats(){
+	document.getElementById("pop").innerHTML=Math.round(population);
+		document.getElementById("available").innerHTML=Math.round(availablePop);
+		document.getElementById("farmers").innerHTML=Math.round(foodPop);
+		document.getElementById("oil workers").innerHTML=Math.round(fuelPop);
+		document.getElementById("miners").innerHTML=Math.round(metalPop);
+	document.getElementById("food").innerHTML=Math.round(food);
+	document.getElementById("fuel").innerHTML=Math.round(fuel);
+	document.getElementById("metal").innerHTML=Math.round(metal);
+	document.getElementById("loyalty").innerHTML=Math.round(loyalty);
+}
+
+/* Function to mathematically update the stats*/
+
+function update(){
+	writeStats();
+	
+	//Figure out the time elapsed
+	
+	var now = new Date();
+	var quarterdaysElapsed = (now.getTime() - lastUpdate.getTime())/21600000;
+	
+	//Fix some stats
+	
+	resourcePop = foodPop + fuelPop + metalPop;
+	availablePop = population - (armySize + resourcePop + productionPop);
+	
+	// Now actually run the formula
+	
+	population += ((Math.log((food+1)/population)*population)*popModifier)*quarterdaysElapsed;
+	food += 40*(foodPop * quarterdaysElapsed);
+	fuel += 40*(fuelPop * quarterdaysElapsed);
+	metal += 40*(metalPop * quarterdaysElapsed);
+	
+	writeStats();
+	uploadStats();
+	lastUpdate = new Date();
+}
+
+//builds units - duh
+function buildUnits(unitSource){
+	if (unitSource == barracks) {
+		var dropDown = document.getElementById("barracksnumber");
+		var unitType = dropDown.selectedIndex;
+		var unitNumber = document.getElementById("barracksnumber").value;
+		switch(unitType){
+			case 0:
+				if (food > unitNumber*50 && fuel > unitNumber*10 && metal > unitNumber*30 && population > unitNumber*50) {
+					food -= unitNumber*50;
+					fuel -= unitNumber*10;
+					metal -= unitNumber*30;
+					militia += unitNumber;
+				} else
+				alert("Insufficient funds.");
+			break;
+			case 1:
+			
+			break;
+			case 2:
+			
+			break;
+		}
+		
+	}
+update();
+}
+</script>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<title>My City</title>
+</head>
+
+<body>
+
+<table width="100%" border="0" cellspacing="0" cellpadding="0">
+  <tr>
+    <td width="25%">
+    	<h1><script type="text/javascript">document.write(cityName);</script></h1>
+        <button onclick="update();">Update</button> <br />
+    </td>
+    <td width="75%">
+    	<img src="http://forums.civfanatics.com/images/smilies/civ4/food.gif" />
+        <span id="food"></span>
+    	<img src="http://forums.civfanatics.com/images/smilies/civ4/science.gif" />
+   	    <span id="fuel"></span>
+    	<img src="http://forums.civfanatics.com/images/smilies/civ4/hammer.gif" />
+  		<span id="metal"></span>
+        <br /> Population <span id="pop"></span> (<span id="available"></span> available)
+        </td>
+  </tr>
+  <tr>
+    <td>
+	<a>Military</a><br />
+    <a>Government</a><br />
+    <a>Religion</a><br />
+    <a>World Map</a><br /></td>
+    <td>
+<div>
+  <div align="right"><strong>Loyalty: <img src="http://forums.civfanatics.com/images/smilies/smile.gif" /><span id="loyalty"></span>%</strong></div>
+</div>
+
+
+<h2>Infrastructure</h2>
+
+<p>Warehouse (Level <span id="warehouse"></span>) <button onclick="update(); upgrade(warehouse);">Upgrade Warehouse</button>
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Farmers
+<span id="farmers"></span>
+	<button onclick="if(availablePop > 50) foodPop += 50; update();">+</button>
+	<button onclick="if (foodPop > 50) foodPop -= 50; update();">-</button>
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Oil Workers 
+<span id="oil workers"></span>
+	<button onclick="if(availablePop > 50) fuelPop += 50; update();">+</button>
+	<button onclick="if (fuelPop > 50) fuelPop -= 50; update();">-</button>
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Miners
+<span id="miners"></span>
+<button onclick="if(availablePop > 50) metalPop += 50; update();">+</button>
+	<button onclick="if (metalPop > 50) metalPop -= 50; update();">-</button></p>
+<p>Barracks <br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Recruit: 
+<input name="barracksnumber" id="barracksnumber" type="text" value="100" />
+<select>
+  <option>Militia</option>
+  <option>Infantry</option>
+  <option>Marine</option>
+</select> <button onclick="buildUnits(barracks);">Confirm</button>
+</p>
+<p>&nbsp;</p>
+    </td>
+  </tr>
+</table>
+
+<div id="militaryscreen"><h2>Military</h2>
+<h3>Infantry</h3>
+<h3>Armor</h3>
+<h3>Artillery</h3>
+</div>
+
+<script type="text/javascript">update();</script>
+</body>
+</html>
