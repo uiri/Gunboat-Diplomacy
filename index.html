@@ -156,7 +156,7 @@ function doQueue () {
 
 //queues units; DUH!
 function buildUnits(unitSource){
-	if (true) {
+	if (unitSource = "barracks") {
 		var dropDown = document.getElementById("barrackstype");
 		var unitType = dropDown.selectedIndex;
 		var unitNumber = document.getElementById("barracksnumber").value;
@@ -248,7 +248,7 @@ update();
   <option>Infantry</option>
   <option>Marines</option>
 </select>
-<button onclick="buildUnits('barracks');">Confirm</button>
+<button onclick="buildUnits('barracks'); queue();">Confirm</button>
 </p>
 <p>&nbsp;</p>
     </td>
