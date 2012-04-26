@@ -3,8 +3,8 @@
 <head>
 <script type="text/javascript">
 /* Reset all the variables */
-var x = 0;
-var y = 0;
+var lat = 0;
+var lng = 0;
 var cityName = "New City";
 var population = 10000;
 	var availablePop = 10000;
@@ -46,7 +46,7 @@ var lastUpdate = new Date();
 
 /* Then we replace the default variables with whatever we pull from the database (will write AJAX functions later)*/
 
-function getStats(xcoord, ycoord){
+function getStats(lat, lng){
 /* DUMMY FUNCTION
 
 Will call the database, pull the statistics from it based on x and y coordinates, and replace the variables. */	
@@ -133,24 +133,30 @@ function queueItem(itemdescription,foodCost,fuelCost,metalCost,productionCost,en
 	this.fuel = fuelCost;
 	this.metal = metalCost;
 	this.duration = (productionCost/production);
-		this.duration *= 21600000;
+		//this.duration *= 21600000;
 		this.completionDate = new Date();
 		this.completionDate.setDate(this.completionDate.getDate()+this.duration);
 	//should be the code IN TEXT QUOTES; unless someone else has a better way
 	this.result = endResult;
 	this.itemText = document.createElement("div");
 	this.itemText.setAttribute("style", "border:black;");
-	this.itemText.innerHTML = "<b>" + this.description + "<//b> "
+	this.itemText.innerHTML = "<b>" + this.description + "</b> Completion in: ";
 	queueHTML.appendChild(this.itemText);
 	this.durationText = document.createElement("span");
 	this.durationText.setAttribute("name", this.description);
-	this.durationText.innerHTML = "Completion at " + this.completionDate;
+	queue.HTML.appendChild(this.durationText);
+	this.durationText.innerHTML = duration + " minutes";
 }
 
 //goes through the queue
 function doQueue () {
 	var current = queue[0];
-	setTimeout("eval(current.result);", current.duration);
+	for (var count=0; count<=duration; count+=0)
+		{
+			setTimeout("count += 1000", 1000);
+			current.durationText.innerHTML = (duration/60000) + " minutes";
+		}
+	eval(current.result)
 	food -= current.food;
 	fuel -= current.fuel;
 	metal -= current.metal;
@@ -172,7 +178,7 @@ function buildUnits(unitSource){
 		switch(unitType){
 			case 0:
 				if (food > unitNumber*50 && fuel > unitNumber*10 && metal > unitNumber*30 && availablePop > unitNumber) {
-					queue.push(new queueItem(unitNumber +  "Militia", unitNumber*50, unitNumber*10, unitNumber*30, unitNumber*60, "militia += " + unitNumber));
+					queue.push(new queueItem(unitNumber +  " Militia", unitNumber*50, unitNumber*10, unitNumber*30, unitNumber*60, "militia += " + unitNumber));
 				} else
 				alert("Insufficient funds.");
 			break;
