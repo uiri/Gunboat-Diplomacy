@@ -151,12 +151,11 @@ function queueItem(itemdescription,foodCost,fuelCost,metalCost,productionCost,en
 //goes through the queue
 function doQueue () {
 	var current = queue[0];
-	for (var count=0; count<duration; count+=0)
-		{
-			setTimeout("count += 1000", 1000);
-			current.durationText.innerHTML = (duration/60000) + " minutes";
-		}
-	eval(current.result)
+    var now = new Date();
+    while ((new Date().getTime() - now.getTime()) < current.duration) {
+	continue
+    }
+	eval(current.result);
 	food -= current.food;
 	fuel -= current.fuel;
 	metal -= current.metal;
@@ -260,7 +259,7 @@ update();
   <option>Infantry</option>
   <option>Marines</option>
 </select>
-<button onclick="buildUnits('barracks'); if (queue.length = 0) doQueue();">Confirm</button>
+<button onclick="buildUnits('barracks'); if (queue.length == 0) doQueue();">Confirm</button>
 </p>
 <p>&nbsp;</p>
     </td>
