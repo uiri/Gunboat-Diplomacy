@@ -36,7 +36,8 @@ var population = 10000;
 var food = 20000;
 var fuel = 10000;
 var metal = 10000;
-var productionModifier = 0.75;
+var production = availablePop*0.75;
+	var productionModifier = 0.75;
 var loyalty = 100;
 
 /* If the city is new, put this time as the last update. */
@@ -110,6 +111,7 @@ function update(){
 	// Now actually run the formula
 	
 	population += ((Math.log((food+1)/population)*population)*popModifier)*quarterdaysElapsed;
+	production = availablePop*productionModifier;
 	food += 40*(foodPop * quarterdaysElapsed);
 	fuel += 40*(fuelPop * quarterdaysElapsed);
 	metal += 40*(metalPop * quarterdaysElapsed);
@@ -132,7 +134,7 @@ function queueItem(itemdescription,foodCost,fuelCost,metalCost,populationCost,pr
 	this.fuel = fuelCost;
 	this.metal = metalCost;
 	this.population = populationCost;
-	this.duration = (productionCost/production)/productionModifier;
+	this.duration = (productionCost/production);
 		this.duration *= 21600000;
 		this.completionDate = new Date();
 		this.completionDate.setDate(completionDate.getDate()+this.duration);
@@ -164,19 +166,19 @@ function buildUnits(unitSource){
 		unitNumber = parseInt(unitNumber);
 		switch(unitType){
 			case 0:
-				if (food > unitNumber*50 && fuel > unitNumber*10 && metal > unitNumber*30 && availablePopulation > unitNumber) {
+				if (food > unitNumber*50 && fuel > unitNumber*10 && metal > unitNumber*30 && availablePop > unitNumber) {
 					queue.push(queueItem(unitNumber +  "Militia", unitNumber*50, unitNumber*10, unitNumber*30, unitNumber, unitNumber*60, "militia += " + unitNumber));
 				} else
 				alert("Insufficient funds.");
 			break;
 			case 1:
-			if (food > unitNumber*30 && fuel > unitNumber*70 && metal > unitNumber*30 && availablePopulation > unitNumber) {
+			if (food > unitNumber*30 && fuel > unitNumber*70 && metal > unitNumber*30 && availablePop > unitNumber) {
 					queue.push(queueItem(unitNumber + " Infantry", unitNumber*30, unitNumber*70, unitNumber*30, unitNumber, unitNumber*65, "infantry += " + unitNumber));
 				} else
 				alert("Insufficient funds.");
 			break;
 			case 2:
-			if (food > unitNumber*60 && fuel > unitNumber*40 && metal > unitNumber*30 && availablePopulation > unitNumber) {
+			if (food > unitNumber*60 && fuel > unitNumber*40 && metal > unitNumber*30 && availablePop > unitNumber) {
 					queue.push(queueItem(unitNumer + " Marines", unitNumber*60, unitNumber*40, unitNumber*30, unitNumber, unitNumber*65, "marines += " + unitNumber));
 				} else
 				alert("Insufficient funds.");
