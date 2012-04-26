@@ -36,8 +36,8 @@ var population = 10000;
 var food = 20000;
 var fuel = 10000;
 var metal = 10000;
-var production = availablePop*0.75;
-	var productionModifier = 0.75;
+var production = availablePop*50;
+	var productionModifier = 50;
 var loyalty = 100;
 
 /* If the city is new, put this time as the last update. */
@@ -151,7 +151,7 @@ function queueItem(itemdescription,foodCost,fuelCost,metalCost,productionCost,en
 //goes through the queue
 function doQueue () {
 	var current = queue[0];
-	for (var count=0; count<=duration; count+=0)
+	for (var count=0; count<duration; count+=0)
 		{
 			setTimeout("count += 1000", 1000);
 			current.durationText.innerHTML = (duration/60000) + " minutes";
