@@ -127,13 +127,12 @@ var queue = new Array();
 loadQueue();
 var queueHTML;
 
-function queueItem(itemdescription,foodCost,fuelCost,metalCost,populationCost,productionCost,endResult){
+function queueItem(itemdescription,foodCost,fuelCost,metalCost,productionCost,endResult){
 	this.description = itemdescription;
 
 	this.food = foodCost;
 	this.fuel = fuelCost;
 	this.metal = metalCost;
-	this.population = populationCost;
 	this.duration = (productionCost/production);
 		this.duration *= 21600000;
 		this.completionDate = new Date();
@@ -142,7 +141,7 @@ function queueItem(itemdescription,foodCost,fuelCost,metalCost,populationCost,pr
 	this.result = endResult;
 	this.itemText = document.createElement("div");
 	itemText.setAttribute("style", "border:black;");
-	itemText.innerHTML = "<b>" + this.description + "<//b>"
+	itemText.innerHTML = "<b>" + this.description + "<//b> "
 	queueHTML.appendChild(itemText);
 	this.durationText = document.createElement("span");
 	durationText.setAttribute("name", this.description);
@@ -152,8 +151,15 @@ function queueItem(itemdescription,foodCost,fuelCost,metalCost,populationCost,pr
 //goes through the queue
 function doQueue () {
 	var current = queue[0];
-	var seconds = 0;
-	setTimeout("eval(current.endResult); shift(queue); food -= current.food; fuel -= current.fuel; metal -= current.metal; population -= current.population; queueHTML.removeChild(queueHTML.childNodes[0]); update(); doQueue();", current.duration);
+	setTimeout("eval(current.endResult);", current.duration);
+	food -= current.food;
+	fuel -= current.fuel;
+	metal -= current.metal;
+	shift(queue);
+	queueHTML.removeChild(queueHTML.childNodes[0]);
+	update();
+	if (queue.length > 0)
+		doQueue();
 }
 
 //queues units; DUH!
@@ -167,19 +173,19 @@ function buildUnits(unitSource){
 		switch(unitType){
 			case 0:
 				if (food > unitNumber*50 && fuel > unitNumber*10 && metal > unitNumber*30 && availablePop > unitNumber) {
-					queue.push(queueItem(unitNumber +  "Militia", unitNumber*50, unitNumber*10, unitNumber*30, unitNumber, unitNumber*60, "militia += " + unitNumber));
+					queue.push(queueItem(unitNumber +  "Militia", unitNumber*50, unitNumber*10, unitNumber*30, unitNumber*60, "militia += " + unitNumber));
 				} else
 				alert("Insufficient funds.");
 			break;
 			case 1:
 			if (food > unitNumber*30 && fuel > unitNumber*70 && metal > unitNumber*30 && availablePop > unitNumber) {
-					queue.push(queueItem(unitNumber + " Infantry", unitNumber*30, unitNumber*70, unitNumber*30, unitNumber, unitNumber*65, "infantry += " + unitNumber));
+					queue.push(queueItem(unitNumber + " Infantry", unitNumber*30, unitNumber*70, unitNumber*30, unitNumber*65, "infantry += " + unitNumber));
 				} else
 				alert("Insufficient funds.");
 			break;
 			case 2:
 			if (food > unitNumber*60 && fuel > unitNumber*40 && metal > unitNumber*30 && availablePop > unitNumber) {
-					queue.push(queueItem(unitNumer + " Marines", unitNumber*60, unitNumber*40, unitNumber*30, unitNumber, unitNumber*65, "marines += " + unitNumber));
+					queue.push(queueItem(unitNumer + " Marines", unitNumber*60, unitNumber*40, unitNumber*30, unitNumber*65, "marines += " + unitNumber));
 				} else
 				alert("Insufficient funds.");
 			break;
@@ -223,9 +229,8 @@ update();
   <div align="right"><strong>Loyalty: <img src="http://forums.civfanatics.com/images/smilies/smile.gif" /><span id="loyalty"></span>%</strong></div>
 </div>
 
-
+<div id="queuediv" style="background:#666; color:#FFF;">Building Queue</div>
 <h2>Infrastructure</h2>
-<div id="queuediv" style="background:#666; color:#FFF;">-</div>
 <p>Warehouse (Level <span id="warehouse"></span>) <button onclick="update(); upgrade(warehouse);">Upgrade Warehouse</button>
 <br />
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Farmers
@@ -250,7 +255,7 @@ update();
   <option>Infantry</option>
   <option>Marines</option>
 </select>
-<button onclick="buildUnits('barracks'); queue();">Confirm</button>
+<button onclick="buildUnits('barracks'); if (queue.length = 0) doQueue();">Confirm</button>
 </p>
 <p>&nbsp;</p>
     </td>
@@ -277,7 +282,7 @@ update();
 <tr>
 	<td><img src="http://www.civfanatics.com/images/civ4/info_center/units/marine.jpg" alt="Marines" width="20" height="20" /><span id="marinenum"></span></td>
    	<td><img src="http://www.civfanatics.com/images/civ4/info_center/units/panzer.jpg" alt="Infantry Fighting Vehicles" width="20" height="20" /><span id="ifvnum"></span></td>
-   	<td><img src="http://www.civfanatics.com/images/civ4/info_center/units/artillery.jpg" alt="Fixed Guns" width="20" height="20" /> <span id="fixedgunnum"></span></td>
+   	<td><img src="http://www.civfanatics.com/images/civ4/info_center/units/artillery.jpg" alt="Fixed Guns" width="20" height="20" /><span id="fixedgunnum"></span></td>
 </tr>
 </table>
 </div>
