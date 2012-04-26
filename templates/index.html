@@ -125,7 +125,7 @@ function update(){
 
 var queue = new Array();
 loadQueue();
-var queueHTML = document.getElementById("queuediv");
+var queueHTML;
 
 function queueItem(itemdescription,foodCost,fuelCost,metalCost,populationCost,productionCost,endResult){
 	this.description = itemdescription;
@@ -282,6 +282,6 @@ update();
 </table>
 </div>
 
-<script type="text/javascript">update();</script>
+<script type="text/javascript">update(); var queueHTML = document.getElementById("queuediv");</script>
 </body>
 </html>
