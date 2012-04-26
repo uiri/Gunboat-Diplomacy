@@ -134,7 +134,7 @@ function queueItem(itemdescription,foodCost,fuelCost,metalCost,productionCost,en
 	this.fuel = fuelCost;
 	this.metal = metalCost;
 	this.duration = (productionCost/production);
-		//this.duration *= 21600000;
+		this.duration *= 60000;
 		this.completionDate = new Date();
 		this.completionDate.setDate(this.completionDate.getDate()+this.duration);
 	//should be the code IN TEXT QUOTES; unless someone else has a better way
@@ -146,7 +146,7 @@ function queueItem(itemdescription,foodCost,fuelCost,metalCost,productionCost,en
 	this.durationText = document.createElement("span");
 	this.durationText.setAttribute("name", this.description);
 	queueHTML.appendChild(this.durationText);
-	this.durationText.innerHTML = this.duration + " minutes";
+	this.durationText.innerHTML = this.duration + " seconds";
 }
 
 //goes through the queue
@@ -162,6 +162,7 @@ function doQueue () {
 	fuel -= current.fuel;
 	metal -= current.metal;
 	queue.shift();
+    for (var c=0;c<2;c++)
 	queueHTML.removeChild(queueHTML.childNodes[1]);
 	update();
 	if (queue.length > 0)
