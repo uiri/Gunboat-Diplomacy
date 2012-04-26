@@ -65,7 +65,7 @@ Will load the queue from a database.
 */
 }
 
-getStats(x, y);
+//getStats(x, y);
 
 /* Function to write out the stats on the page */
 
@@ -124,6 +124,7 @@ function update(){
 //queue item object
 
 var queue = new Array();
+var doingQueue = false;
 loadQueue();
 var queueHTML;
 
@@ -144,12 +145,13 @@ function queueItem(itemdescription,foodCost,fuelCost,metalCost,productionCost,en
 	queueHTML.appendChild(this.itemText);
 	this.durationText = document.createElement("span");
 	this.durationText.setAttribute("name", this.description);
-	queue.HTML.appendChild(this.durationText);
-	this.durationText.innerHTML = duration + " minutes";
+	queueHTML.appendChild(this.durationText);
+	this.durationText.innerHTML = this.duration + " minutes";
 }
 
 //goes through the queue
 function doQueue () {
+    doingQueue = true;
 	var current = queue[0];
     var now = new Date();
     while ((new Date().getTime() - now.getTime()) < current.duration) {
@@ -164,6 +166,8 @@ function doQueue () {
 	update();
 	if (queue.length > 0)
 		doQueue();
+    else
+	doingQueue = false;
 }
 
 //queues units; DUH!
@@ -178,23 +182,26 @@ function buildUnits(unitSource){
 			case 0:
 				if (food > unitNumber*50 && fuel > unitNumber*10 && metal > unitNumber*30 && availablePop > unitNumber) {
 					queue.push(new queueItem(unitNumber +  " Militia", unitNumber*50, unitNumber*10, unitNumber*30, unitNumber*60, "militia += " + unitNumber));
+			    return true;
 				} else
 				alert("Insufficient funds.");
 			break;
 			case 1:
 			if (food > unitNumber*30 && fuel > unitNumber*70 && metal > unitNumber*30 && availablePop > unitNumber) {
 					queue.push(new queueItem(unitNumber + " Infantry", unitNumber*30, unitNumber*70, unitNumber*30, unitNumber*65, "infantry += " + unitNumber));
+			    return true;
 				} else
 				alert("Insufficient funds.");
 			break;
 			case 2:
 			if (food > unitNumber*60 && fuel > unitNumber*40 && metal > unitNumber*30 && availablePop > unitNumber) {
 					queue.push(new queueItem(unitNumer + " Marines", unitNumber*60, unitNumber*40, unitNumber*30, unitNumber*65, "marines += " + unitNumber));
+			    return true;
 				} else
 				alert("Insufficient funds.");
 			break;
 		}
-		
+	    return false;
 	}
 update();
 }
@@ -259,7 +266,7 @@ update();
   <option>Infantry</option>
   <option>Marines</option>
 </select>
-<button onclick="buildUnits('barracks'); if (queue.length == 0) doQueue();">Confirm</button>
+<button onclick="if (buildUnits('barracks') && (!doingQueue)) doQueue();">Confirm</button>
 </p>
 <p>&nbsp;</p>
     </td>
