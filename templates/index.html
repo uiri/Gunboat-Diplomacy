@@ -134,7 +134,7 @@ function queueItem(itemdescription,foodCost,fuelCost,metalCost,productionCost,en
 	this.fuel = fuelCost;
 	this.metal = metalCost;
 	this.duration = (productionCost/production);
-		this.duration *= 60000;
+		this.duration *= 1000000;
 		this.completionDate = new Date();
 		this.completionDate.setDate(this.completionDate.getDate()+this.duration);
 	//should be the code IN TEXT QUOTES; unless someone else has a better way
@@ -146,29 +146,26 @@ function queueItem(itemdescription,foodCost,fuelCost,metalCost,productionCost,en
 	this.durationText = document.createElement("span");
 	this.durationText.setAttribute("name", this.description);
 	queueHTML.appendChild(this.durationText);
-	this.durationText.innerHTML = this.duration + " seconds";
+    this.durationText.innerHTML = (this.duration/1000) + " seconds";
 }
 
 //goes through the queue
 function doQueue () {
     doingQueue = true;
-	var current = queue[0];
-    var now = new Date();
-    while ((new Date().getTime() - now.getTime()) < current.duration) {
-	continue
-    }
-	eval(current.result);
-	food -= current.food;
-	fuel -= current.fuel;
-	metal -= current.metal;
-	queue.shift();
+    var current = queue[0];
+    eval(current.result);
+    food -= current.food;
+    fuel -= current.fuel;
+    metal -= current.metal;
+    queue.shift();
     for (var c=0;c<2;c++)
 	queueHTML.removeChild(queueHTML.childNodes[1]);
-	update();
-	if (queue.length > 0)
-		doQueue();
-    else
+    update();
+    if (queue.length > 0) {
+	setTimeout(doQueue(), queue[0].duration);
+    } else {
 	doingQueue = false;
+    }
 }
 
 //queues units; DUH!
@@ -267,7 +264,7 @@ update();
   <option>Infantry</option>
   <option>Marines</option>
 </select>
-<button onclick="if (buildUnits('barracks') && (!doingQueue)) doQueue();">Confirm</button>
+<button onclick='var buildunits = buildUnits("barracks"); if (buildunits && (!doingQueue)) { setTimeout("doQueue()", queue[0].duration);}'>Confirm</button>
 </p>
 <p>&nbsp;</p>
     </td>
