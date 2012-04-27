@@ -65,7 +65,7 @@ Will load the queue from a database.
 */
 }
 
-getStats(x, y);
+//getStats(x, y);
 
 /* Function to write out the stats on the page */
 
@@ -124,6 +124,7 @@ function update(){
 //queue item object
 
 var queue = new Array();
+var doingQueue = false;
 loadQueue();
 var queueHTML;
 
@@ -133,7 +134,7 @@ function queueItem(itemdescription,foodCost,fuelCost,metalCost,productionCost,en
 	this.fuel = fuelCost;
 	this.metal = metalCost;
 	this.duration = (productionCost/production);
-		//this.duration *= 21600000;
+		this.duration *= 1000000;
 		this.completionDate = new Date();
 		this.completionDate.setDate(this.completionDate.getDate()+this.duration);
 	//should be the code IN TEXT QUOTES; unless someone else has a better way
@@ -144,27 +145,27 @@ function queueItem(itemdescription,foodCost,fuelCost,metalCost,productionCost,en
 	queueHTML.appendChild(this.itemText);
 	this.durationText = document.createElement("span");
 	this.durationText.setAttribute("name", this.description);
-	queue.HTML.appendChild(this.durationText);
-	this.durationText.innerHTML = duration + " minutes";
+	queueHTML.appendChild(this.durationText);
+    this.durationText.innerHTML = (this.duration/1000) + " seconds";
 }
 
 //goes through the queue
 function doQueue () {
-	var current = queue[0];
-	for (var count=0; count<duration; count+=0)
-		{
-			setTimeout("count += 1000", 1000);
-			current.durationText.innerHTML = (duration/60000) + " minutes";
-		}
-	eval(current.result)
-	food -= current.food;
-	fuel -= current.fuel;
-	metal -= current.metal;
-	queue.shift();
+    doingQueue = true;
+    var current = queue[0];
+    eval(current.result);
+    food -= current.food;
+    fuel -= current.fuel;
+    metal -= current.metal;
+    queue.shift();
+    for (var c=0;c<2;c++)
 	queueHTML.removeChild(queueHTML.childNodes[1]);
-	update();
-	if (queue.length > 0)
-		doQueue();
+    update();
+    if (queue.length > 0) {
+	setTimeout(doQueue(), queue[0].duration);
+    } else {
+	doingQueue = false;
+    }
 }
 
 //queues units; DUH!
@@ -179,23 +180,26 @@ function buildUnits(unitSource){
 			case 0:
 				if (food > unitNumber*50 && fuel > unitNumber*10 && metal > unitNumber*30 && availablePop > unitNumber) {
 					queue.push(new queueItem(unitNumber +  " Militia", unitNumber*50, unitNumber*10, unitNumber*30, unitNumber*60, "militia += " + unitNumber));
+			    return true;
 				} else
 				alert("Insufficient funds.");
 			break;
 			case 1:
 			if (food > unitNumber*30 && fuel > unitNumber*70 && metal > unitNumber*30 && availablePop > unitNumber) {
 					queue.push(new queueItem(unitNumber + " Infantry", unitNumber*30, unitNumber*70, unitNumber*30, unitNumber*65, "infantry += " + unitNumber));
+			    return true;
 				} else
 				alert("Insufficient funds.");
 			break;
 			case 2:
 			if (food > unitNumber*60 && fuel > unitNumber*40 && metal > unitNumber*30 && availablePop > unitNumber) {
 					queue.push(new queueItem(unitNumer + " Marines", unitNumber*60, unitNumber*40, unitNumber*30, unitNumber*65, "marines += " + unitNumber));
+			    return true;
 				} else
 				alert("Insufficient funds.");
 			break;
 		}
-		
+	    return false;
 	}
 update();
 }
@@ -260,7 +264,7 @@ update();
   <option>Infantry</option>
   <option>Marines</option>
 </select>
-<button onclick="buildUnits('barracks'); if (queue.length = 0) doQueue();">Confirm</button>
+<button onclick='var buildunits = buildUnits("barracks"); if (buildunits && (!doingQueue)) { setTimeout("doQueue()", queue[0].duration);}'>Confirm</button>
 </p>
 <p>&nbsp;</p>
     </td>
