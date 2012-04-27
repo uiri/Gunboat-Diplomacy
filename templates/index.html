@@ -224,6 +224,8 @@ function update(){
 
 var queue = new Array();
 var doingQueue = false;
+var intervalid = 0;
+var queuetimes = new Array();
 loadQueue();
 var queueHTML;
 
@@ -245,7 +247,8 @@ function queueItem(itemdescription,foodCost,fuelCost,metalCost,productionCost,en
 	this.durationText = document.createElement("span");
 	this.durationText.setAttribute("name", this.description);
 	queueHTML.appendChild(this.durationText);
-    this.durationText.innerHTML = Math.round(this.duration/1000) + " seconds";
+    this.durationText.innerHTML = (this.duration/1000) + " seconds";
+    queuetimes.push(this.duration/1000);
 }
 
 //goes through the queue
@@ -262,6 +265,9 @@ function doQueue () {
 	queueHTML.removeChild(queueHTML.childNodes[1]);
     update();
     if (queue.length > 0) {
+	clearInterval(intervalid);
+	intervalid = setInterval("queue[0].durationText.innerHTML = queuetimes[0] + \" seconds\";queuetimes[0]--;", 1000);
+	setTimeout("queuetimes.shift();clearInterval(intervalid);doQueue()", queue[0].duration);
 	setTimeout(doQueue(), queue[0].duration);
     } else {
 	doingQueue = false;
@@ -389,7 +395,7 @@ queue.push(new queueItem("REVOLUTION!", 0, 0, 0, population, "politicschoice=" +
   <option>Infantry</option>
   <option>Marines</option>
 </select>
-<button onclick='var buildunits = buildUnits("barracks"); if (buildunits && (!doingQueue)) { setTimeout("doQueue()", queue[0].duration);}'>Confirm</button>
+<button onclick='var buildunits = buildUnits("barracks"); if (buildunits && (!doingQueue)) {alert("hi!");clearInterval(intervalid);intervalid = setInterval("queue[0].durationText.innerHTML = queuetimes[0] + \" seconds\";queuetimes[0]--;", 1000); setTimeout("clearInterval(intervalid);doQueue()", queue[0].duration);}'>Confirm</button>
 </p>
 <p>&nbsp;</p>
     </td>
