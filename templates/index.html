@@ -134,19 +134,19 @@ function queueItem(itemdescription,foodCost,fuelCost,metalCost,productionCost,en
 	this.fuel = fuelCost;
 	this.metal = metalCost;
 	this.duration = (productionCost/production);
-		this.duration *= 1000000;
+		this.duration *= 21600000;
 		this.completionDate = new Date();
 		this.completionDate.setDate(this.completionDate.getDate()+this.duration);
 	//should be the code IN TEXT QUOTES; unless someone else has a better way
 	this.result = endResult;
 	this.itemText = document.createElement("div");
 	this.itemText.setAttribute("style", "border:black;");
-	this.itemText.innerHTML = "<b>" + this.description + "</b> Completion in: ";
+	this.itemText.innerHTML = "<b>" + this.description + "</b> Completion time: ";
 	queueHTML.appendChild(this.itemText);
 	this.durationText = document.createElement("span");
 	this.durationText.setAttribute("name", this.description);
 	queueHTML.appendChild(this.durationText);
-    this.durationText.innerHTML = (this.duration/1000) + " seconds";
+    this.durationText.innerHTML = Math.round(this.duration/1000) + " seconds";
 }
 
 //goes through the queue
@@ -238,7 +238,7 @@ update();
   <div align="right"><strong>Loyalty: <img src="http://forums.civfanatics.com/images/smilies/smile.gif" /><span id="loyalty"></span>%</strong></div>
 </div>
 
-<div id="queuediv" style="background:#666; color:#FFF;">Building Queue</div>
+<div id="queuediv" style="background:#666; color:#FFF;"><h3>Building Queue<h3></div>
 <h2>Infrastructure</h2>
 <p>Warehouse (Level <span id="warehouse"></span>) <button onclick="update(); upgrade(warehouse);">Upgrade Warehouse</button>
 <br />
