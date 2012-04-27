@@ -235,7 +235,7 @@ function queueItem(itemdescription,foodCost,fuelCost,metalCost,productionCost,en
 	this.fuel = fuelCost;
 	this.metal = metalCost;
 	this.duration = (productionCost/production);
-		this.duration *= 21600000;
+		this.duration *= 600000;
 		this.completionDate = new Date();
 		this.completionDate.setDate(this.completionDate.getDate()+this.duration);
 	//should be the code IN TEXT QUOTES; unless someone else has a better way
@@ -254,7 +254,6 @@ function queueItem(itemdescription,foodCost,fuelCost,metalCost,productionCost,en
 //goes through the queue
 
 function doQueue () {
-    doingQueue = true;
     var current = queue[0];
     eval(current.result);
     food -= current.food;
@@ -265,6 +264,7 @@ function doQueue () {
 	queueHTML.removeChild(queueHTML.childNodes[1]);
     update();
     if (queue.length > 0) {
+	doingQueue = true;
 	clearInterval(intervalid);
 	intervalid = setInterval("queue[0].durationText.innerHTML = queuetimes[0] + \" seconds\";queuetimes[0]--;", 1000);
 	setTimeout("queuetimes.shift();clearInterval(intervalid);doQueue()", queue[0].duration);
@@ -395,7 +395,7 @@ queue.push(new queueItem("REVOLUTION!", 0, 0, 0, population, "politicschoice=" +
   <option>Infantry</option>
   <option>Marines</option>
 </select>
-<button onclick='var buildunits = buildUnits("barracks"); if (buildunits && (!doingQueue)) {alert("hi!");clearInterval(intervalid);intervalid = setInterval("queue[0].durationText.innerHTML = queuetimes[0] + \" seconds\";queuetimes[0]--;", 1000); setTimeout("clearInterval(intervalid);doQueue()", queue[0].duration);}'>Confirm</button>
+<button onclick='var buildunits = buildUnits("barracks"); if (buildunits && (!doingQueue)) {doingQueue = true;clearInterval(intervalid);intervalid = setInterval("queue[0].durationText.innerHTML = queuetimes[0] + \" seconds\";queuetimes[0]--;", 1000); setTimeout("clearInterval(intervalid);doQueue()", queue[0].duration);}'>Confirm</button>
 </p>
 <p>&nbsp;</p>
     </td>
