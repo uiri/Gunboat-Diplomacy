@@ -39,6 +39,18 @@ var metal = 10000;
 var production = availablePop*50;
 	var productionModifier = 50;
 var loyalty = 100;
+	var warehouseLevel = 4;
+		foodCapacity = 80000;
+		fuelCapatcity = 40000;
+		metalCapacity = 40000;
+	var barracksLevel = 1;
+	var roadLevel = 0;
+	var workshopLevel = 0;
+	var schoolLevel = 1;
+	var hospitalLevel = 0;
+	var factoryLevel = 0;
+	var shipuardLevel = 0;
+	var airportLevel = 0
 
 /* If the city is new, put this time as the last update. */
 
@@ -89,6 +101,8 @@ function writeStats(){
 	document.getElementById("fieldgunnum").innerHTML=fieldGuns;
 	document.getElementById("artillerynum").innerHTML=artillery;
 	document.getElementById("fixedgunnum").innerHTML=fixedGuns;
+	//building levels
+	document.getElementById("warehousespan").innerHTML=warehouseLevel;
 }
 
 /* Function to mathematically update the stats*/
@@ -108,14 +122,25 @@ function update(){
 	availablePop = population - (armySize + resourcePop + productionPop);
 
 	
-	// Now actually run the formula
+	// Now actually run the resource formula
 	
 	population += ((Math.log((food+1)/population)*population)*popModifier)*quarterdaysElapsed;
 	production = availablePop*productionModifier;
 	food += 40*(foodPop * quarterdaysElapsed);
 	fuel += 40*(fuelPop * quarterdaysElapsed);
 	metal += 40*(metalPop * quarterdaysElapsed);
-	
+	//capacity limit
+	foodCapacity = warehouseLevel*1300 + 10000;
+	fuelCapacity = warehouseLevel*1300 + 10000;
+	metalCapacity = warehouseLevel*1300 + 10000;
+	if (food > foodCapacity)
+		food = foodCapacity;
+	if (fuel > fuelCapacity)
+		fuel = fuelCapacity;
+	if (metal > metalCapacity)
+		metal = metalCapacity;
+		
+	//now record it for posterity
 	writeStats();
 	uploadStats();
 	lastUpdate = new Date();
@@ -201,8 +226,16 @@ function buildUnits(unitSource){
 		}
 	    return false;
 	}
-update();
 }
+function upgradeBuilding(buildingChoice){
+	switch(buildingChoice) {
+		case "warehouse":
+			if (food > 8712 && fuel > 8015)
+				queue.push(new queueItem("Warehouse Level " + warehouseLevel, 8500, 8600, 8700, warehouseLevel*1300, "warehouseLevel+=1"));
+		break;	
+	}
+}
+
 </script>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 <title>My City</title>
@@ -240,7 +273,7 @@ update();
 
 <div id="queuediv" style="background:#666; color:#FFF;"><h3>Building Queue<h3></div>
 <h2>Infrastructure</h2>
-<p>Warehouse (Level <span id="warehouse"></span>) <button onclick="update(); upgrade(warehouse);">Upgrade Warehouse</button>
+<p>Warehouse (Level <span id="warehousespan"></span>) <button onclick="update(); upgradeBuilding('warehouse');">Upgrade Warehouse</button>
 <br />
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Farmers
 <span id="farmers"></span>
