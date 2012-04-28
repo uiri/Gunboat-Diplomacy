@@ -40,9 +40,7 @@ var production = availablePop*50;
 	var productionModifier = 50;
 var loyalty = 100;
 	var warehouseLevel = 4;
-		foodCapacity = 80000;
-		fuelCapatcity = 40000;
-		metalCapacity = 40000;
+		var capacity;
 	var barracksLevel = 1;
 	var roadLevel = 0;
 	var workshopLevel = 0;
@@ -108,37 +106,31 @@ function writeStats(){
 /* Function to mathematically update the stats*/
 
 function update(){
-	writeStats();
-	
 	//Figure out the time elapsed
-	
 	var now = new Date();
 	var quarterdaysElapsed = (now.getTime() - lastUpdate.getTime())/21600000;
 	
 	//Fix some stats
-	
 	resourcePop = foodPop + fuelPop + metalPop;
 	armySize = militia + infantry + marines + tanks*4 + APCs*6 + IFVs*5 + fieldGuns*5 + artillery*8 + fixedGuns*10;
 	availablePop = population - (armySize + resourcePop + productionPop);
 
 	
 	// Now actually run the resource formula
-	
 	population += ((Math.log((food+1)/population)*population)*popModifier)*quarterdaysElapsed;
 	production = availablePop*productionModifier;
 	food += 40*(foodPop * quarterdaysElapsed);
 	fuel += 40*(fuelPop * quarterdaysElapsed);
 	metal += 40*(metalPop * quarterdaysElapsed);
+	
 	//capacity limit
-	foodCapacity = warehouseLevel*1300 + 10000;
-	fuelCapacity = warehouseLevel*1300 + 10000;
-	metalCapacity = warehouseLevel*1300 + 10000;
-	if (food > foodCapacity)
-		food = foodCapacity;
-	if (fuel > fuelCapacity)
-		fuel = fuelCapacity;
-	if (metal > metalCapacity)
-		metal = metalCapacity;
+	capacity = (warehouseLevel^2.5)*1000;
+	if (food > capacity)
+		food = capacity;
+	if (fuel > capacity)
+		fuel = capacity;
+	if (metal > capacity)
+		metal = capacity;
 		
 	//now record it for posterity
 	writeStats();
@@ -227,11 +219,12 @@ function buildUnits(unitSource){
 	    return false;
 	}
 }
+
 function upgradeBuilding(buildingChoice){
 	switch(buildingChoice) {
 		case "warehouse":
 			if (food > 8712 && fuel > 8015)
-				queue.push(new queueItem("Warehouse Level " + warehouseLevel, 8500, 8600, 8700, warehouseLevel*1300, "warehouseLevel+=1"));
+				queue.push(new queueItem("Warehouse Level " + warehouseLevel, (warehouseLevel^3)*90, (warehouseLevel^3)*100, (warehouseLevel^3)*110, warehouseLevel*1300, "warehouseLevel+=1"));
 		break;	
 	}
 }
@@ -273,7 +266,7 @@ function upgradeBuilding(buildingChoice){
 
 <div id="queuediv" style="background:#666; color:#FFF;"><h3>Building Queue<h3></div>
 <h2>Infrastructure</h2>
-<p>Warehouse (Level <span id="warehousespan"></span>) <button onclick="update(); upgradeBuilding('warehouse');">Upgrade Warehouse</button>
+<p>Warehouse (Level <span id="warehousespan"></span>) <button onclick="upgradeBuilding('warehouse');">Upgrade Warehouse</button>
 <br />
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Farmers
 <span id="farmers"></span>
