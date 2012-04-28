@@ -248,7 +248,10 @@ function queueItem(itemdescription,foodCost,fuelCost,metalCost,productionCost,en
 	this.durationText.setAttribute("name", this.description);
 	queueHTML.appendChild(this.durationText);
     this.durationText.innerHTML = (this.duration/1000) + " seconds";
-    queuetimes.push(this.duration/1000);
+    if (queuetimes.length > 0)
+	queuetimes.push(this.duration/1000 - queuetimes[0]);
+    else
+	queuetimes.push(this.duration/1000);
 }
 
 //goes through the queue
