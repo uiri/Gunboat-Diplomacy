@@ -4,13 +4,13 @@ Gunboat-Diplomacy
 text-based mmo under construction
 
 City/map system:
-  Cities start off on squares on a grid map (made with Google Maps API)
-  Each city has three resources: food, fuel, metal
-    Harvested from nearby squares
-      Desert yields fuel
-      Plains yield food
-      Hills yield metal
-      Water and mountain (impassable)
+*Cities start off on squares on a grid map (made with Google Maps API)
+*Each city has three resources: food, fuel, metal
+**Harvested from nearby squares
+***Desert yields fuel
+***Plains yield food
+***Hills yield metal
+***Water and mountain (impassable)
         Water yields less food
         Mountains yield less metal
       Special buildings (require a lot of infrastructure) can convert resources
