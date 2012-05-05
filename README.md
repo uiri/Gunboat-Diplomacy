@@ -180,11 +180,11 @@ Politics system
       
     Religion
       
-      Free Religion (☪☸xis☩) - increased education
+      Free Religion (symbol: ☪☸xis☩) - increased education
       
-      Theocracy (♗) - decreased research, increased loyalty
+      Theocracy (symbol: ♗) - decreased research, increased loyalty
       
-      State Atheism (⚛) - increased research, decreased loyalty
+      State Atheism (symbol: ⚛) - increased research, decreased loyalty
       
   Players choose from presets at first
   
@@ -240,7 +240,7 @@ Religion
         
         Fanatic: Varagnian (bonus for Artillery)
         
-      Catholic (✝)
+      Catholic (symbol: ✝)
       
         "Now the Catholic Faith is this: We worship One God in Trinity and Trinity in Unity, neither confounding the Persons nor dividing the substance."
       
@@ -248,7 +248,7 @@ Religion
         
         Fanatic: Crusader (bonus for Tanks)
         
-      Protestant (✞)
+      Protestant (symbol: ✞)
       
         "I believe in the Holy Ghost, the Holy Christian Church, the Communion of Saints, the Forgiveness of sins, the Resurrection of the Body, and the Life everlasting.  Amen."
         
@@ -256,7 +256,7 @@ Religion
         
         Fanatic: Puritan (bonus for Marines)
         
-      Sunni (☪)
+      Sunni (symbol: ☪)
       
         "There is no god but God, and Muhammad is the messenger of God."
         
@@ -264,7 +264,7 @@ Religion
         
         Fanatic: Mujahadin (bonus for Militia)
       
-      Shia (☫)
+      Shia (symbol: ☫)
       
         "There is no god but God, and Muhammad is the messenger of God, and Ali is the viceregent of God."
       
@@ -272,7 +272,7 @@ Religion
         
         Fanatic: Assassin (bonus for espionage)
         
-      Buddhist (☸)
+      Buddhist (symbol: ☸)
         
         "Suffering exists. There is a cause for suffering. There is an end to suffering. In order to end suffering, you must follow the Eightfold Path."
         
@@ -280,7 +280,7 @@ Religion
         
         Fanatic: Shaolin Monk (bonus for fortification)
         
-      Sikh (☬)
+      Sikh (symbol: ☬)
       
         "There exists but one God, who is called The True, The Creator, Free from fear and hate, Immortal, Not begotten, Self-Existent, Great and Compassionate."  
       
@@ -306,21 +306,21 @@ Religion
       
     Different Pantheons can be chosen (NOTE: purely flavor at this point)
     
-      Hindu (ॐ)
+      Hindu (symbol: ॐ)
       
-      Chinese (☯)
+      Chinese (symbol: ☯)
       
-      Shinto (π)
+      Shinto (symbol: π)
       
-      Norse (☇)
+      Norse (symbol: ☇)
       
-      Egyptian (☥)
+      Egyptian (symbol: ☥)
       
-      Greek (☿)
+      Greek (symbol: ☿)
       
-      Animist (☀)
+      Animist (symbol: ☀)
       
-      Leader-Worship (☟)
+      Cult of Personality (symbol: ☟)
 
 Commerce
 
