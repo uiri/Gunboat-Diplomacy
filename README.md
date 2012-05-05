@@ -292,13 +292,13 @@ Religion
   
     Certain percentage of population is "Pagan"
     
-    If Paganism adopted as State Religion, each city can be dedicated to a specific god
+    If Paganism adopted as State Religion, each city can have a Festival once per week, which yields a certain bonus
     
-      Creator God - +10% production
+      Creator God - production efficiency increased 5%
       
-      War God - +1 barracks level for every 20% pagan
+      War God - loyalty boost
       
-      Harvest God - +20% to all resource collection
+      Harvest God - +20% of every resource
       
       Sea God - bonus commerce
       
