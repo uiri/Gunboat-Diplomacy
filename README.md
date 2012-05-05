@@ -156,11 +156,11 @@ Politics system
       
     Society
     
-      Libertarian (symbol: ☮ + assault rifle) - more education, less espionage
+      Libertarian (symbol: 🗽) - more education, less espionage
       
-      Tolerant (symbol: ✌ + gavel) - slight education bonus
+      Tolerant (symbol: ☮) - slight education bonus
       
-      Conservative (fasces) - less education, more espionage
+      Conservative (symbol: 🔨) - less education, more espionage
       
     Capital
     
@@ -176,7 +176,7 @@ Politics system
       
       Mixed (symbol: ☊)
       
-      Market (symbol: scales)
+      Market (symbol: ⚖)
       
     Religion
       
