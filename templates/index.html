@@ -92,7 +92,7 @@ var loyalty = 100;
 				stateReligion.program = 0;
 				stateReligion.buildings = ["hospitalLevel", "warehouseLevel", "schoolLevel", "roadLevel", "fortLevel"];
 			var fanaticCity = cityName;
-		var paganism 
+		var paganism = new Object;
 			paganism.types = ["Cult of Personality", "Hindu", "Chinese", "Shinto", "Norse", "Egyptian", "Greek", "Animist"];
 			paganism.choice = 1;
 			paganism.programs = ["Creator God", "War God", "Harvest God", "Sea God", "Underworld God"];
@@ -224,8 +224,6 @@ function update(){
 
 var queue = new Array();
 var doingQueue = false;
-var intervalid = 0;
-var queuetimes = new Array();
 loadQueue();
 var queueHTML;
 
@@ -243,15 +241,13 @@ function queueItem(itemdescription,foodCost,fuelCost,metalCost,productionCost,en
 	this.itemText = document.createElement("div");
 	this.itemText.setAttribute("style", "border:black;");
 	this.itemText.innerHTML = "<b>" + this.description + "</b> Completion time: ";
-	queueHTML.appendChild(this.itemText);
 	this.durationText = document.createElement("span");
 	this.durationText.setAttribute("name", this.description);
-	queueHTML.appendChild(this.durationText);
+        this.surroundingDiv = document.createElement("div");
+        this.surroundingDiv.appendChild(this.itemText);
+        this.surroundingDiv.appendChild(this.durationText);
+	queueHTML.appendChild(this.surroundingDiv);
     this.durationText.innerHTML = (this.duration/1000) + " seconds";
-    if (queuetimes.length > 0)
-	queuetimes.push(this.duration/1000 - queuetimes[0]);
-    else
-	queuetimes.push(this.duration/1000);
 }
 
 //goes through the queue
@@ -263,15 +259,11 @@ function doQueue () {
     fuel -= current.fuel;
     metal -= current.metal;
     queue.shift();
-    for (var c=0;c<2;c++)
-	queueHTML.removeChild(queueHTML.childNodes[1]);
+    queueHTML.removeChild(queueHTML.childNodes[1]);
     update();
     if (queue.length > 0) {
-	doingQueue = true;
-	clearInterval(intervalid);
-	intervalid = setInterval("queue[0].durationText.innerHTML = queuetimes[0] + \" seconds\";queuetimes[0]--;", 1000);
-	setTimeout("queuetimes.shift();clearInterval(intervalid);doQueue()", queue[0].duration);
-	setTimeout(doQueue(), queue[0].duration);
+        doingQueue = true;
+	setTimeout("doQueue()", queue[0].duration);
     } else {
 	doingQueue = false;
     }
@@ -398,7 +390,7 @@ queue.push(new queueItem("REVOLUTION!", 0, 0, 0, population, "politicschoice=" +
   <option>Infantry</option>
   <option>Marines</option>
 </select>
-<button onclick='var buildunits = buildUnits("barracks"); if (buildunits && (!doingQueue)) {doingQueue = true;clearInterval(intervalid);intervalid = setInterval("queue[0].durationText.innerHTML = queuetimes[0] + \" seconds\";queuetimes[0]--;", 1000); setTimeout("clearInterval(intervalid);doQueue()", queue[0].duration);}'>Confirm</button>
+<button onclick='var buildunits = buildUnits("barracks"); if (buildunits && (!doingQueue)) {doingQueue = true; setTimeout("doQueue()", queue[0].duration);}'>Confirm</button>
 </p>
 <p>&nbsp;</p>
     </td>
