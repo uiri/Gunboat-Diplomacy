@@ -92,7 +92,7 @@ var loyalty = 100;
 				stateReligion.program = 0;
 				stateReligion.buildings = ["hospitalLevel", "warehouseLevel", "schoolLevel", "roadLevel", "fortLevel"];
 			var fanaticCity = cityName;
-		var paganism 
+		var paganism = new Object;
 			paganism.types = ["Cult of Personality", "Hindu", "Chinese", "Shinto", "Norse", "Egyptian", "Greek", "Animist"];
 			paganism.choice = 1;
 			paganism.programs = ["Creator God", "War God", "Harvest God", "Sea God", "Underworld God"];
@@ -233,7 +233,7 @@ function queueItem(itemdescription,foodCost,fuelCost,metalCost,productionCost,en
 	this.fuel = fuelCost;
 	this.metal = metalCost;
 	this.duration = (productionCost/production);
-		this.duration *= 21600000;
+		this.duration *= 600000;
 		this.completionDate = new Date();
 		this.completionDate.setDate(this.completionDate.getDate()+this.duration);
 	//should be the code IN TEXT QUOTES; unless someone else has a better way
@@ -241,28 +241,29 @@ function queueItem(itemdescription,foodCost,fuelCost,metalCost,productionCost,en
 	this.itemText = document.createElement("div");
 	this.itemText.setAttribute("style", "border:black;");
 	this.itemText.innerHTML = "<b>" + this.description + "</b> Completion time: ";
-	queueHTML.appendChild(this.itemText);
 	this.durationText = document.createElement("span");
 	this.durationText.setAttribute("name", this.description);
-	queueHTML.appendChild(this.durationText);
-    this.durationText.innerHTML = Math.round(this.duration/1000) + " seconds";
+        this.surroundingDiv = document.createElement("div");
+        this.surroundingDiv.appendChild(this.itemText);
+        this.surroundingDiv.appendChild(this.durationText);
+	queueHTML.appendChild(this.surroundingDiv);
+    this.durationText.innerHTML = (this.duration/1000) + " seconds";
 }
 
 //goes through the queue
 
 function doQueue () {
-    doingQueue = true;
     var current = queue[0];
     eval(current.result);
     food -= current.food;
     fuel -= current.fuel;
     metal -= current.metal;
     queue.shift();
-    for (var c=0;c<2;c++)
-	queueHTML.removeChild(queueHTML.childNodes[1]);
+    queueHTML.removeChild(queueHTML.childNodes[1]);
     update();
     if (queue.length > 0) {
-	setTimeout(doQueue(), queue[0].duration);
+        doingQueue = true;
+	setTimeout("doQueue()", queue[0].duration);
     } else {
 	doingQueue = false;
     }
@@ -308,7 +309,7 @@ function buildUnits(unitSource){
 
 //queues buildings
 function upgradeBuilding(buildingChoice){
-	switch(buildingChoice) {
+    switch(buildingChoice) {
 		case "warehouse":
 			if (food > 8712 && fuel > 8015)
 				queue.push(new queueItem("Warehouse Level " + parseInt(warehouseLevel+1), 1000+Math.pow(warehouseLevel, 2), 1500+Math.pow(warehouseLevel, 2), 2000+Math.pow(warehouseLevel, 2), 10*Math.pow(warehouseLevel, 3), "warehouseLevel+=1"));
@@ -389,7 +390,7 @@ queue.push(new queueItem("REVOLUTION!", 0, 0, 0, population, "politicschoice=" +
   <option>Infantry</option>
   <option>Marines</option>
 </select>
-<button onclick='var buildunits = buildUnits("barracks"); if (buildunits && (!doingQueue)) { setTimeout("doQueue()", queue[0].duration);}'>Confirm</button>
+<button onclick='var buildunits = buildUnits("barracks"); if (buildunits && (!doingQueue)) {doingQueue = true; setTimeout("doQueue()", queue[0].duration);}'>Confirm</button>
 </p>
 <p>&nbsp;</p>
     </td>
