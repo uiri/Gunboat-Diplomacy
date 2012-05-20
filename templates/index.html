@@ -2,12 +2,10 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <script type="text/javascript">
-
 /* Reset all the variables */
 var lat = 0;
 var lng = 0;
 var cityName = "New City";
-
 var population = 10000;
 	var availablePop = 10000;
 	var armySize = 50;
@@ -20,24 +18,21 @@ var population = 10000;
 		var fieldGuns = 0;
 		var artillery = 0;
 		var fixedGuns = 0;
-		var fanatics = 1;
 	var resourcePop = 0;
 		var foodPop = 250;
 		var fuelPop = 250;
 		var metalPop = 250;
 	var productionPop = 0;
 	var popModifier = 1;
-	
 var food = 20000;
 var fuel = 10000;
 var metal = 10000;
-
 var production = availablePop*50;
 	var productionModifier = 50;
+var loyalty = 100;
 	var warehouseLevel = 4;
 		var capacity;
 	var barracksLevel = 1;
-	var fortLevel = 1;
 	var roadLevel = 0;
 	var workshopLevel = 0;
 	var schoolLevel = 1;
@@ -48,68 +43,10 @@ var production = availablePop*50;
 	var laboratoryLevel = 0;
 		var supercomputerLevel;
 		var ethanolLevel;
-		var hydroponicsLevel;
-		var recyclingLevel;
-		var nuclearLevel;
-		var launchpadLevel;
-
-var loyalty = 100;
-	var politics;
-		var politicstypes = ["Democracy", "Republic", "Autocracy"];
-		var politicssymbols = ["☑", "✍", "♔"];
-		var politicschoice = 1;
-	var society;
-		var societytypes = ["Libertarian", "Tolerant", "Conservative"];
-		var societysymbols = ["🗽", "☮", "🔨"];
-		var societychoice = 1;
-	var capital;
-		var capitaltypes = ["Syndicalist", "Decentralized", "Capitalist"];
-		var capitalsymbols = ["Ⓐ", "☍", "$"];
-		var capitalchoice = 1;
-	var economy
-		var economytypes = ["Free Market", "Mixed", "Planned"];
-		var economysymbols = ["⚖", "☊", "☭"];
-		var economychoice = 1;
-	var religionsystems;
-		var religionsystemstypes = ["Free Religion", "State Atheism", "Theocracy"];
-		var religionsystemssymbols = ["☪☸xis☩", "⚛", "♗"];
-		var religionsystemschoice = 0;
-		var orthodox = 10;
-		var catholic = 10;
-		var protestant = 10;
-		var sunni = 10;
-		var shia = 10;
-		var buddhist = 10;
-		var sikh = 10;
-		var pagan = 15;
-		var atheist = 15;
-		var majorReligions = ["Orthodox", "Catholic", "Protestant", "Sunni", "Shia", "Buddhist", "Sikh", "Pagan", "Irreligious"];
-			var religionsymbols = ["☦","✝","✞","☪","☫","☸","☬","⛤","αθεοι"];
-			var religionquotes = ["I believe in one God, Father Almighty, Creator of heaven and earth, and of all things visible and invisible. And in one Lord Jesus Christ, the only-begotten Son of God, begotten of the Father before all ages.", "Now the Catholic Faith is this: We worship One God in Trinity and Trinity in Unity, neither confounding the Persons nor dividing the substance.",  "I believe in the Holy Ghost, the Holy Christian Church, the Communion of Saints, the Forgiveness of sins, the Resurrection of the Body, and the Life everlasting.  Amen.",  "There is no god but God, and Muhammad is the messenger of God.", "There is no god but God, and Muhammad is the messenger of God, and Ali is the viceregent of God.", "Suffering exists. There is a cause for suffering. There is an end to suffering. In order to end suffering, you must follow the Eightfold Path.",  "There exists but one God, who is called The True, The Creator, Free from fear and hate, Immortal, Not begotten, Self-Existent, Great and Compassionate." ]
-			var religionUnits = ["Varagnian", "Crusader", "Puritan", "Mujahadin", "Assassin", "Shaolin Monk", "Punjabi"];
-			var stateReligion = 0;
-				stateReligion.programs = ["Charity", "Asceticism", "Missionaries", "Pilgrimage", "Holy War"];
-				stateReligion.program = 0;
-				stateReligion.buildings = ["hospitalLevel", "warehouseLevel", "schoolLevel", "roadLevel", "fortLevel"];
-			var fanaticCity = cityName;
-		var paganism = new Object;
-			paganism.types = ["Cult of Personality", "Hindu", "Chinese", "Shinto", "Norse", "Egyptian", "Greek", "Animist"];
-			paganism.choice = 1;
-			paganism.programs = ["Creator God", "War God", "Harvest God", "Sea God", "Underworld God"];
-			paganism.results = ["productionModifier += .1", "loyalty+=10", "food *= 1.1; metal *= 1.1; fuel *= 1.1", "fortLevel += Math.round(pagan/5)"];
-			paganism.lastFestival = new Date();
-
-function getReligion(latitude, longitude){
-/*DUMMY FUNCTION
-
-Determines pagan and atheist population, then fills in the rest.
-
-If in Eurasia, based on proximity to holy cities.
-If in Africa, based on latitude.
-If in Americans, based on proximity to equator.*/
-}
-
-getReligion(lat,lng);
+	    var hydroponicsLevel;
+	    var recyclingLevel;
+	    var nuclearLevel;
+	    var launchpadLevel;
 /* If the city is new, put this time as the last update. */
 
 var lastUpdate = new Date();
@@ -161,12 +98,6 @@ function writeStats(){
 	document.getElementById("fixedgunnum").innerHTML=fixedGuns;
 	//building levels
 	document.getElementById("warehousespan").innerHTML=warehouseLevel;
-	//politics and religion
-	document.getElementById("political").innerHTML=politicstypes[politicschoice];
-	document.getElementById("social").innerHTML=societytypes[societychoice];
-	document.getElementById("capital").innerHTML=capitaltypes[capitalchoice];
-	document.getElementById("economic").innerHTML=economytypes[economychoice];
-	document.getElementById("religious").innerHTML=religionsystemstypes[religionsystemschoice];
 }
 
 /* Function to mathematically update the stats*/
@@ -184,15 +115,7 @@ function update(){
 	resourcePop = foodPop + fuelPop + metalPop;
 	armySize = militia + infantry + marines + tanks*4 + APCs*6 + IFVs*5 + fieldGuns*5 + artillery*8 + fixedGuns*10;
 	availablePop = population - (armySize + resourcePop + productionPop);
-	
-	//Fix the politics & religion stuff
-	if (fanaticCity == cityName)
-		fanatics = 1;
-	else
-		fanatics = 0;
-	var religious = (orthodox+catholic+protestant+sunni+shia+buddhist+sikh+pagan)
-	if (religious < 100)
-		atheist = 100-religious;
+
 	
 	// Now actually run the resource formula
 	
@@ -201,6 +124,25 @@ function update(){
 	food += 40*(foodPop * quarterdaysElapsed);
 	fuel += 40*(fuelPop * quarterdaysElapsed);
 	metal += 40*(metalPop * quarterdaysElapsed);
+	
+	//special buildings
+	
+	if (ethanolLevel > 0) {
+	energy += ethanolLevel*500;
+	food -= ethanolLevel*500;
+	}
+	if (recyclingLevel > 0) {
+	metal += recyclingLevel*500;
+	energy -= recyclingLevel*250;
+	}
+	if (nuclearLevel > 0) {
+	energy += nuclearLevel*500;
+	metal -= nuclearLevel*500;
+	}
+	if (hydroponicsLevel > 0) {
+	food += ethanolLevel*500;
+	energy -= ethanolLevel*250;
+	}
 	//capacity limit
 	capacity = warehouseLevel*1300 + 10000;
 	if (food > capacity)
@@ -210,10 +152,6 @@ function update(){
 	if (metal > capacity)
 		metal = capacity;
 		
-	//check the queue
-	if (!doingQueue && queue.length > 0)
-		doQueue();
-	
 	//now record it for posterity
 	writeStats();
 	uploadStats();
@@ -233,7 +171,7 @@ function queueItem(itemdescription,foodCost,fuelCost,metalCost,productionCost,en
 	this.fuel = fuelCost;
 	this.metal = metalCost;
 	this.duration = (productionCost/production);
-		this.duration *= 600000;
+		this.duration *= 21600000;
 		this.completionDate = new Date();
 		this.completionDate.setDate(this.completionDate.getDate()+this.duration);
 	//should be the code IN TEXT QUOTES; unless someone else has a better way
@@ -241,29 +179,28 @@ function queueItem(itemdescription,foodCost,fuelCost,metalCost,productionCost,en
 	this.itemText = document.createElement("div");
 	this.itemText.setAttribute("style", "border:black;");
 	this.itemText.innerHTML = "<b>" + this.description + "</b> Completion time: ";
+	queueHTML.appendChild(this.itemText);
 	this.durationText = document.createElement("span");
 	this.durationText.setAttribute("name", this.description);
-        this.surroundingDiv = document.createElement("div");
-        this.surroundingDiv.appendChild(this.itemText);
-        this.surroundingDiv.appendChild(this.durationText);
-	queueHTML.appendChild(this.surroundingDiv);
-    this.durationText.innerHTML = (this.duration/1000) + " seconds";
+	queueHTML.appendChild(this.durationText);
+    this.durationText.innerHTML = Math.round(this.duration/1000) + " seconds";
 }
 
 //goes through the queue
 
 function doQueue () {
+    doingQueue = true;
     var current = queue[0];
     eval(current.result);
     food -= current.food;
     fuel -= current.fuel;
     metal -= current.metal;
     queue.shift();
-    queueHTML.removeChild(queueHTML.childNodes[1]);
+    for (var c=0;c<2;c++)
+	queueHTML.removeChild(queueHTML.childNodes[1]);
     update();
     if (queue.length > 0) {
-        doingQueue = true;
-	setTimeout("doQueue()", queue[0].duration);
+	setTimeout(doQueue(), queue[0].duration);
     } else {
 	doingQueue = false;
     }
@@ -309,13 +246,15 @@ function buildUnits(unitSource){
 
 //queues buildings
 function upgradeBuilding(buildingChoice){
-    switch(buildingChoice) {
+	switch(buildingChoice) {
 		case "warehouse":
 			if (food > 8712 && fuel > 8015)
-				queue.push(new queueItem("Warehouse Level " + parseInt(warehouseLevel+1), 1000+Math.pow(warehouseLevel, 2), 1500+Math.pow(warehouseLevel, 2), 2000+Math.pow(warehouseLevel, 2), 10*Math.pow(warehouseLevel, 3), "warehouseLevel+=1"));
+				queue.push(new queueItem("Warehouse Level " + warehouseLevel, 1000+Math.pow(warehouseLevel, 2), 1500+Math.pow(warehouseLevel, 2), 2000+Math.pow(warehouseLevel, 2), 10*Math.pow(warehouseLevel, 3), "warehouseLevel+=1"));
 		break;
 	}
+
 }
+
 
 //viva la revolución!
 function revolution() {
@@ -323,11 +262,32 @@ var targetPolitics =  document.getElementById("revpolitics").selectedIndex;
 var targetSociety =  document.getElementById("revsociety").selectedIndex;
 var targetCapital =  document.getElementById("revcapital").selectedIndex;
 var targetEconomy =  document.getElementById("reveconomy").selectedIndex;
-var targetReligionSystem =  document.getElementById("revreligion").selectedIndex;
+var targetReligionSystem = document.getElementById("revreligion").selectedIndex;
 
 queue.push(new queueItem("REVOLUTION!", 0, 0, 0, population, "politicschoice=" + targetPolitics + ";societyChoice=" + targetSociety + ";capitalchoice=" + targetCapital + ";economychoice=" + targetEconomy + "religionsystemschoice=" + targetReligionSystem + ";"));
 }
 
+
+var politics;
+	var politicstypes = ["Democracy", "Republic", "Autocracy"];
+	var politicssymbols = ["☑", "✍", "♔"];
+	var politicschoice = 1;
+var society;
+	var societytypes = ["Libertarian", "Tolerant", "Conservative"];
+	var societysymbols = ["🗽", "☮", "🔨"];
+	var societychoice = 1;
+var capital;
+	var capitaltypes = ["Syndicalist", "Decentralized", "Capitalist"];
+	var capitalsymbols = ["Ⓐ", "☍", "$"];
+	var capitalchoice = 1;
+var economy
+	var economytypes = ["Free Market", "Mixed", "Planned"];
+	var economysymbols = ["⚖", "☊", "☭"];
+	var economychoice = 1;
+var religionsystems;
+	var religionsystemstypes = ["Free Religion", "State Atheism", "Theocracy"];
+	var religionsystemssymbols = ["☪☸xis☩", "⚛", "♗"];
+	var religionsystemschoice = 0;
 </script>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 <title>My City</title>
@@ -353,8 +313,8 @@ queue.push(new queueItem("REVOLUTION!", 0, 0, 0, population, "politicschoice=" +
   </tr>
   <tr>
     <td>
-	  <p><a href="#military">Military</a><br />
-	    <a href="#government">Government</a><br />
+	  <p><a>Military</a><br />
+	    <a>Government</a><br />
 	    <a>Religion</a><br />
       <a>World Map</a><br />
     </p></td>
@@ -364,8 +324,7 @@ queue.push(new queueItem("REVOLUTION!", 0, 0, 0, population, "politicschoice=" +
 </div>
 
 <div id="queuediv" style="background:#666; color:#FFF;"><h3>Building Queue<h3></div>
-<h2>Infrastructure </h2>
-
+<h2>Infrastructure</h2>
 <p>Warehouse (Level <span id="warehousespan"></span>) <button onclick="update(); upgradeBuilding('warehouse');">Upgrade Warehouse</button>
 <br />
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Farmers
@@ -390,14 +349,14 @@ queue.push(new queueItem("REVOLUTION!", 0, 0, 0, population, "politicschoice=" +
   <option>Infantry</option>
   <option>Marines</option>
 </select>
-<button onclick='var buildunits = buildUnits("barracks"); if (buildunits && (!doingQueue)) {doingQueue = true; setTimeout("doQueue()", queue[0].duration);}'>Confirm</button>
+<button onclick='var buildunits = buildUnits("barracks"); if (buildunits && (!doingQueue)) { setTimeout("doQueue()", queue[0].duration);}'>Confirm</button>
 </p>
 <p>&nbsp;</p>
     </td>
   </tr>
 </table>
 
-<div id="militaryscreen" align="center"><h2><a name="military">Military</a></h2>
+<div id="militaryscreen" align="center"><h2>Military</h2>
 <table cellspacing="5">
 <tr>
 	<td>Infantry</td>
@@ -459,6 +418,7 @@ Religious system: <b><span id="religious"></span></b>
 <button onclick="revolution();">Revolution!</button>
 </p>
 </div>
+
 
 <script type="text/javascript">update(); var queueHTML = document.getElementById("queuediv");</script>
 </body>
