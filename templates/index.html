@@ -105,10 +105,7 @@ function writeStats(){
 function update(){
 	writeStats();
 	
-	//Figure out the time elapsed
-	
-	var now = new Date();
-	var quarterdaysElapsed = (now.getTime() - lastUpdate.getTime())/21600000;
+	var quarterdaysElapsed = 60000/21600000;
 	
 	//Fix some stats
 	
@@ -128,20 +125,20 @@ function update(){
 	//special buildings
 	
 	if (ethanolLevel > 0) {
-	energy += ethanolLevel*500;
-	food -= ethanolLevel*500;
+	energy += ethanolLevel*500*quarterdaysElapsed;
+	food -= ethanolLevel*500*quarterdaysElapsed;
 	}
 	if (recyclingLevel > 0) {
-	metal += recyclingLevel*500;
-	energy -= recyclingLevel*250;
+	metal += recyclingLevel*500*quarterdaysElapsed;
+	energy -= recyclingLevel*250*quarterdaysElapsed;
 	}
 	if (nuclearLevel > 0) {
-	energy += nuclearLevel*500;
-	metal -= nuclearLevel*500;
+	energy += nuclearLevel*500*quarterdaysElapsed;
+	metal -= nuclearLevel*500*quarterdaysElapsed;
 	}
 	if (hydroponicsLevel > 0) {
-	food += ethanolLevel*500;
-	energy -= ethanolLevel*250;
+	food += ethanolLevel*500*quarterdaysElapsed;
+	energy -= ethanolLevel*250*quarterdaysElapsed;
 	}
 	//capacity limit
 	capacity = warehouseLevel*1300 + 10000;
@@ -151,17 +148,34 @@ function update(){
 		fuel = capacity;
 	if (metal > capacity)
 		metal = capacity;
-		
+	
+	///kkkweue
+	var latestItem = queue[0];
+	latestItem.timeLeft -= production*quarterdaysElapsed;
+	document.getElementById("queuetime").innerHTML = "About " (latestItem.timeLeft)/1000 + " seconds left";
+	if (latestItem.timeLeft < 1) {
+	food -= latestItem.food;
+	fuel -= latestItem.fuel;
+	metal -= latestItem.metal;
+	eval(latestItem.endResult);
+	queue.shift();
+	latestItem = queue[0];
+	queueHTML.removeChild(queueHTML.childNodes[1]);
+	document.getElementById("queuetime").innerHTML = "About " (latestItem.timeLeft)/1000 + " seconds left";	
+	}
+	
+	
 	//now record it for posterity
 	writeStats();
 	uploadStats();
 	lastUpdate = new Date();
+	
+	
 }
 
 //queue item object
 
 var queue = new Array();
-var doingQueue = false;
 loadQueue();
 var queueHTML;
 
@@ -170,41 +184,20 @@ function queueItem(itemdescription,foodCost,fuelCost,metalCost,productionCost,en
 	this.food = foodCost;
 	this.fuel = fuelCost;
 	this.metal = metalCost;
-	this.duration = (productionCost/production);
-		this.duration *= 21600000;
-		this.completionDate = new Date();
-		this.completionDate.setDate(this.completionDate.getDate()+this.duration);
+	this.timeLeft = (productionCost/production);
+		this.timeLeft *= 21600000;
 	//should be the code IN TEXT QUOTES; unless someone else has a better way
 	this.result = endResult;
 	this.itemText = document.createElement("div");
 	this.itemText.setAttribute("style", "border:black;");
-	this.itemText.innerHTML = "<b>" + this.description + "</b> Completion time: ";
+	this.itemText.innerHTML = "<b>" + this.description + "</b> Duration: ";
 	queueHTML.appendChild(this.itemText);
 	this.durationText = document.createElement("span");
 	this.durationText.setAttribute("name", this.description);
 	queueHTML.appendChild(this.durationText);
-    this.durationText.innerHTML = Math.round(this.duration/1000) + " seconds";
+    this.durationText.innerHTML = Math.round(this.timeLeft/60000) + " minutes";
 }
 
-//goes through the queue
-
-function doQueue () {
-    doingQueue = true;
-    var current = queue[0];
-    eval(current.result);
-    food -= current.food;
-    fuel -= current.fuel;
-    metal -= current.metal;
-    queue.shift();
-    for (var c=0;c<2;c++)
-	queueHTML.removeChild(queueHTML.childNodes[1]);
-    update();
-    if (queue.length > 0) {
-	setTimeout(doQueue(), queue[0].duration);
-    } else {
-	doingQueue = false;
-    }
-}
 
 
 //queues units; DUH!
@@ -288,6 +281,11 @@ var religionsystems;
 	var religionsystemstypes = ["Free Religion", "State Atheism", "Theocracy"];
 	var religionsystemssymbols = ["☪☸xis☩", "⚛", "♗"];
 	var religionsystemschoice = 0;
+	
+	//loop update
+	var myInterval = window.setInterval(function() {
+  update();
+},60000);
 </script>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 <title>My City</title>
@@ -299,7 +297,6 @@ var religionsystems;
   <tr>
     <td width="25%">
     	<h1><script type="text/javascript">document.write(cityName);</script></h1>
-        <button onclick="update();">Update</button> <br />
     </td>
     <td width="75%">
     	<img src="http://forums.civfanatics.com/images/smilies/civ4/food.gif" alt="Food" />
@@ -316,31 +313,32 @@ var religionsystems;
 	  <p><a>Military</a><br />
 	    <a>Government</a><br />
 	    <a>Religion</a><br />
-      <a>World Map</a><br />
+        <a>Intelligence</a><br />
+        <a>World Map</a><br />
     </p></td>
     <td>
 <div>
   <div align="right"><strong>Loyalty: <img src="http://forums.civfanatics.com/images/smilies/smile.gif" /><span id="loyalty"></span>%</strong></div>
 </div>
 
-<div id="queuediv" style="background:#666; color:#FFF;"><h3>Building Queue<h3></div>
+<table style="border:hidden; width:100%; background:#666; color:#FFF;"><tr><td width="75%"><div id="queuediv"><h3>Building Queue</h3></div></td><td id="queuetime"></td></tr></table>
 <h2>Infrastructure</h2>
-<p>Warehouse (Level <span id="warehousespan"></span>) <button onclick="update(); upgradeBuilding('warehouse');">Upgrade Warehouse</button>
+<p>Warehouse (Level <span id="warehousespan"></span>) <button onclick="upgradeBuilding('warehouse');">Upgrade Warehouse</button>
 <br />
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Farmers
 <span id="farmers"></span>
-	<button onclick="if(availablePop > 50) foodPop += 50; update();">+</button>
-	<button onclick="if (foodPop > 50) foodPop -= 50; update();">-</button>
+	<button onclick="if(availablePop > 50) foodPop += 50;">+</button>
+	<button onclick="if (foodPop > 50) foodPop -= 50;">-</button>
 <br />
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Oil Workers 
 <span id="oil workers"></span>
-	<button onclick="if(availablePop > 50) fuelPop += 50; update();">+</button>
-	<button onclick="if (fuelPop > 50) fuelPop -= 50; update();">-</button>
+	<button onclick="if(availablePop > 50) fuelPop += 50;">+</button>
+	<button onclick="if (fuelPop > 50) fuelPop -= 50;">-</button>
 <br />
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Miners
 <span id="miners"></span>
-<button onclick="if(availablePop > 50) metalPop += 50; update();">+</button>
-	<button onclick="if (metalPop > 50) metalPop -= 50; update();">-</button></p>
+<button onclick="if(availablePop > 50) metalPop += 50;">+</button>
+	<button onclick="if (metalPop > 50) metalPop -= 50;">-</button></p>
 <p>Barracks <br />
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Recruit: 
 <input name="barracksnumber" id="barracksnumber" type="text" value="100" />
