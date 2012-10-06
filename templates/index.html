@@ -150,18 +150,20 @@ function update(){
 		metal = capacity;
 	
 	///kkkweue
-	var latestItem = queue[0];
-	latestItem.timeLeft -= production*quarterdaysElapsed;
-	document.getElementById("queuetime").innerHTML = "About " (latestItem.timeLeft)/1000 + " seconds left";
-	if (latestItem.timeLeft < 1) {
-	food -= latestItem.food;
-	fuel -= latestItem.fuel;
-	metal -= latestItem.metal;
-	eval(latestItem.endResult);
-	queue.shift();
-	latestItem = queue[0];
-	queueHTML.removeChild(queueHTML.childNodes[1]);
-	document.getElementById("queuetime").innerHTML = "About " (latestItem.timeLeft)/1000 + " seconds left";	
+	if (queue[0]) {
+		var latestItem = queue[0];
+		latestItem.timeLeft -= production*quarterdaysElapsed;
+		document.getElementById("queuetime").innerHTML = "About " (latestItem.timeLeft)/1000 + " seconds left";
+		if (latestItem.timeLeft < 1) {
+			food -= latestItem.food;
+			fuel -= latestItem.fuel;
+			metal -= latestItem.metal;
+			eval(latestItem.endResult);
+		queue.shift();
+		latestItem = queue[0];
+		queueHTML.removeChild(queueHTML.childNodes[1]);
+		document.getElementById("queuetime").innerHTML = "About " (latestItem.timeLeft)/1000 + " seconds left";	
+	}
 	}
 	
 	
@@ -263,23 +265,23 @@ queue.push(new queueItem("REVOLUTION!", 0, 0, 0, population, "politicschoice=" +
 
 var politics;
 	var politicstypes = ["Democracy", "Republic", "Autocracy"];
-	var politicssymbols = ["☑", "✍", "♔"];
+	var politicssymbols = ["?", "?", "?"];
 	var politicschoice = 1;
 var society;
 	var societytypes = ["Libertarian", "Tolerant", "Conservative"];
-	var societysymbols = ["🗽", "☮", "🔨"];
+	var societysymbols = ["??", "?", "??"];
 	var societychoice = 1;
 var capital;
 	var capitaltypes = ["Syndicalist", "Decentralized", "Capitalist"];
-	var capitalsymbols = ["Ⓐ", "☍", "$"];
+	var capitalsymbols = ["?", "?", "$"];
 	var capitalchoice = 1;
 var economy
 	var economytypes = ["Free Market", "Mixed", "Planned"];
-	var economysymbols = ["⚖", "☊", "☭"];
+	var economysymbols = ["?", "?", "?"];
 	var economychoice = 1;
 var religionsystems;
 	var religionsystemstypes = ["Free Religion", "State Atheism", "Theocracy"];
-	var religionsystemssymbols = ["☪☸xis☩", "⚛", "♗"];
+	var religionsystemssymbols = ["??xis?", "?", "?"];
 	var religionsystemschoice = 0;
 	
 	//loop update
