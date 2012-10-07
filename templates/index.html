@@ -148,13 +148,16 @@ function update(){
 		fuel = capacity;
 	if (metal > capacity)
 		metal = capacity;
-	
-	///kkkweue
-	if (queue[0]) {
+		
+	//now record it for posterity
+	writeStats();
+	uploadStats();
+	lastUpdate = new Date();
+	}
+
+function doQueue() {
 		var latestItem = queue[0];
-		latestItem.timeLeft -= production*quarterdaysElapsed;
 		document.getElementById("queuetime").innerHTML = "About " (latestItem.timeLeft)/1000 + " seconds left";
-		if (latestItem.timeLeft < 1) {
 			food -= latestItem.food;
 			fuel -= latestItem.fuel;
 			metal -= latestItem.metal;
@@ -163,17 +166,8 @@ function update(){
 		latestItem = queue[0];
 		queueHTML.removeChild(queueHTML.childNodes[1]);
 		document.getElementById("queuetime").innerHTML = "About " (latestItem.timeLeft)/1000 + " seconds left";	
+	setTimeout(function(){doQueue()}; latestItem.timeLeft);
 	}
-	}
-	
-	
-	//now record it for posterity
-	writeStats();
-	uploadStats();
-	lastUpdate = new Date();
-	
-	
-}
 
 //queue item object
 
@@ -285,9 +279,7 @@ var religionsystems;
 	var religionsystemschoice = 0;
 	
 	//loop update
-	var myInterval = window.setInterval(function() {
-  update();
-},60000);
+	window.setInterval(update,60000);
 </script>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 <title>My City</title>
@@ -349,7 +341,7 @@ var religionsystems;
   <option>Infantry</option>
   <option>Marines</option>
 </select>
-<button onclick='var buildunits = buildUnits("barracks"); if (buildunits && (!doingQueue)) { setTimeout("doQueue()", queue[0].duration);}'>Confirm</button>
+<button onclick='var buildunits = buildUnits("barracks")'>Confirm</button>
 </p>
 <p>&nbsp;</p>
     </td>
