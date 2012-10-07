@@ -137,8 +137,8 @@ function update(){
 	metal -= nuclearLevel*500*quarterdaysElapsed;
 	}
 	if (hydroponicsLevel > 0) {
-	food += ethanolLevel*500*quarterdaysElapsed;
-	energy -= ethanolLevel*250*quarterdaysElapsed;
+	food += hydroponicsLevel*500*quarterdaysElapsed;
+	energy -= hydroponicsLevel*250*quarterdaysElapsed;
 	}
 	//capacity limit
 	capacity = warehouseLevel*1300 + 10000;
@@ -149,6 +149,10 @@ function update(){
 	if (metal > capacity)
 		metal = capacity;
 		
+	//checc da queue
+
+		if (!queue[0])
+			doQueue();
 	//now record it for posterity
 	writeStats();
 	uploadStats();
@@ -173,7 +177,7 @@ function doQueue() {
 
 var queue = new Array();
 loadQueue();
-var queueHTML;
+var queueHTML=document.getElementById("queuediv");
 
 function queueItem(itemdescription,foodCost,fuelCost,metalCost,productionCost,endResult){
 	this.description = itemdescription;
@@ -279,6 +283,7 @@ var religionsystems;
 	var religionsystemschoice = 0;
 	
 	//loop update
+	update();
 	window.setInterval(update,60000);
 </script>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
