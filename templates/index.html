@@ -1,7 +1,9 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
+<title>New City</title>
 <script type="text/javascript">
+<<<<<<< HEAD
 var lastUpdate=new Date();
 var horaepasatae;
 
@@ -88,7 +90,163 @@ function writeStats(){
 	    queuediv.innerHTML += '<button onclick="queue.shift();update();">Cancel</button>';
 	itemsdiv.appendChild(queuediv);
     }
+=======
+var cityName = "New City";
+var population;
+
+var food;
+var fuel;
+var mineral;
+
+var lastChange =  new Date;
+
+function downloadStats() {
+//dummy function for ajax request
+//currently filling in with test statistics
+
+cityName = "Test City";
+
+food = 20000;
+fuel = 10000;
+mineral = 10000;
+lastChange = new Date(2012, 21, 14);
 }
+
+
+function uploadResources(foodChange,fuelChange,mineralChange,populationChange) {
+//dummy function for ajax request
+//currently filling in with test statistics
+
+}
+
+<<<<<<< HEAD
+/* Function to mathematically update the stats*/
+
+function update(){
+	writeStats();
+	
+	var quarterdaysElapsed = 60000/21600000;
+	
+	//Fix some stats
+	
+	resourcePop = foodPop + fuelPop + metalPop;
+	armySize = militia + infantry + marines + tanks*4 + APCs*6 + IFVs*5 + fieldGuns*5 + artillery*8 + fixedGuns*10;
+	availablePop = population - (armySize + resourcePop + productionPop);
+
+	
+	// Now actually run the resource formula
+	
+	population += ((Math.log((food+1)/population)*population)*popModifier)*quarterdaysElapsed;
+	production = availablePop*productionModifier;
+	food += 40*(foodPop * quarterdaysElapsed);
+	fuel += 40*(fuelPop * quarterdaysElapsed);
+	metal += 40*(metalPop * quarterdaysElapsed);
+	
+	//special buildings
+	
+	if (ethanolLevel > 0) {
+	energy += ethanolLevel*500*quarterdaysElapsed;
+	food -= ethanolLevel*500*quarterdaysElapsed;
+	}
+	if (recyclingLevel > 0) {
+	metal += recyclingLevel*500*quarterdaysElapsed;
+	energy -= recyclingLevel*250*quarterdaysElapsed;
+	}
+	if (nuclearLevel > 0) {
+	energy += nuclearLevel*500*quarterdaysElapsed;
+	metal -= nuclearLevel*500*quarterdaysElapsed;
+	}
+	if (hydroponicsLevel > 0) {
+	food += hydroponicsLevel*500*quarterdaysElapsed;
+	energy -= hydroponicsLevel*250*quarterdaysElapsed;
+	}
+	//capacity limit
+	capacity = warehouseLevel*1300 + 10000;
+	if (food > capacity)
+		food = capacity;
+	if (fuel > capacity)
+		fuel = capacity;
+	if (metal > capacity)
+		metal = capacity;
+		
+	//checc da queue
+
+		if (!queue[0])
+			doQueue();
+	//now record it for posterity
+	writeStats();
+	uploadStats();
+	lastUpdate = new Date();
+	}
+
+function doQueue() {
+		var latestItem = queue[0];
+		document.getElementById("queuetime").innerHTML = "About " (latestItem.timeLeft)/1000 + " seconds left";
+			food -= latestItem.food;
+			fuel -= latestItem.fuel;
+			metal -= latestItem.metal;
+			eval(latestItem.endResult);
+		queue.shift();
+		latestItem = queue[0];
+		queueHTML.removeChild(queueHTML.childNodes[1]);
+		document.getElementById("queuetime").innerHTML = "About " (latestItem.timeLeft)/1000 + " seconds left";	
+	setTimeout(function(){doQueue()}; latestItem.timeLeft);
+	}
+=======
+function uploadQueue() {
+//dummy function for ajax request
+//currently filling in with test statistics
+	
+}
+>>>>>>> restarted the whole client side
+
+function changeHTML(id,changeTo) {
+var changing = document.getElementById(changeTo);
+changing.innerHTML = changeTo;
+
+<<<<<<< HEAD
+var queue = new Array();
+loadQueue();
+var queueHTML=document.getElementById("queuediv");
+
+function queueItem(itemdescription,foodCost,fuelCost,metalCost,productionCost,endResult){
+	this.description = itemdescription;
+	this.food = foodCost;
+	this.fuel = fuelCost;
+	this.metal = metalCost;
+	this.timeLeft = (productionCost/production);
+		this.timeLeft *= 21600000;
+	//should be the code IN TEXT QUOTES; unless someone else has a better way
+	this.result = endResult;
+	this.itemText = document.createElement("div");
+	this.itemText.setAttribute("style", "border:black;");
+	this.itemText.innerHTML = "<b>" + this.description + "</b> Duration: ";
+	queueHTML.appendChild(this.itemText);
+	this.durationText = document.createElement("span");
+	this.durationText.setAttribute("name", this.description);
+	queueHTML.appendChild(this.durationText);
+    this.durationText.innerHTML = Math.round(this.timeLeft/60000) + " minutes";
+=======
+return id + " has been changed to " + changeTo;
+>>>>>>> restarted the whole client side
+}
+
+function writeStats() {
+changeHTML("namediv", cityName);
+changeHTML("popspan", population);
+changeHTML("foodspan", food);
+changeHTML("fuelspan", fuel);
+changeHTML("mineralspan", mineral);
+
+	
+}
+
+function updateStats(){
+writeStats();
+
+>>>>>>> restarted the whole client side
+}
+<<<<<<< HEAD
 
 function loaded() {
 update();
@@ -103,13 +261,47 @@ changeHTML("S", blockTypes[blocks[7]]);
 changeHTML("SE", blockTypes[blocks[8]]);
 }
 
+<<<<<<< HEAD
 window.setInterval(update, 1000);
+=======
+var politics;
+	var politicstypes = ["Democracy", "Republic", "Autocracy"];
+	var politicssymbols = ["?", "?", "?"];
+	var politicschoice = 1;
+var society;
+	var societytypes = ["Libertarian", "Tolerant", "Conservative"];
+	var societysymbols = ["??", "?", "??"];
+	var societychoice = 1;
+var capital;
+	var capitaltypes = ["Syndicalist", "Decentralized", "Capitalist"];
+	var capitalsymbols = ["?", "?", "$"];
+	var capitalchoice = 1;
+var economy
+	var economytypes = ["Free Market", "Mixed", "Planned"];
+	var economysymbols = ["?", "?", "?"];
+	var economychoice = 1;
+var religionsystems;
+	var religionsystemstypes = ["Free Religion", "State Atheism", "Theocracy"];
+	var religionsystemssymbols = ["??xis?", "?", "?"];
+	var religionsystemschoice = 0;
+	
+	//loop update
+	update();
+	window.setInterval(update,60000);
+=======
+>>>>>>> restarted the whole client side
+>>>>>>> restarted the whole client side
 </script>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-<title>My City</title>
+
 </head>
 
+<<<<<<< HEAD
 <body onload="loaded();">
+=======
+<body>
+<<<<<<< HEAD
+>>>>>>> restarted the whole client side
 
 <h1 id="name" onclick="update();"></h1>
 Change city name: <input type="text" onblur="cityName=this.value; update();" />
@@ -123,7 +315,38 @@ Food <span id="food"></span>&nbsp;|&nbsp;Fuel <span id="fuel"></span>&nbsp;|&nbs
 <tr><td id="SW"></td><td id="S"></td><td id="SE"></td></tr>
 </table>
 
+<<<<<<< HEAD
 <h3>Task Queue</h3>
 <div id="items"></div>
+=======
+<script type="text/javascript">update(); var queueHTML = document.getElementById("queuediv");</script>
+=======
+<h1 id="namediv">New City</h1>
+<p>Population <span id="popspan"></span></p>
+
+Food <span id="foodspan"></span><br  />
+Fuel<span id="fuelspan"></span><br />
+Mineral<span id="mineralspan"></span><br />
+
+<p>Also, I'm using this page to save some of the images and descriptions we're using for the various government systems/actions:</p>
+<h2>Theocracy</h2><img src="http://news.bbc.co.uk/nol/shared/spl/hi/middle_east/03/iran_power/img/guardian_council_203.jpg" /><br /> Your state is under a <b>Theocracy</b>. The affairs of state and religion are one and the same. Religious leaders are appointed by the government, and government policy is legitamitized and set by religious leaders. Other religions may be persecuted or discouraged. Depending on the degree of social freedom, there may be morality police and religious laws.
+<h2>State Atheism</h2><img src="http://3.bp.blogspot.com/-idSsnKQhb4g/TfzDRGh8SgI/AAAAAAAABHo/03XG9ZoPlUE/s320/padre-francisco-vera.jpg" /><br /> You state is under <b>State Atheism</b>. Religion is considered not only false, but also a threat, by the state. Religious leaders are persecuted and their power greatly curtailed under ths law. Religious believers are discouraged. Pogroms against believers, or seizures of church property, may be common.
+<h2>Free Religion</h2><img src="http://euro-med.dk/billeder/interfaith2.jpg" /><br />Your state has <b>Free Religion</b>. There is a separation of church and state. The government does not interfere in the affairs of religions, and religious leaders do not have the official authority to make legislate. Religions may have certain exemptions or protection under the law.
+<h2>Libertarian</h2><img src="" /><br />
+<h2>Tolerant</h2><img src="" /><br />
+<h2>Conservative</h2><img src="" /><br />
+<h2>Democratic</h2><img src="" /><br />
+<h2>Constitutional</h2><img src="" /><br />
+<h2>Autocratic</h2><img src="" /><br />
+<h2>Feudalism (Decentralized +  anything)</h2><img src="" /><br />
+<h2>Mercantilism (Capitalist + Mixed Economy)</h2><img src="" /><br />
+<h2>Socialism (Syndicalist + Mixed Economy)</h2><img src="" /><br />
+<h2>Corporatism (Capitalist + Planned Economy)</h2><img src="" /><br />
+<h2>Communism (Syndicalist + Planned Economy)</h2><img src="" /><br />
+<h2>Free Enterprise (Capitalism + Free Market)</h2><img src="" /><br />
+<h2>Mutualism (Syndicalist + Free Market)</h2><img src="" /><br />
+<script type="text/javascript">updateStats(); while (true) updateStats();</script>
+>>>>>>> restarted the whole client side
+>>>>>>> restarted the whole client side
 </body>
 </html>
