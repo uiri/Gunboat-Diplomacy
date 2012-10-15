@@ -2,289 +2,48 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <script type="text/javascript">
-/* Reset all the variables */
-var lat = 0;
-var lng = 0;
+var lastUpdate=new Date();
+var horaepasatae; //lrn2latin mofos
+
 var cityName = "New City";
-var population = 10000;
-	var availablePop = 10000;
-	var armySize = 50;
-		var militia = 50;
-		var infantry = 0;
-		var marines = 0;
-		var tanks = 0;
-		var APCs = 0;
-		var IFVs = 0;
-		var fieldGuns = 0;
-		var artillery = 0;
-		var fixedGuns = 0;
-	var resourcePop = 0;
-		var foodPop = 250;
-		var fuelPop = 250;
-		var metalPop = 250;
-	var productionPop = 0;
-	var popModifier = 1;
-var food = 20000;
-var fuel = 10000;
-var metal = 10000;
-var production = availablePop*50;
-	var productionModifier = 50;
-var loyalty = 100;
-	var warehouseLevel = 4;
-		var capacity;
-	var barracksLevel = 1;
-	var roadLevel = 0;
-	var workshopLevel = 0;
-	var schoolLevel = 1;
-	var hospitalLevel = 0;
-	var factoryLevel = 0;
-	var airportLevel = 0
-	var shipyardLevel = 0;
-	var laboratoryLevel = 0;
-		var supercomputerLevel;
-		var ethanolLevel;
-	    var hydroponicsLevel;
-	    var recyclingLevel;
-	    var nuclearLevel;
-	    var launchpadLevel;
-/* If the city is new, put this time as the last update. */
+var population=100000;
 
-var lastUpdate = new Date();
+// it goes NW, N, NE, W, city's own, E, SW, W, SE
+var blocks = [0, 0, 0, 1, 1, 1, 2, 2, 2];
+var blockTypes = ["Plains", "Hills", "Desert", "Water", "Mountain"];
 
-/* Then we replace the default variables with whatever we pull from the database (will write AJAX functions later)*/
+var food=200000;
+	var foodProduction = 100000*(2.5/100);
+	//normally we would derive this from the blocks
+var fuel=100000;
+var mineral=100000;
 
-function getStats(lat, lng){
-/* DUMMY FUNCTION
-
-Will call the database, pull the statistics from it based on x and y coordinates, and replace the variables. */	
+function changeHTML(id, changeTo){
+var blahblah = document.getElementById(id);
+blahblah.innerHTML = changeTo;
 }
-
-function uploadStats(){
-/*DUMMY FUNCTION
-
-Will call the database and update all the entries for this city, based on current variables.*/	
-}
-
-function loadQueue(){
-/*DUMMY FUNCTION
-
-Will load the queue from a database.
-*/
-}
-
-//getStats(x, y);
-
-/* Function to write out the stats on the page */
-
-function writeStats(){
-	document.getElementById("pop").innerHTML=Math.round(population);
-		document.getElementById("available").innerHTML=Math.round(availablePop);
-		document.getElementById("farmers").innerHTML=Math.round(foodPop);
-		document.getElementById("oil workers").innerHTML=Math.round(fuelPop);
-		document.getElementById("miners").innerHTML=Math.round(metalPop);
-	document.getElementById("food").innerHTML=Math.round(food);
-	document.getElementById("fuel").innerHTML=Math.round(fuel);
-	document.getElementById("metal").innerHTML=Math.round(metal);
-	document.getElementById("loyalty").innerHTML=Math.round(loyalty);
-	//army numbers
-	document.getElementById("militianum").innerHTML=militia;
-	document.getElementById("infantrynum").innerHTML=infantry;
-	document.getElementById("marinenum").innerHTML=marines;
-	document.getElementById("tanknum").innerHTML=tanks;
-	document.getElementById("ifvnum").innerHTML=IFVs;
-	document.getElementById("apcnum").innerHTML=APCs;
-	document.getElementById("fieldgunnum").innerHTML=fieldGuns;
-	document.getElementById("artillerynum").innerHTML=artillery;
-	document.getElementById("fixedgunnum").innerHTML=fixedGuns;
-	//building levels
-	document.getElementById("warehousespan").innerHTML=warehouseLevel;
-}
-
-/* Function to mathematically update the stats*/
 
 function update(){
-	writeStats();
-	
-	var quarterdaysElapsed = 60000/21600000;
-	
-	//Fix some stats
-	
-	resourcePop = foodPop + fuelPop + metalPop;
-	armySize = militia + infantry + marines + tanks*4 + APCs*6 + IFVs*5 + fieldGuns*5 + artillery*8 + fixedGuns*10;
-	availablePop = population - (armySize + resourcePop + productionPop);
+var iam = new Date();
+horaepasatae = (iam-lastUpdate)/21600000;
 
-	
-	// Now actually run the resource formula
-	
-	population += ((Math.log((food+1)/population)*population)*popModifier)*quarterdaysElapsed;
-	production = availablePop*productionModifier;
-	food += 40*(foodPop * quarterdaysElapsed);
-	fuel += 40*(fuelPop * quarterdaysElapsed);
-	metal += 40*(metalPop * quarterdaysElapsed);
-	
-	//special buildings
-	
-	if (ethanolLevel > 0) {
-	energy += ethanolLevel*500*quarterdaysElapsed;
-	food -= ethanolLevel*500*quarterdaysElapsed;
-	}
-	if (recyclingLevel > 0) {
-	metal += recyclingLevel*500*quarterdaysElapsed;
-	energy -= recyclingLevel*250*quarterdaysElapsed;
-	}
-	if (nuclearLevel > 0) {
-	energy += nuclearLevel*500*quarterdaysElapsed;
-	metal -= nuclearLevel*500*quarterdaysElapsed;
-	}
-	if (hydroponicsLevel > 0) {
-	food += hydroponicsLevel*500*quarterdaysElapsed;
-	energy -= hydroponicsLevel*250*quarterdaysElapsed;
-	}
-	//capacity limit
-	capacity = warehouseLevel*1300 + 10000;
-	if (food > capacity)
-		food = capacity;
-	if (fuel > capacity)
-		fuel = capacity;
-	if (metal > capacity)
-		metal = capacity;
-		
-	//checc da queue
+food += foodProduction*horaepasatae;
+population += (Math.log((food+1)/population)*population)*horaepasatae;
 
-		if (!queue[0])
-			doQueue();
-	//now record it for posterity
-	writeStats();
-	uploadStats();
-	lastUpdate = new Date();
-	}
-
-function doQueue() {
-		var latestItem = queue[0];
-		document.getElementById("queuetime").innerHTML = "About " (latestItem.timeLeft)/1000 + " seconds left";
-			food -= latestItem.food;
-			fuel -= latestItem.fuel;
-			metal -= latestItem.metal;
-			eval(latestItem.endResult);
-		queue.shift();
-		latestItem = queue[0];
-		queueHTML.removeChild(queueHTML.childNodes[1]);
-		document.getElementById("queuetime").innerHTML = "About " (latestItem.timeLeft)/1000 + " seconds left";	
-	setTimeout(function(){doQueue()}; latestItem.timeLeft);
-	}
-
-//queue item object
-
-var queue = new Array();
-loadQueue();
-var queueHTML=document.getElementById("queuediv");
-
-function queueItem(itemdescription,foodCost,fuelCost,metalCost,productionCost,endResult){
-	this.description = itemdescription;
-	this.food = foodCost;
-	this.fuel = fuelCost;
-	this.metal = metalCost;
-	this.timeLeft = (productionCost/production);
-		this.timeLeft *= 21600000;
-	//should be the code IN TEXT QUOTES; unless someone else has a better way
-	this.result = endResult;
-	this.itemText = document.createElement("div");
-	this.itemText.setAttribute("style", "border:black;");
-	this.itemText.innerHTML = "<b>" + this.description + "</b> Duration: ";
-	queueHTML.appendChild(this.itemText);
-	this.durationText = document.createElement("span");
-	this.durationText.setAttribute("name", this.description);
-	queueHTML.appendChild(this.durationText);
-    this.durationText.innerHTML = Math.round(this.timeLeft/60000) + " minutes";
+writeStats();
 }
 
+function writeStats(){
+document.title = cityName + " | Gunship Diplomacy";
+changeHTML("name", cityName);
+changeHTML("cityblock", "<h3>" + cityName + "</h1>");
 
+changeHTML("population", parseInt(population) + " working population");
 
-//queues units; DUH!
-
-function buildUnits(unitSource){
-	if (unitSource = "barracks") {
-		var dropDown = document.getElementById("barrackstype");
-		var unitType = dropDown.selectedIndex;
-		var unitNumber = document.getElementById("barracksnumber").value;
-		//make sure it isn't taken as text
-		unitNumber = parseInt(unitNumber);
-		switch(unitType){
-			case 0:
-				if (food > unitNumber*50 && fuel > unitNumber*10 && metal > unitNumber*30 && availablePop > unitNumber) {
-					queue.push(new queueItem(unitNumber +  " Militia", unitNumber*50, unitNumber*10, unitNumber*30, unitNumber*60, "militia += " + unitNumber));
-			    return true;
-				} else
-				alert("Insufficient funds.");
-			break;
-			case 1:
-			if (food > unitNumber*30 && fuel > unitNumber*70 && metal > unitNumber*30 && availablePop > unitNumber) {
-					queue.push(new queueItem(unitNumber + " Infantry", unitNumber*30, unitNumber*70, unitNumber*30, unitNumber*65, "infantry += " + unitNumber));
-			    return true;
-				} else
-				alert("Insufficient funds.");
-			break;
-			case 2:
-			if (food > unitNumber*60 && fuel > unitNumber*40 && metal > unitNumber*30 && availablePop > unitNumber) {
-					queue.push(new queueItem(unitNumer + " Marines", unitNumber*60, unitNumber*40, unitNumber*30, unitNumber*65, "marines += " + unitNumber));
-			    return true;
-				} else
-				alert("Insufficient funds.");
-			break;
-		}
-	    return false;
-	}
+changeHTML("food", parseInt(food));
+changeHTML("fuel", parseInt(fuel));
+changeHTML("mineral", parseInt(mineral));
 }
-
-
-//queues buildings
-function upgradeBuilding(buildingChoice){
-	switch(buildingChoice) {
-		case "warehouse":
-			if (food > 8712 && fuel > 8015)
-				queue.push(new queueItem("Warehouse Level " + warehouseLevel, 1000+Math.pow(warehouseLevel, 2), 1500+Math.pow(warehouseLevel, 2), 2000+Math.pow(warehouseLevel, 2), 10*Math.pow(warehouseLevel, 3), "warehouseLevel+=1"));
-		break;
-	}
-
-}
-
-
-//viva la revolución!
-function revolution() {
-var targetPolitics =  document.getElementById("revpolitics").selectedIndex;	
-var targetSociety =  document.getElementById("revsociety").selectedIndex;
-var targetCapital =  document.getElementById("revcapital").selectedIndex;
-var targetEconomy =  document.getElementById("reveconomy").selectedIndex;
-var targetReligionSystem = document.getElementById("revreligion").selectedIndex;
-
-queue.push(new queueItem("REVOLUTION!", 0, 0, 0, population, "politicschoice=" + targetPolitics + ";societyChoice=" + targetSociety + ";capitalchoice=" + targetCapital + ";economychoice=" + targetEconomy + "religionsystemschoice=" + targetReligionSystem + ";"));
-}
-
-
-var politics;
-	var politicstypes = ["Democracy", "Republic", "Autocracy"];
-	var politicssymbols = ["?", "?", "?"];
-	var politicschoice = 1;
-var society;
-	var societytypes = ["Libertarian", "Tolerant", "Conservative"];
-	var societysymbols = ["??", "?", "??"];
-	var societychoice = 1;
-var capital;
-	var capitaltypes = ["Syndicalist", "Decentralized", "Capitalist"];
-	var capitalsymbols = ["?", "?", "$"];
-	var capitalchoice = 1;
-var economy
-	var economytypes = ["Free Market", "Mixed", "Planned"];
-	var economysymbols = ["?", "?", "?"];
-	var economychoice = 1;
-var religionsystems;
-	var religionsystemstypes = ["Free Religion", "State Atheism", "Theocracy"];
-	var religionsystemssymbols = ["??xis?", "?", "?"];
-	var religionsystemschoice = 0;
-	
-	//loop update
-	update();
-	window.setInterval(update,60000);
 </script>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 <title>My City</title>
@@ -292,131 +51,26 @@ var religionsystems;
 
 <body>
 
-<table width="100%" border="0" cellspacing="0" cellpadding="0">
-  <tr>
-    <td width="25%">
-    	<h1><script type="text/javascript">document.write(cityName);</script></h1>
-    </td>
-    <td width="75%">
-    	<img src="http://forums.civfanatics.com/images/smilies/civ4/food.gif" alt="Food" />
-        <span id="food"></span>
-    	<img src="http://forums.civfanatics.com/images/smilies/civ4/science.gif" alt="Fuel" />
-   	    <span id="fuel"></span>
-    	<img src="http://forums.civfanatics.com/images/smilies/civ4/hammer.gif" alt="Metal" />
-  		<span id="metal"></span>
-        <br /> Population <span id="pop"></span> (<span id="available"></span> available)
-        </td>
-  </tr>
-  <tr>
-    <td>
-	  <p><a>Military</a><br />
-	    <a>Government</a><br />
-	    <a>Religion</a><br />
-        <a>Intelligence</a><br />
-        <a>World Map</a><br />
-    </p></td>
-    <td>
-<div>
-  <div align="right"><strong>Loyalty: <img src="http://forums.civfanatics.com/images/smilies/smile.gif" /><span id="loyalty"></span>%</strong></div>
-</div>
+<h1 id="name" onclick="update();"></h1>
+Change city name: <textarea onblur="cityName=this.innerHTML; update();" rows="1"></textarea>
+<p id="population"></p>
 
-<table style="border:hidden; width:100%; background:#666; color:#FFF;"><tr><td width="75%"><div id="queuediv"><h3>Building Queue</h3></div></td><td id="queuetime"></td></tr></table>
-<h2>Infrastructure</h2>
-<p>Warehouse (Level <span id="warehousespan"></span>) <button onclick="upgradeBuilding('warehouse');">Upgrade Warehouse</button>
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Farmers
-<span id="farmers"></span>
-	<button onclick="if(availablePop > 50) foodPop += 50;">+</button>
-	<button onclick="if (foodPop > 50) foodPop -= 50;">-</button>
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Oil Workers 
-<span id="oil workers"></span>
-	<button onclick="if(availablePop > 50) fuelPop += 50;">+</button>
-	<button onclick="if (fuelPop > 50) fuelPop -= 50;">-</button>
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Miners
-<span id="miners"></span>
-<button onclick="if(availablePop > 50) metalPop += 50;">+</button>
-	<button onclick="if (metalPop > 50) metalPop -= 50;">-</button></p>
-<p>Barracks <br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Recruit: 
-<input name="barracksnumber" id="barracksnumber" type="text" value="100" />
-<select id="barrackstype">
-  <option>Militia</option>
-  <option>Infantry</option>
-  <option>Marines</option>
-</select>
-<button onclick='var buildunits = buildUnits("barracks")'>Confirm</button>
-</p>
-<p>&nbsp;</p>
-    </td>
-  </tr>
+Food <span id="food"></span>&nbsp;|&nbsp;Fuel <span id="fuel"></span>&nbsp;|&nbsp;Minerals <span id="mineral"></span>
+
+<table width="30%" border="1">
+<tr><td id="NW"></td><td id="N"></td><td id="NE"></td></tr>
+<tr><td id="W"></td><td id="cityblock"></td><td id="E"></td></tr>
+<tr><td id="SW"></td><td id="S"></td><td id="SE"></td></tr>
 </table>
 
-<div id="militaryscreen" align="center"><h2>Military</h2>
-<table cellspacing="5">
-<tr>
-	<td>Infantry</td>
-    <td>Armor</td>
-    <td>Artillery</td>
-</tr>
-<tr>
-	<td><img src="http://www.civfanatics.com/images/civ4/info_center/units/paratrooper.jpg" alt="Militia" width="20" height="20" /><span id="militianum"></span></td>
-    <td><img src="http://www.civfanatics.com/images/civ4/info_center/units/modernarmor.jpg" alt="Tanks" width="20" height="20" /><span id="tanknum"></span></td>
-    <td><img src="http://www.civfanatics.com/images/civ4/info_center/units/antitank.jpg" alt="Field Guns" width="20" height="20" /><span id="fieldgunnum"></span></td>
-</tr>
-<tr>
-	<td><img src="http://www.civfanatics.com/images/civ4/info_center/units/infantry.jpg" alt="Infantry" width="20" height="20" /><span id="infantrynum"></span></td>
-   	<td><img src="http://www.civfanatics.com/images/civ4/info_center/units/mechanizedinfantry.jpg" alt="Armored Personnel Carriers" width="20" height="20" /><span id="apcnum"></span></td>
-   	<td><img src="http://www.civfanatics.com/images/civ4/info_center/units/mobileartillery.jpg" alt="Artillery" width="20" height="20" /><span id="artillerynum"></span></td>
-</tr>
-<tr>
-	<td><img src="http://www.civfanatics.com/images/civ4/info_center/units/marine.jpg" alt="Marines" width="20" height="20" /><span id="marinenum"></span></td>
-   	<td><img src="http://www.civfanatics.com/images/civ4/info_center/units/panzer.jpg" alt="Infantry Fighting Vehicles" width="20" height="20" /><span id="ifvnum"></span></td>
-   	<td><img src="http://www.civfanatics.com/images/civ4/info_center/units/artillery.jpg" alt="Fixed Guns" width="20" height="20" /><span id="fixedgunnum"></span></td>
-</tr>
-</table>
-</div>
-
-<div id="govscreen" align="center"><h2><a name="government">Government</a></h2>
-
-Political system: <b><span id="political"></span></b><br />
-Social system: <b><span id="social"></span></b><br />
-Capital system: <b><span id="capital"></span></b><br />
-Economic systen: <b><span id="economic"></span></b><br />
-Religious system: <b><span id="religious"></span></b>
-
-<p><select id="revpolitics">
-  <option>Launch Coup-d'etat!</option>
-  <option>Rewrite Constitution!</option>
-  <option>Hold Elections!</option>
-</select>
-&nbsp;For a&nbsp;
-<select id="revsociety">
-  <option>Libertarian</option>
-  <option>Tolerant</option>
-  <option>Conservative</option>
-</select>
-<select id="revreligion">
-  <option>Secular</option>
-  <option>State Atheist</option>
-  <option>Theocratic</option>
-</select>
-<select id="revcapital">
-  <option>Workers'</option>
-  <option>Decentralized </option>
-  <option>Capitalist</option>
-</select>
-<select id="reveconomy">
-  <option>Free Market</option>
-  <option>Mixed Economy</option>
-  <option>Planned Economy</option>
-</select>
-<button onclick="revolution();">Revolution!</button>
-</p>
-</div>
-
-
-<script type="text/javascript">update(); var queueHTML = document.getElementById("queuediv");</script>
+<script type="text/javascript">update(); changeHTML("NW", blockTypes[blocks[0]]);
+changeHTML("N", blockTypes[blocks[1]]);
+changeHTML("NE", blockTypes[blocks[2]]);
+changeHTML("W", blockTypes[blocks[3]]);
+changeHTML("cityblock", "<h3>" + cityName + "</h2>");
+changeHTML("E", blockTypes[blocks[5]]);
+changeHTML("SW", blockTypes[blocks[6]]);
+changeHTML("S", blockTypes[blocks[7]]);
+changeHTML("SE", blockTypes[blocks[8]]);</script>
 </body>
 </html>
