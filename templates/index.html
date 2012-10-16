@@ -3,11 +3,21 @@
 <head>
 <script type="text/javascript">
 var lastUpdate=new Date();
-var horaepasatae; //lrn2latin mofos
+var horaepasatae;
 
 var cityName = "New City";
 var population=100000;
 
+var queue1 = "Placeholder"; //description of the queue item
+	var queue1cost = [2000,1000,1000,10]; //food, fuel, mineral, production
+	var queue1prodleft = 5;
+	var queue1task = "window.alert('It works!')"; //put actual code here
+
+var queue2 = "Placeholder 2"; //description of the queue item
+	var queue2cost = [2000,1000,1000,10]; //food, fuel, mineral, production
+	var queue2prodleft = 10;
+	var queue2task = "window.alert('Works again!');";
+	
 // it goes NW, N, NE, W, city's own, E, SW, W, SE
 var blocks = [0, 0, 0, 1, 1, 1, 2, 2, 2];
 var blockTypes = ["Plains", "Hills", "Desert", "Water", "Mountain"];
@@ -15,8 +25,13 @@ var blockTypes = ["Plains", "Hills", "Desert", "Water", "Mountain"];
 var food=200000;
 	var foodProduction = 100000*(2.5/100);
 	//normally we would derive this from the blocks
-var fuel=100000;
-var mineral=100000;
+var fuel=10000;
+	var fuelProduction = 100000*(5/100);
+var mineral=10000;
+	var mineralProduction = 100000*(5/100);
+	
+var production = 1000;
+	//normally we'd derive this from population, economy, buildings and tech
 
 function changeHTML(id, changeTo){
 var blahblah = document.getElementById(id);
@@ -28,21 +43,47 @@ var iam = new Date();
 horaepasatae = (iam-lastUpdate)/21600000;
 
 food += foodProduction*horaepasatae;
+fuel += fuelProduction*horaepasatae;
+mineral += mineralProduction*horaepasatae;
+
 population += (Math.log((food+1)/population)*population)*horaepasatae;
 
+queue1prodleft -= production*horaepasatae;
+	if (queue1prodleft < 1) {
+	eval(queue1task);
+	food -= queue1cost[0];
+	fuel -= queue1cost[1];
+	mineral -= queue1cost[2];
+	
+	queue1=queue2;
+		queue2=null;
+		queue1cost=queue2cost;
+		queue2cost=null;
+		queue1prodleft = queue2prodleft;
+		queue1task = queue2task;
+		queue2task = null;
+	}
+
 writeStats();
+lastUpdate = new Date();
 }
 
 function writeStats(){
 document.title = cityName + " | Gunship Diplomacy";
 changeHTML("name", cityName);
-changeHTML("cityblock", "<h3>" + cityName + "</h1>");
+changeHTML("cityblock", "<h3>" + cityName + "</h3>");
 
 changeHTML("population", parseInt(population) + " working population");
 
 changeHTML("food", parseInt(food));
 changeHTML("fuel", parseInt(fuel));
 changeHTML("mineral", parseInt(mineral));
+
+changeHTML("queue", queue1);
+changeHTML("queuepercent", Math.round(100-((queue1prodleft/queue1cost[3])*100)) + "%");
+
+changeHTML("queue2", queue2);
+changeHTML("queue2percent", Math.round(100-((queue2prodleft/queue2cost[3])*100)) + "%");
 }
 </script>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
@@ -52,7 +93,7 @@ changeHTML("mineral", parseInt(mineral));
 <body>
 
 <h1 id="name" onclick="update();"></h1>
-Change city name: <textarea onblur="cityName=this.innerHTML; update();" rows="1"></textarea>
+Change city name: <textarea onblur="cityName=this.value; update();" rows="1"></textarea>
 <p id="population"></p>
 
 Food <span id="food"></span>&nbsp;|&nbsp;Fuel <span id="fuel"></span>&nbsp;|&nbsp;Minerals <span id="mineral"></span>
@@ -61,6 +102,11 @@ Food <span id="food"></span>&nbsp;|&nbsp;Fuel <span id="fuel"></span>&nbsp;|&nbs
 <tr><td id="NW"></td><td id="N"></td><td id="NE"></td></tr>
 <tr><td id="W"></td><td id="cityblock"></td><td id="E"></td></tr>
 <tr><td id="SW"></td><td id="S"></td><td id="SE"></td></tr>
+</table>
+<h3>Queue</h3>
+<table>
+<tr><td id="queue"></td><td id="queuepercent"></td></tr>
+<tr><td id="queue2"></td><td id="queue2percent"></td></tr>
 </table>
 
 <script type="text/javascript">update(); changeHTML("NW", blockTypes[blocks[0]]);
