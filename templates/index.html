@@ -79,15 +79,29 @@ function writeStats(){
     changeHTML("fuel", parseInt(fuel));
     changeHTML("mineral", parseInt(mineral));
 
-    changeHTML("item1", queue[0].name + "&nbsp;&nbsp;&nbsp;" + Math.round((1-(queue[0].prodleft/queue[0].cost[3]))*100) + "%");
-	changeHTML("item2", queue[1].name + "&nbsp;&nbsp;&nbsp;" + Math.round((1-(queue[1].prodleft/queue[1].cost[3]))*100) + "%");
-	
-	var queueleft = "<h4>Queue</h4>";
-	for (item in queue)
-		if (item > 1)
-			queueleft += queue[item].name + "<br />";
-	changeHTML("queue", queueleft);
+    var itemsdiv = document.getElementById("items");
+    itemsdiv.innerHTML = "";
+    for (item in queue) {
+	queuediv = document.createElement("div");
+	queuediv.innerHTML = queue[item].name + "&nbsp;&nbsp;&nbsp;" + Math.round((1-(queue[item].prodleft/queue[item].cost[3]))*100) + "%";
+	if (item == 0)
+	    queuediv.innerHTML += '<button onclick="queue.shift();update();">Cancel</button>';
+	itemsdiv.appendChild(queuediv);
+    }
 }
+
+update();
+changeHTML("NW", blockTypes[blocks[0]]);
+changeHTML("N", blockTypes[blocks[1]]);
+changeHTML("NE", blockTypes[blocks[2]]);
+changeHTML("W", blockTypes[blocks[3]]);
+changeHTML("cityblock", "<h3>" + cityName + "</h3>" + blockTypes[blocks[4]]);
+changeHTML("E", blockTypes[blocks[5]]);
+changeHTML("SW", blockTypes[blocks[6]]);
+changeHTML("S", blockTypes[blocks[7]]);
+changeHTML("SE", blockTypes[blocks[8]]);
+
+window.setInterval(update, 1000);
 </script>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 <title>My City</title>
@@ -107,22 +121,7 @@ Food <span id="food"></span>&nbsp;|&nbsp;Fuel <span id="fuel"></span>&nbsp;|&nbs
 <tr><td id="SW"></td><td id="S"></td><td id="SE"></td></tr>
 </table>
 
-<h3>City Tasks</h3>
-<span id="item1"></span><button onclick="queue.shift();update();">Cancel</button>
-<div id="item2"></div>
-<div id="queue"></div>
-
-<script type="text/javascript">update();
-changeHTML("NW", blockTypes[blocks[0]]);
-changeHTML("N", blockTypes[blocks[1]]);
-changeHTML("NE", blockTypes[blocks[2]]);
-changeHTML("W", blockTypes[blocks[3]]);
-changeHTML("cityblock", "<h3>" + cityName + "</h3>" + blockTypes[blocks[4]]);
-changeHTML("E", blockTypes[blocks[5]]);
-changeHTML("SW", blockTypes[blocks[6]]);
-changeHTML("S", blockTypes[blocks[7]]);
-changeHTML("SE", blockTypes[blocks[8]]);
-
-window.setInterval(update, 1000);</script>
+<h3>Task Queue</h3>
+<div id="items"></div>
 </body>
 </html>
