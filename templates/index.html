@@ -7,16 +7,20 @@ var horaepasatae;
 
 var cityName = "New City";
 var population=100000;
+var queue = new Array();
 
-var queue1 = "Placeholder"; //description of the queue item
-	var queue1cost = [2000,1000,1000,10]; //food, fuel, mineral, production
-	var queue1prodleft = 5;
-	var queue1task = "window.alert('It works!')"; //put actual code here
+function QueueItem() {
+    this.cost = [2000,1000,1000,10];
+    if (queue.length)
+	this.prodleft = 10;
+    else
+	this.prodleft = 2;
+    this.task = "alert('XSS!')";
+    this.name = "Example "+queue.length;
+}
 
-var queue2 = "Placeholder 2"; //description of the queue item
-	var queue2cost = [2000,1000,1000,10]; //food, fuel, mineral, production
-	var queue2prodleft = 10;
-	var queue2task = "window.alert('Works again!');";
+queue.push(new QueueItem());
+queue.push(new QueueItem());
 	
 // it goes NW, N, NE, W, city's own, E, SW, W, SE
 var blocks = [0, 0, 0, 1, 1, 1, 2, 2, 2];
@@ -39,51 +43,47 @@ blahblah.innerHTML = changeTo;
 }
 
 function update(){
-var iam = new Date();
-horaepasatae = (iam-lastUpdate)/21600000;
+    var iam = new Date();
+    horaepasatae = (iam-lastUpdate)/21600000;
 
-food += foodProduction*horaepasatae;
-fuel += fuelProduction*horaepasatae;
-mineral += mineralProduction*horaepasatae;
+    food += foodProduction*horaepasatae;
+    fuel += fuelProduction*horaepasatae;
+    mineral += mineralProduction*horaepasatae;
 
-population += (Math.log((food+1)/population)*population)*horaepasatae;
-
-queue1prodleft -= production*horaepasatae;
-	if (queue1prodleft < 1) {
-	eval(queue1task);
-	food -= queue1cost[0];
-	fuel -= queue1cost[1];
-	mineral -= queue1cost[2];
-	
-	queue1=queue2;
-		queue2=null;
-		queue1cost=queue2cost;
-		queue2cost=null;
-		queue1prodleft = queue2prodleft;
-		queue1task = queue2task;
-		queue2task = null;
+    population += (Math.log((food+1)/population)*population)*horaepasatae;
+    if (queue.length) {
+	queue[0].prodleft -= production*horaepasatae;
+	if (queue[0].prodleft < 0.01) {
+	    eval(queue[0].task);
+	    food -= queue[0].cost[0];
+	    fuel -= queue[0].cost[1];
+	    mineral -= queue[0].cost[2];
+	    queue.shift();
 	}
+    }
 
 writeStats();
 lastUpdate = new Date();
 }
 
 function writeStats(){
-document.title = cityName + " | Gunship Diplomacy";
-changeHTML("name", cityName);
-changeHTML("cityblock", "<h3>" + cityName + "</h3>");
+    document.title = cityName + " | Gunship Diplomacy";
+    changeHTML("name", cityName);
+    changeHTML("cityblock", "<h3>" + cityName + "</h3>");
+    
+    changeHTML("population", parseInt(population) + " working population");
+    
+    changeHTML("food", parseInt(food));
+    changeHTML("fuel", parseInt(fuel));
+    changeHTML("mineral", parseInt(mineral));
 
-changeHTML("population", parseInt(population) + " working population");
-
-changeHTML("food", parseInt(food));
-changeHTML("fuel", parseInt(fuel));
-changeHTML("mineral", parseInt(mineral));
-
-changeHTML("queue", queue1);
-changeHTML("queuepercent", Math.round(100-((queue1prodleft/queue1cost[3])*100)) + "%");
-
-changeHTML("queue2", queue2);
-changeHTML("queue2percent", Math.round(100-((queue2prodleft/queue2cost[3])*100)) + "%");
+    var itemsdiv = document.getElementById("items");
+    itemsdiv.innerHTML = "";
+    for (item in queue) {
+	queuediv = document.createElement("div");
+	queuediv.innerHTML = queue[item].name + "&nbsp;&nbsp;&nbsp;" + Math.round((1-(queue[item].prodleft/queue[item].cost[3]))*100) + "%";
+	itemsdiv.appendChild(queuediv);
+    }
 }
 </script>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
@@ -104,11 +104,7 @@ Food <span id="food"></span>&nbsp;|&nbsp;Fuel <span id="fuel"></span>&nbsp;|&nbs
 <tr><td id="SW"></td><td id="S"></td><td id="SE"></td></tr>
 </table>
 <h3>Queue</h3>
-<table>
-<tr><td id="queue"></td><td id="queuepercent"></td></tr>
-<tr><td id="queue2"></td><td id="queue2percent"></td></tr>
-</table>
-
+<div id="items"></div>
 <script type="text/javascript">update(); changeHTML("NW", blockTypes[blocks[0]]);
 changeHTML("N", blockTypes[blocks[1]]);
 changeHTML("NE", blockTypes[blocks[2]]);
