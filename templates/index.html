@@ -9,37 +9,35 @@ var cityName = "New City";
 var population=100000;
 var queue = new Array();
 
-function QueueItem() {
-    this.cost = [2000,1000,1000,10];
-    if (queue.length)
-	this.prodleft = 10;
-    else
-	this.prodleft = 2;
-    this.task = "alert('XSS!')";
-    this.name = "Example "+queue.length;
+function QueueItem(foodcost,fuelcost,mineralcost,productioncost,task,description) {
+    this.cost = [foodcost,fuelcost,mineralcost,productioncost];
+	this.prodleft = this.cost[3];
+    this.task = task; //raw code executed after completion
+    this.name = description; //whatever this thing is called
 }
 
-queue.push(new QueueItem());
-queue.push(new QueueItem());
+queue.push(new QueueItem(2000,1000,1000,20, 'window.alert("dummy function")', 'Dummy Function')); //dummy values
+queue[0].prodleft = 10; //make it half done
+queue.push(new QueueItem(2000,1000,1000,20, 'window.alert("dummy function")', 'Dummy Function')); //dummy values
 	
 // it goes NW, N, NE, W, city's own, E, SW, W, SE
-var blocks = [0, 0, 0, 1, 1, 1, 2, 2, 2];
+var blocks = [0, 0, 0, 1, 1, 1, 2, 2, 2]; //dummy values, normally we'd get from ajax
 var blockTypes = ["Plains", "Hills", "Desert", "Water", "Mountain"];
 
-var food=200000;
+//all dummy values to be filled in with ajax
+var food=150000;
 	var foodProduction = 100000*(2.5/100);
 	//normally we would derive this from the blocks
-var fuel=10000;
+var fuel=100000;
 	var fuelProduction = 100000*(5/100);
-var mineral=10000;
+var mineral=100000;
 	var mineralProduction = 100000*(5/100);
 	
 var production = 1000;
 	//normally we'd derive this from population, economy, buildings and tech
 
 function changeHTML(id, changeTo){
-var blahblah = document.getElementById(id);
-blahblah.innerHTML = changeTo;
+document.getElementById(id).innerHTML = changeTo;
 }
 
 function update(){
@@ -68,9 +66,9 @@ lastUpdate = new Date();
 
 function writeStats(){
     document.title = cityName + " | Gunship Diplomacy";
-    changeHTML("name", cityName);
-    changeHTML("cityblock", "<h3>" + cityName + "</h3>");
     
+	changeHTML("name", cityName);
+    changeHTML("cityblock", "<h3>" + cityName + "</h3>" + blockTypes[blocks[4]]);
     changeHTML("population", parseInt(population) + " working population");
     
     changeHTML("food", parseInt(food));
@@ -93,7 +91,7 @@ function writeStats(){
 <body>
 
 <h1 id="name" onclick="update();"></h1>
-Change city name: <textarea onblur="cityName=this.value; update();" rows="1"></textarea>
+Change city name: <input type="text" onblur="cityName=this.value; update();" />
 <p id="population"></p>
 
 Food <span id="food"></span>&nbsp;|&nbsp;Fuel <span id="fuel"></span>&nbsp;|&nbsp;Minerals <span id="mineral"></span>
@@ -109,7 +107,7 @@ Food <span id="food"></span>&nbsp;|&nbsp;Fuel <span id="fuel"></span>&nbsp;|&nbs
 changeHTML("N", blockTypes[blocks[1]]);
 changeHTML("NE", blockTypes[blocks[2]]);
 changeHTML("W", blockTypes[blocks[3]]);
-changeHTML("cityblock", "<h3>" + cityName + "</h2>");
+changeHTML("cityblock", "<h3>" + cityName + "</h3>" + blockTypes[blocks[4]]);
 changeHTML("E", blockTypes[blocks[5]]);
 changeHTML("SW", blockTypes[blocks[6]]);
 changeHTML("S", blockTypes[blocks[7]]);
