@@ -5,6 +5,7 @@
 var lastUpdate=new Date();
 var horaepasatae;
 
+//all of these city properties should go into the django model
 var cityName = "New City";
 var population=100000;
 var queue = new Array();
@@ -16,10 +17,13 @@ function QueueItem(foodcost,fuelcost,mineralcost,productioncost,task,description
     this.name = description; //whatever this thing is called
 }
 
-queue.push(new QueueItem(2000,1000,1000,20, 'window.alert("dummy function")', 'Dummy Function')); //dummy values
-queue[0].prodleft = 10; //make it half done
-queue.push(new QueueItem(2000,1000,1000,20, 'window.alert("dummy function")', 'Dummy Function')); //dummy values
-	
+queue.push(new QueueItem(2000,1000,1000,1, 'window.alert("dummy function")', 'Dummy Function')); //dummy values
+queue.push(new QueueItem(2000,1000,1000,1, 'window.alert("dummy function")', 'Dummy Function')); //dummy values
+queue.push(new QueueItem(2000,1000,1000,1, 'window.alert("dummy function")', 'Dummy Function')); //dummy values
+queue.push(new QueueItem(2000,1000,1000,1, 'window.alert("dummy function")', 'Dummy Function')); //dummy values
+queue.push(new QueueItem(2000,1000,1000,1, 'window.alert("dummy function")', 'Dummy Function')); //dummy values
+
+
 // it goes NW, N, NE, W, city's own, E, SW, W, SE
 var blocks = [0, 0, 0, 1, 1, 1, 2, 2, 2]; //dummy values, normally we'd get from ajax
 var blockTypes = ["Plains", "Hills", "Desert", "Water", "Mountain"];
@@ -51,14 +55,14 @@ function update(){
     population += (Math.log((food+1)/population)*population)*horaepasatae;
     if (queue.length) {
 	queue[0].prodleft -= production*horaepasatae;
-	if (queue[0].prodleft < 0.01) {
-	    eval(queue[0].task);
-	    food -= queue[0].cost[0];
-	    fuel -= queue[0].cost[1];
-	    mineral -= queue[0].cost[2];
-	    queue.shift();
-	}
-    }
+		if (queue[0].prodleft < 0.01) {
+			eval(queue[0].task);
+			food -= queue[0].cost[0];
+			fuel -= queue[0].cost[1];
+			mineral -= queue[0].cost[2];
+			queue.shift();
+		}
+}
 
 writeStats();
 lastUpdate = new Date();
@@ -75,13 +79,14 @@ function writeStats(){
     changeHTML("fuel", parseInt(fuel));
     changeHTML("mineral", parseInt(mineral));
 
-    var itemsdiv = document.getElementById("items");
-    itemsdiv.innerHTML = "";
-    for (item in queue) {
-	queuediv = document.createElement("div");
-	queuediv.innerHTML = queue[item].name + "&nbsp;&nbsp;&nbsp;" + Math.round((1-(queue[item].prodleft/queue[item].cost[3]))*100) + "%";
-	itemsdiv.appendChild(queuediv);
-    }
+    changeHTML("item1", queue[0].name + "&nbsp;&nbsp;&nbsp;" + Math.round((1-(queue[0].prodleft/queue[0].cost[3]))*100) + "%");
+	changeHTML("item2", queue[1].name + "&nbsp;&nbsp;&nbsp;" + Math.round((1-(queue[1].prodleft/queue[1].cost[3]))*100) + "%");
+	
+	var queueleft = "<h4>Queue</h4>";
+	for (item in queue)
+		if (item > 1)
+			queueleft += queue[item].name + "<br />";
+	changeHTML("queue", queueleft);
 }
 </script>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
@@ -101,9 +106,14 @@ Food <span id="food"></span>&nbsp;|&nbsp;Fuel <span id="fuel"></span>&nbsp;|&nbs
 <tr><td id="W"></td><td id="cityblock"></td><td id="E"></td></tr>
 <tr><td id="SW"></td><td id="S"></td><td id="SE"></td></tr>
 </table>
-<h3>Queue</h3>
-<div id="items"></div>
-<script type="text/javascript">update(); changeHTML("NW", blockTypes[blocks[0]]);
+
+<h3>City Tasks</h3>
+<span id="item1"></span><button onclick="queue.shift();update();">Cancel</button>
+<div id="item2"></div>
+<div id="queue"></div>
+
+<script type="text/javascript">update();
+changeHTML("NW", blockTypes[blocks[0]]);
 changeHTML("N", blockTypes[blocks[1]]);
 changeHTML("NE", blockTypes[blocks[2]]);
 changeHTML("W", blockTypes[blocks[3]]);
@@ -111,6 +121,8 @@ changeHTML("cityblock", "<h3>" + cityName + "</h3>" + blockTypes[blocks[4]]);
 changeHTML("E", blockTypes[blocks[5]]);
 changeHTML("SW", blockTypes[blocks[6]]);
 changeHTML("S", blockTypes[blocks[7]]);
-changeHTML("SE", blockTypes[blocks[8]]);</script>
+changeHTML("SE", blockTypes[blocks[8]]);
+
+window.setInterval(update, 1000);</script>
 </body>
 </html>
