@@ -90,6 +90,7 @@ function writeStats(){
     }
 }
 
+function loaded() {
 update();
 changeHTML("NW", blockTypes[blocks[0]]);
 changeHTML("N", blockTypes[blocks[1]]);
@@ -100,6 +101,7 @@ changeHTML("E", blockTypes[blocks[5]]);
 changeHTML("SW", blockTypes[blocks[6]]);
 changeHTML("S", blockTypes[blocks[7]]);
 changeHTML("SE", blockTypes[blocks[8]]);
+}
 
 window.setInterval(update, 1000);
 </script>
@@ -107,7 +109,7 @@ window.setInterval(update, 1000);
 <title>My City</title>
 </head>
 
-<body>
+<body onload="loaded();">
 
 <h1 id="name" onclick="update();"></h1>
 Change city name: <input type="text" onblur="cityName=this.value; update();" />
