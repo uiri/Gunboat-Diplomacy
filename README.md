@@ -241,6 +241,8 @@ Combat system
     Missile Cruiser - cannot see submarines, strong attack, med. defense
     
     Transport - adds land unit capacity
+    
+    Submarine - medium attack, invisible except to destroyers
   
   Special Units
 
