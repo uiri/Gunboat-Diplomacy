@@ -65,8 +65,6 @@ City/map system:
     Units can attack cities when adjacent to them
     
   Infrastructure:
-  
-    Warehouse - increases capacity to store resources
     
     Barracks - unlocks infantry units, decreases production costs of infantry
     
@@ -74,13 +72,13 @@ City/map system:
     
     Transportation - decreases transport time, increases commerce, unlocks resource trading
     
-    Workshop - unlocks armored units, decreases production costs of armor
+    Workshop - unlocks armored units, decreases production costs of armor, increases production
     
     School - increases research, increases education, unlocks government transitions
     
     Hospital (requires School) - keeps population modifier (health) near 1
     
-    Factory (requires Workshop, Warehouse) - increases production, unlocks artillery
+    Foundry (requires Workshop, Warehouse) - increases production, unlocks artillery
     
     Airport (requires Workshop, Transportation) - increases commerce, decreases transport time, unlocks aircraft
     
@@ -92,17 +90,111 @@ City/map system:
       
       Ethanol Plant - food to fuel
       
-      Hydroponics Garden - fuel to food
+      Hydroponics - fuel to food
       
       Recycling Center - fuel to metal
       
       Nuclear Plant - metal to fuel
       
-      Launch Pad - allows missile units, satellite launches
+      Space Center - allows missile units, satellite launches
 
 Combat system
 
-  (NOTE: WILL ELABORATE)
+  Movement
+    
+    Each square can hold one army
+    
+    Players assign units to armies and send out to specific map blocks
+      
+      Have to draw waypoints to that block
+      
+      Cannot pass through mountain or water blocks; rivers have no effect
+      
+    When an army is adjacent to a city, it can attack
+    
+      Air and naval support can be assigned
+    
+      Three-round battles
+      
+        First, bombardment
+        
+          Air battle if any
+          
+          Artillery/ships/helicopters/remaining air units add to attack
+          
+          Losses calculated for artillery and helicopters
+          
+        Then, armor losses and gains calculated
+        
+        Then, infantry losses and gains calculated
+    
+      Battles designed to go until one side loses ~20%
+      
+      City taken when loyalty/approval drops to 0%, after several battles
+        
+        Loyalty decreases when attackers win
+        
+        Loyalty increases when defenders win
+        
+      Attacks can also be off of ships or paratroops
+      
+    Armies can also be placed in friendly cities without map movement - requires airport
+
+  Fleets
+  
+    Ships are super-expensive
+  
+    Players assign ships to fleets, move like armies
+    
+    Each fleet can see x number of blocks around it
+    
+      Depends on air support
+      
+      Can attack similar distances
+      
+    Methods of attack
+    
+      Blockade - choose a specific city, requires closeness to city
+        
+        No resource shipments, no use of water blocks
+        
+        Ends when defender defeats fleet
+        
+      Bombardment
+        
+        Requires adjacency to city
+        
+        Depending on ship's guns, damages buildings and infrastructure
+        
+      Direct attack
+      
+        Can bombard enemy ships from afar
+        
+          With ships guns/missiles
+          
+          With carrier air wings - then starts air battle
+        
+        Rarely decisive
+        
+      Amphibious landing
+        
+        Armies can be put in fleet depending on transport capacity
+        
+        When fleet adjacent to city, can proceed with attack
+  
+    Air units
+    
+      Based in specific city
+      
+      Can launch air raid
+        
+        Certain ground units can partake (militia, SAM, helikkkopter)
+        
+        Battle is such as land war, but with smaller % casualities
+        
+        Certain buildings damaged, ground or naval units may be destroyed
+      
+      Can drop paratroopers
   
   Ground Units
   
@@ -110,7 +202,7 @@ Combat system
     
       Militia - good anti-armor defense, average attack
       
-      Infantry - good anti-infantry defense, bad attack
+      Motor Rifle - good anti-infantry defense, bad attack
       
       Marine - good attack, bad defense
       
@@ -128,19 +220,37 @@ Combat system
       
       Artillery - general attack
       
-      Fixed Gun - super-defense, cannot move
+      Train Gun - super-defense, cannot attack
       
   Air Units
   
-  Sea Units
+    Fighter-Bomber - general unit, can destroy aircraft and bombard cities
+    
+    Close Air Support - attack unit, destroys enemy land and naval units
+    
+    Paratroop - can embark Marines, see above
+  
+    Cruise Missile - air unit, sacrifices with use
+      
+  Naval Units
+  
+    Carrier - carries fighter-bombers, strong attack (w/airpower), weak defense
+    
+    Destroyer - can see submarines, weak attack, strong defense
+    
+    Missile Cruiser - cannot see submarines, strong attack, med. defense
+    
+    Transport - adds land unit capacity
   
   Special Units
 
     Fanatic - one per player, good attack and defense, special ability from religion
   
-    Cruise Missile - air unit, sacrifices with use
+    Helicopter - hermaphrodite, acts as both air and land unit; good attack, good anti-armor defense
     
     Satellite - can be assigned to city, lingers over for two weeks and gives daily reports of unit numbers
+    
+    SAM - artillery unit, only attacks helicopters
 
 Politics system
 
@@ -148,11 +258,11 @@ Politics system
   
     Politics
     
-      Autocracy (symbol: ♔) - faster transitions, faster military recruitment
+      Autocracy (symbol: ♔) - faster transitions, faster military recruitment. Loyalty bhanges slower
       
-      Republic (symbol: ✍) - slight commerce bonus
+      Consitution (symbol: ✍) - slight commerce bonus
       
-      Democracy (symbol: ☑) - more loyalty, enemy loyalty decreases faster
+      Democracy (symbol: ☑) - more education, more commerce. Loyalty changes faster
       
     Society
     
@@ -168,7 +278,7 @@ Politics system
       
       Decentralized (symbol: ☍) - no effect
       
-      Capitalist (symbol: $) - more research, less health
+      Capitalist (symbol: $) - more research, less health, less loyalty
       
     Economy (NOTE: will be elaborated later)
     
@@ -187,12 +297,12 @@ Politics system
       State Atheism (symbol: ⚛) - increased research, decreased loyalty
       
   Players choose from presets at first
-  
-    Constitutional Monarchy - tolerant, decentralized, mixed economy, free religion, republic.
     
-    Barracks State - conservative, decentralized, planned economy, theocracy, autocracy.
+    Barracks State - conservative, capitalist, planned economy, free religion, autocracy.
     
-    Libertarian Democracy - libertarian, capitalist, free markey, free religion, democracy.
+    Religious Colony - conservative, decentralized, mixed economy, theocracy, autocracy.
+    
+    Liberal Democracy - libertarian, capitalist, free market, free religion, democracy.
     
     Communist Dictatorship - tolerant, syndicalist, planned economy, state atheism, autocracy.
     
@@ -211,6 +321,10 @@ Religion
         Regular bonus against opposing Theocracies
         
         Double bonus against State Atheist/Pagan players
+        
+      Religions slowly convert to state religion based on Bulliet curve
+      
+      Allows Fanatic units, one per city
       
       Allows city religion programs (+1 level to buildings for every 20% of the population in the state religion)
       
@@ -228,23 +342,21 @@ Religion
     
       If attacking player has state religion, bonus loyalty for population NOT in that religion
       
-      Allows choice between Fanatic types
+      Religions fluctuate wildly
+      
+      No change in loyalty
       
     Religions:
     
       Orthodox (symbol: ☦)
       
-        "I believe in one God, Father Almighty, Creator of heaven and earth, and of all things visible and invisible. And in one Lord Jesus Christ, the only-begotten Son of God, begotten of the Father before all ages;"
-        
-        Holy city: Constantinopolis
+        "I believe in one God, Father Almighty, Creator of heaven and earth, and of all things visible and invisible. And in one Lord Jesus Christ, the only-begotten Son of God, begotten of the Father before all ages;"    
         
         Fanatic: Varagnian (bonus for Artillery)
         
       Catholic (symbol: ✝)
       
         "Now the Catholic Faith is this: We worship One God in Trinity and Trinity in Unity, neither confounding the Persons nor dividing the substance."
-      
-        Holy city: Roma
         
         Fanatic: Crusader (bonus for Tanks)
         
@@ -252,82 +364,171 @@ Religion
       
         "I believe in the Holy Ghost, the Holy Christian Church, the Communion of Saints, the Forgiveness of sins, the Resurrection of the Body, and the Life everlasting.  Amen."
         
-        Holy city: Canterbury
-        
-        Fanatic: Puritan (bonus for Marines)
+        Fanatic: Hugenot (bonus for APC)
         
       Sunni (symbol: ☪)
       
-        "There is no god but God, and Muhammad is the messenger of God."
-        
-        Holy city: Mecca
-        
+        "I testify that there is no god but God, and Muhammad is the messenger of God."
+       
         Fanatic: Mujahadin (bonus for Militia)
       
       Shia (symbol: ☫)
       
-        "There is no god but God, and Muhammad is the messenger of God, and Ali is the viceregent of God."
+        "There is no god but God, and Mohammad is the messenger of God, and Ali is the viceregent of God."
       
-        Holy city: Qom
-        
         Fanatic: Assassin (bonus for espionage)
         
       Buddhist (symbol: ☸)
         
         "Suffering exists. There is a cause for suffering. There is an end to suffering. In order to end suffering, you must follow the Eightfold Path."
         
-        Holy city: Lopburi
-        
-        Fanatic: Shaolin Monk (bonus for fortification)
+        Fanatic: Shaolin Monk (bonus for Infantry)
         
       Sikh (symbol: ☬)
       
         "There exists but one God, who is called The True, The Creator, Free from fear and hate, Immortal, Not begotten, Self-Existent, Great and Compassionate."  
       
-        Holy city: Amritsar
-        
-        Fanatic: Punjabi (bonus for Infantry)
+        Fanatic: Punjabi (bonus for IFV)
         
   Paganism
   
     Certain percentage of population is "Pagan"
     
-    If Paganism adopted as State Religion, each city can have a Festival once per week, which yields a certain bonus
+    If Paganism adopted as State Religion, each city can do...something
+      
+    Different Ethnic Religions based on location, holyshit we have 30 in all
     
-      Creator God - production efficiency increased 5%
+      Australian Aboriginal
       
-      War God - loyalty boost
+      Akan (in Gambia and stuff)
       
-      Harvest God - +20% of every resource
+      Aztec
       
-      Sea God - bonus commerce
+      Bakongo (in da kkkongo)
       
-      Underworld God - +1 fortification level for every 20% pagan
+      Bantu
       
-    Different Pantheons can be chosen (NOTE: purely flavor at this point)
-    
+      Berber
+      
+      Cao Dai (in Vietnam, perhaps just merge into Shen?)
+      
+      Celtic
+      
+      Cultus Deorum (like fucking Romans maaaan)
+      
+      Hellenismos (symbol: ☿))
+      
       Hindu (symbol: ॐ)
       
-      Chinese (symbol: ☯)
+      Hoponopono (its Hawaiian, humor me)
+      
+      Jewish (symbol: ✡; how many jimmies can we rustle?)
+      
+      Juche (the religion of Best Korea)
+            
+      Kemet (symbol: ☥; its in Egypt, followed by approximately 0.00% of the population)
+      
+      Mapuche (in Chile)
+      
+      Muisca (in KKKolombia, important because FARC)
+      
+      Norse (rustle more jimmies by making the symbol a swatstika)
+      
+      Peyote
+      
+      Quechua
+      
+      Rodnovery (the Slavic paganism)
+      
+      Shen (symbol: ☯)
       
       Shinto (symbol: π)
       
-      Norse (symbol: ☇)
+      Tengricilik (the shamanists, let's add in a ulan reference)
       
-      Egyptian (symbol: ☥)
+      Tsonga (in MozambiKKK)
       
-      Greek (symbol: ☿)
+      Waaq (in Sudan and Somalia)
       
-      Animist (symbol: ☀)
+      Wathaniyya (not an actual pantheon, but what the Arabs refer to Semitic paganism)
       
-      Cult of Personality (symbol: ☟)
+      Yoruba
+      
+      Zardoshti (Zoroastrian, because Persians invented everything)
+      
 
 Commerce
-
-  (NOTE: These all should tie into commerce.)
+  
+  I'm thinking something with different sectors
+    
+    Primary makes resource production
+    
+    Secondary makes production
+    
+    Tertiary increases the total yields of the previous two, increases loyalty
+    
+  Maybe each sector hires a certain amount of the population
+  
+    Do stuff with unemployment?
+    
+    Hurts the economy to have too much cannon fodder?
+    
+  Cash economy probably won't be there directly, but...
+  
+    We could get a rough estimate of GDP, gov't budget, trade surplus, etc
+    
+    Gov't deficit could paralyze production
+    
+    Trade surplus could give benefits
+    
+  Different methods of sector grwoth based on gov't
+  
+    Under Market, sectors grow on their own (with minimal player input) based on education, infrastructure, gov't
+    
+    Under Planned, player must pump resources to grow each one
+    
+    Mixed could maybe have investment into sectors, but otherwise grow on own?
   
   Education
   
   Espionage
   
+    Spy satellites give view of all city stats, but are uber-expen$$$ive and temporary
+    
+    Old fashioned spy networks!
+
+      Would be stored as player-wide variable
+      
+      Specific cities targeted, or whole players?
+      
+      Counter-espionage can be infrastructure mebbe?
+      
+      Anyways, effectiveness of spy network vs. effectiveness of counterespionage determines data gotten
+      
+      If spies caught, network dismantled and PLAYER KNOWS NOW
+
   Research
+  
+    Each city contributes to a player wide pool of research
+    
+    Pool of research randomly assigned to various categories
+    
+      Biology/Medicine - increases food production, increases health
+      
+      Physics/Engineering - increases total production, increases mineral production
+            
+      Mathematics/Computer Science - increases commerce, increases total research, increases espionage
+      
+      Chemistry/Materials Science - increases energy production, increases Transportation
+      
+      ATOMIX (only increases when Nuclear Plant built) - increases health, increases energy production
+      
+      Astronomy/Rocketry (only increases when Space Center built) - missile effectiveness, increases espionage
+  
+    Each unit has a certain level from 1 to 3 - AKA level 3 militia, level 1 fighter, level 2 tank
+      
+      Applies all of the player's units
+      
+      Player can only assign a certain amount of upgrades, depending on techs
+      
+      Therefore, Greater Somali Club Bearer Brigade will do badly against equal number of US Marine Corps
