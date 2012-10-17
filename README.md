@@ -238,11 +238,11 @@ Combat system
     
     Destroyer - can see submarines, weak attack, strong defense
     
-    Missile Cruiser - cannot see submarines, strong attack, med. defense
+    Missile Cruiser - cannot see submarines, strong attack, med. defense, can hold cruise missiles
     
     Transport - adds land unit capacity
     
-    Submarine - medium attack, invisible except to destroyers
+    Submarine - medium attack, invisible except to destroyers, can hold cruise missiles
   
   Special Units
 
@@ -418,7 +418,7 @@ Religion
       
       Cultus Deorum (like fucking Romans maaaan)
       
-      Hellenismos (symbol: ☿))
+      Hellenismos (symbol: ☿)
       
       Hindu (symbol: ॐ)
       
