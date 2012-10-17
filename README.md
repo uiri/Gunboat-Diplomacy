@@ -527,9 +527,11 @@ Commerce
       
       Astronomy/Rocketry (only increases when Space Center built) - missile effectiveness, increases espionage
   
-    Each unit has a certain level from 1 to 3 - AKA level 3 militia, level 1 fighter, level 2 tank
+    Each land or air unit has a certain level from 1 to 3 - AKA level 3 militia, level 1 fighter, level 2 tank
       
       Applies all of the player's units
+      
+      NOT NAVAL UNITS
       
       Player can only assign a certain amount of upgrades, depending on techs
       
