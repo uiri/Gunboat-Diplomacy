@@ -12,33 +12,42 @@ var queue = new Array();
 
 function QueueItem(foodcost,fuelcost,mineralcost,productioncost,task,description) {
     this.cost = [foodcost,fuelcost,mineralcost,productioncost];
-this.prodleft = this.cost[3];
+    this.prodleft = this.cost[3];
     this.task = task; //raw code executed after completion
     this.name = description; //whatever this thing is called
 }
 
-queue.push(new QueueItem(2000,1000,1000,1, 'window.alert("dummy function")', 'Dummy Function')); //dummy values
-queue.push(new QueueItem(2000,1000,1000,1, 'window.alert("dummy function")', 'Dummy Function')); //dummy values
-queue.push(new QueueItem(2000,1000,1000,1, 'window.alert("dummy function")', 'Dummy Function')); //dummy values
-queue.push(new QueueItem(2000,1000,1000,1, 'window.alert("dummy function")', 'Dummy Function')); //dummy values
-queue.push(new QueueItem(2000,1000,1000,1, 'window.alert("dummy function")', 'Dummy Function')); //dummy values
+queue.push(new QueueItem(2000,1000,1000,1, 'changeHTML("test", new Date())', 'Dummy Function')); //dummy values
+queue.push(new QueueItem(2000,1000,1000,1, 'changeHTML("test", new Date())', 'Dummy Function')); //dummy values
+queue.push(new QueueItem(2000,1000,1000,1, 'changeHTML("test", new Date())', 'Dummy Function')); //dummy values
+queue.push(new QueueItem(2000,1000,1000,1, 'changeHTML("test", new Date())', 'Dummy Function')); //dummy values
+queue.push(new QueueItem(2000,1000,1000,1, 'changeHTML("test", new Date())', '')); //dummy values
 
+
+function Block(type, improvement, level){
+this.type=type;
+this.improvement=improvement;
+this.level=level;
+
+return this.type;
+}
 
 // it goes NW, N, NE, W, city's own, E, SW, W, SE
-var blocks = [0, 0, 0, 1, 1, 1, 2, 2, 2]; //dummy values, normally we'd get from ajax
+var blocks = [new Block(0, 0, 250), new Block(0, 0, 250), new Block(0, 4, 250), new Block(1, 1, 250), new Block(1, 1, 250), new Block(1,5, 250), new Block(2,2, 250), new Block(2,2, 250), new Block(2,6, 250)]; //dummy values, normally we'd get from ajax
 var blockTypes = ["Plains", "Hills", "Desert", "Water", "Mountain"];
+var blockImprovements = ["Farm", "Mine", "Oil Well", "Fishery", "Quarry", "Coal Mine", "Pasture"];
 
 //all dummy values to be filled in with ajax
-var food=150000;
-var foodProduction = 100000*(2.5/100);
-//normally we would derive this from the blocks
+var food=100000;
+    var foodProduction = 50;
+	//production per workier; normally we would derive this from tech and such
 var fuel=100000;
-var fuelProduction = 100000*(5/100);
+	var fuelProduction = 25;
 var mineral=100000;
-var mineralProduction = 100000*(5/100);
-
+	var mineralProduction = 25;
+	
 var production = 1000;
-//normally we'd derive this from population, economy, buildings and tech
+	//normally we'd derive this from population, economy, buildings and tech
 
 function changeHTML(id, changeTo){
 document.getElementById(id).innerHTML = changeTo;
@@ -48,20 +57,51 @@ function update(){
     var iam = new Date();
     horaepasatae = (iam-lastUpdate)/21600000;
 
-    food += foodProduction*horaepasatae;
-    fuel += fuelProduction*horaepasatae;
-    mineral += mineralProduction*horaepasatae;
+	
+	for (number in blocks) {
+		switch (blocks[number].type){
+			case 0: {
+			food += foodProduction*horaepasatae;
+			break;
+			}
+			case 1: {
+			mineral += mineralProduction*horaepasatae;
+			break;
+			}
+			case 2: {
+			fuel += fuelProduction*horaepasatae
+			break;
+			}
+			case 3: {
+			food += 0.75*foodProduction*horaepasatae;
+			break;
+			}
+			case 4: {
+			mineral += 0.75*mineralProduction*horaepasatae;
+			break;
+			}
+			case 5: {
+			fuel += 0.75*fuelProduction*horaepasatae
+			break;
+			}
+			case 6: {
+			food += 0.75*foodProduction*horaepasatae
+			break;
+			}
+		}
+	}
 
+	
     population += (Math.log((food+1)/population)*population)*horaepasatae;
     if (queue.length) {
-queue[0].prodleft -= production*horaepasatae;
-if (queue[0].prodleft < 0.01) {
-eval(queue[0].task);
-food -= queue[0].cost[0];
-fuel -= queue[0].cost[1];
-mineral -= queue[0].cost[2];
-queue.shift();
-}
+	queue[0].prodleft -= production*horaepasatae;
+		if (queue[0].prodleft < 0.01) {
+			eval(queue[0].task);
+			food -= queue[0].cost[0];
+			fuel -= queue[0].cost[1];
+			mineral -= queue[0].cost[2];
+			queue.shift();
+		}
 }
 
 writeStats();
@@ -71,7 +111,7 @@ lastUpdate = new Date();
 function writeStats(){
     document.title = cityName + " | Gunship Diplomacy";
     
-changeHTML("name", cityName);
+	changeHTML("name", cityName);
     changeHTML("cityblock", "<h3>" + cityName + "</h3>" + blockTypes[blocks[4]]);
     changeHTML("population", parseInt(population) + " working population");
     
@@ -82,25 +122,25 @@ changeHTML("name", cityName);
     var itemsdiv = document.getElementById("items");
     itemsdiv.innerHTML = "";
     for (item in queue) {
-queuediv = document.createElement("div");
-queuediv.innerHTML = queue[item].name + "&nbsp;&nbsp;&nbsp;" + Math.round((1-(queue[item].prodleft/queue[item].cost[3]))*100) + "%";
-if (item == 0)
-queuediv.innerHTML += '<button onclick="queue.shift();update();">Cancel</button>';
-itemsdiv.appendChild(queuediv);
+	queuediv = document.createElement("div");
+	queuediv.innerHTML = queue[item].name + "&nbsp;&nbsp;&nbsp;" + Math.round((1-(queue[item].prodleft/queue[item].cost[3]))*100) + "%";
+	if (item == 0)
+	    queuediv.innerHTML += '<button onclick="queue.shift();update();">Cancel</button>';
+	itemsdiv.appendChild(queuediv);
     }
 }
 
 function loaded() {
 update();
-changeHTML("NW", blockTypes[blocks[0]]);
-changeHTML("N", blockTypes[blocks[1]]);
-changeHTML("NE", blockTypes[blocks[2]]);
-changeHTML("W", blockTypes[blocks[3]]);
-changeHTML("cityblock", "<h3>" + cityName + "</h3>" + blockTypes[blocks[4]]);
-changeHTML("E", blockTypes[blocks[5]]);
-changeHTML("SW", blockTypes[blocks[6]]);
-changeHTML("S", blockTypes[blocks[7]]);
-changeHTML("SE", blockTypes[blocks[8]]);
+changeHTML("NW", blockTypes[blocks[0].type] + "<br />" + blockImprovements[blocks[0].improvement]);
+changeHTML("N", blockTypes[blocks[1].type] + "<br />" + blockImprovements[blocks[1].improvement]);
+changeHTML("NE", blockTypes[blocks[2].type] + "<br />" + blockImprovements[blocks[2].improvement]);
+changeHTML("W", blockTypes[blocks[3].type] + "<br />" + blockImprovements[blocks[3].improvement]);
+changeHTML("cityblock", "<h3>" + cityName + "</h3>" + blockTypes[blocks[4].type] + "<br />" + blockImprovements[blocks[4].improvement]);
+changeHTML("E", blockTypes[blocks[5].type] + "<br />" + blockImprovements[blocks[5].improvement]);
+changeHTML("SW", blockTypes[blocks[6].type] + "<br />" + blockImprovements[blocks[6].improvement]);
+changeHTML("S", blockTypes[blocks[7].type] + "<br />" + blockImprovements[blocks[7].improvement]);
+changeHTML("SE", blockTypes[blocks[8].type] + "<br />" + blockImprovements[blocks[8].improvement]);
 }
 
 window.setInterval(update, 1000);
@@ -111,16 +151,17 @@ window.setInterval(update, 1000);
 
 <body onload="loaded();">
 
-<h1 id="name" onclick="update();"></h1>
-Change city name: <input type="text" onblur="cityName=this.value; update();" />
+<h1 id="name"></h1>
+Change city name: <input type="text" onblur="cityName=this.value;" />
+<div id="test"></div>
 <p id="population"></p>
 
 Food <span id="food"></span>&nbsp;|&nbsp;Fuel <span id="fuel"></span>&nbsp;|&nbsp;Minerals <span id="mineral"></span>
 
 <table width="30%" border="1">
-<tr><td id="NW"></td><td id="N"></td><td id="NE"></td></tr>
-<tr><td id="W"></td><td id="cityblock"></td><td id="E"></td></tr>
-<tr><td id="SW"></td><td id="S"></td><td id="SE"></td></tr>
+<tr><td><div id="NW"></div></td><td><div id="N"></div></td><td><div id="NE"></div></td></tr>
+<tr><td><div id="W"></div></td><td><div id="cityblock"></div></td><td><div id="E"></div></td></tr>
+<tr><td><div id="SW"></div></td><td><div id="S"></div></td><td><div id="SE"></div></td></tr>
 </table>
 
 <h3>Task Queue</h3>
