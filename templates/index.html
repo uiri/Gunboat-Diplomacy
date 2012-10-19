@@ -7,6 +7,7 @@ var horaepasatae;
 
 //all of these city properties should go into the django model
 var cityName = "New City";
+var player = "King Medi";
 var population=100000;
 var queue = new Array();
 
@@ -33,12 +34,13 @@ return this.type;
 }
 
 // it goes NW, N, NE, W, city's own, E, SW, W, SE
-var blocks = [new Block(0, 0, 250), new Block(0, 0, 250), new Block(0, 4, 250), new Block(1, 1, 250), new Block(1, 1, 250), new Block(1,5, 250), new Block(2,2, 250), new Block(2,2, 250), new Block(2,6, 250)]; //dummy values, normally we'd get from ajax
+var blocks = [new Block(0,0,750), new Block(0,0,750), new Block(0,4,750), new Block(1,1,750), new Block(1,1,750), new Block(1,5,750), new Block(2,2,750), new Block(2,2,750), new Block(2,6,750)]; //dummy values, normally we'd get from ajax
 var blockTypes = ["Plains", "Hills", "Desert", "Water", "Mountain"];
+var blockGraphics = ["http://kingbushido95.ki.funpic.de/ModernDS/graphic/map/gras1.png", "http://kingbushido95.ki.funpic.de/ModernDS/graphic/map/berg2.png", "http://i.imgur.com/CqMI5.png", "http://i.imgur.com/CqMI5.png", "http://i.imgur.com/cE9RQ.png"];
 var blockImprovements = ["Farm", "Mine", "Oil Well", "Fishery", "Quarry", "Coal Mine", "Pasture"];
 
 //all dummy values to be filled in with ajax
-var food=100000;
+var food=200000;
     var foodProduction = 50;
 	//production per workier; normally we would derive this from tech and such
 var fuel=100000;
@@ -51,11 +53,12 @@ var production = 1000;
 
 function changeHTML(id, changeTo){
 document.getElementById(id).innerHTML = changeTo;
+return document.getElementById(id);
 }
 
 function update(){
     var iam = new Date();
-    horaepasatae = (iam-lastUpdate)/21600000;
+    horaepasatae = (iam-lastUpdate)/21600//000;
 
 	
 	for (number in blocks) {
@@ -132,15 +135,15 @@ function writeStats(){
 
 function loaded() {
 update();
-changeHTML("NW", blockTypes[blocks[0].type] + "<br />" + blockImprovements[blocks[0].improvement]);
-changeHTML("N", blockTypes[blocks[1].type] + "<br />" + blockImprovements[blocks[1].improvement]);
-changeHTML("NE", blockTypes[blocks[2].type] + "<br />" + blockImprovements[blocks[2].improvement]);
-changeHTML("W", blockTypes[blocks[3].type] + "<br />" + blockImprovements[blocks[3].improvement]);
-changeHTML("cityblock", "<h3>" + cityName + "</h3>" + blockTypes[blocks[4].type] + "<br />" + blockImprovements[blocks[4].improvement]);
-changeHTML("E", blockTypes[blocks[5].type] + "<br />" + blockImprovements[blocks[5].improvement]);
-changeHTML("SW", blockTypes[blocks[6].type] + "<br />" + blockImprovements[blocks[6].improvement]);
-changeHTML("S", blockTypes[blocks[7].type] + "<br />" + blockImprovements[blocks[7].improvement]);
-changeHTML("SE", blockTypes[blocks[8].type] + "<br />" + blockImprovements[blocks[8].improvement]);
+changeHTML("NW", "<h4>" + blockTypes[blocks[0].type] + "</h4>" + blockImprovements[blocks[0].improvement]).style.backgroundImage="url(" + blockGraphics[blocks[0].type] + ")";
+changeHTML("N", "<h4>" + blockTypes[blocks[1].type] + "</h4>" + blockImprovements[blocks[1].improvement]).style.backgroundImage="url(" + blockGraphics[blocks[1].type] + ")";
+changeHTML("NE", "<h4>" + blockTypes[blocks[2].type] + "</h4>" + blockImprovements[blocks[2].improvement]).style.backgroundImage="url(" + blockGraphics[blocks[2].type] + ")";
+changeHTML("W", "<h4>" + blockTypes[blocks[3].type] + "</h4>" + blockImprovements[blocks[3].improvement]).style.backgroundImage="url(" + blockGraphics[blocks[3].type] + ")";
+changeHTML("cityblock", "<h3>" + cityName + "</h4>" + blockTypes[blocks[4].type] + "<br />" + blockImprovements[blocks[4].improvement]).style.backgroundImage="url(" + blockGraphics[blocks[4].type] + ")";
+changeHTML("E", "<h4>" + blockTypes[blocks[5].type] + "</h4>" + blockImprovements[blocks[5].improvement]).style.backgroundImage="url(" + blockGraphics[blocks[5].type] + ")";
+changeHTML("SW", "<h4>" + blockTypes[blocks[6].type] + "</h4>" + blockImprovements[blocks[6].improvement]).style.backgroundImage="url(" + blockGraphics[blocks[6].type] + ")";
+changeHTML("S", "<h4>" + blockTypes[blocks[7].type] + "</h4>" + blockImprovements[blocks[7].improvement]).style.backgroundImage="url(" + blockGraphics[blocks[7].type] + ")";
+changeHTML("SE", "<h4>" + blockTypes[blocks[8].type] + "</h4>" + blockImprovements[blocks[8].improvement]).style.backgroundImage="url(" + blockGraphics[blocks[8].type] + ")";
 }
 
 window.setInterval(update, 1000);
