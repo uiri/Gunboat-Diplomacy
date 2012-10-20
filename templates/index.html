@@ -34,14 +34,14 @@ return this.type;
 }
 
 // it goes NW, N, NE, W, city's own, E, SW, W, SE
-var blocks = [new Block(0,0,750), new Block(0,0,750), new Block(0,4,750), new Block(1,1,750), new Block(1,1,750), new Block(1,5,750), new Block(2,2,750), new Block(2,2,750), new Block(2,6,750)]; //dummy values, normally we'd get from ajax
+var blocks = [new Block(0,0,5), new Block(0,4,5), new Block(1,1,5), new Block(1,5,5), new Block(2,2,5), new Block(2,6,5), new Block(3,3,5), new Block(4,2,5), new Block(4,5,5)]; //dummy values, normally we'd get from ajax
 var blockTypes = ["Plains", "Hills", "Desert", "Water", "Mountain"];
-var blockGraphics = ["http://kingbushido95.ki.funpic.de/ModernDS/graphic/map/gras1.png", "http://kingbushido95.ki.funpic.de/ModernDS/graphic/map/berg2.png", "http://i.imgur.com/CqMI5.png", "http://i.imgur.com/CqMI5.png", "http://i.imgur.com/cE9RQ.png"];
 var blockImprovements = ["Farm", "Mine", "Oil Well", "Fishery", "Quarry", "Coal Mine", "Pasture"];
+var blockGraphics = ["http://kingbushido95.ki.funpic.de/ModernDS/graphic/map/gras1.png", "http://kingbushido95.ki.funpic.de/ModernDS/graphic/map/berg2.png", "http://i.imgur.com/CqMI5.png", "http://i.imgur.com/cWv4h.png", "http://i.imgur.com/cE9RQ.png"];
 
 //all dummy values to be filled in with ajax
 var food=200000;
-    var foodProduction = 50;
+    var foodProduction = 30;
 	//production per workier; normally we would derive this from tech and such
 var fuel=100000;
 	var fuelProduction = 25;
@@ -58,37 +58,37 @@ return document.getElementById(id);
 
 function update(){
     var iam = new Date();
-    horaepasatae = (iam-lastUpdate)/21600//000;
+    horaepasatae = (iam-lastUpdate)/21600000;
 
 	
 	for (number in blocks) {
 		switch (blocks[number].type){
 			case 0: {
-			food += foodProduction*horaepasatae;
+			food += horaepasatae*((foodProduction)*1.163118^(blocks[number].level - 1));
 			break;
 			}
 			case 1: {
-			mineral += mineralProduction*horaepasatae;
+			mineral += horaepasatae*((mineralProduction)*1.163118^(blocks[number].level - 1));
 			break;
 			}
 			case 2: {
-			fuel += fuelProduction*horaepasatae
+			fuel += horaepasatae*((fuelProduction)*1.163118^(blocks[number].level - 1));
 			break;
 			}
 			case 3: {
-			food += 0.75*foodProduction*horaepasatae;
+			food += 0.75*horaepasatae*((foodProduction)*1.163118^(blocks[number].level - 1));
 			break;
 			}
 			case 4: {
-			mineral += 0.75*mineralProduction*horaepasatae;
+			mineral += horaepasatae*((mineralProduction)*1.163118^(blocks[number].level - 1));
 			break;
 			}
 			case 5: {
-			fuel += 0.75*fuelProduction*horaepasatae
+			fuel += 0.75*horaepasatae*((fuelProduction)*1.163118^(blocks[number].level - 1));
 			break;
 			}
 			case 6: {
-			food += 0.75*foodProduction*horaepasatae
+			food += horaepasatae*((foodProduction)*1.163118^(blocks[number].level - 1));
 			break;
 			}
 		}
