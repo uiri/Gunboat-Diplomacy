@@ -130,7 +130,7 @@ function writeStats(){
     document.title = cityName + " | Gunship Diplomacy";
     
 	changeHTML("name", cityName);
-    changeHTML("cityblock", "<h3>" + cityName + "</h3>" + blockTypes[blocks[4]]);
+    changeHTML("cityblock", "<h3>" + cityName + "</h3>" + blockTypes[blocks[4].type] + "<br />" + blockImprovements[blocks[4].improvement]);
     changeHTML("population", parseInt(population) + " working population");
     
     changeHTML("food", parseInt(food));
@@ -154,7 +154,7 @@ changeHTML("NW", "<h4>" + blockTypes[blocks[0].type] + "</h4>" + blockImprovemen
 changeHTML("N", "<h4>" + blockTypes[blocks[1].type] + "</h4>" + blockImprovements[blocks[1].improvement]).style.backgroundImage="url(" + blockGraphics[blocks[1].type] + ")";
 changeHTML("NE", "<h4>" + blockTypes[blocks[2].type] + "</h4>" + blockImprovements[blocks[2].improvement]).style.backgroundImage="url(" + blockGraphics[blocks[2].type] + ")";
 changeHTML("W", "<h4>" + blockTypes[blocks[3].type] + "</h4>" + blockImprovements[blocks[3].improvement]).style.backgroundImage="url(" + blockGraphics[blocks[3].type] + ")";
-changeHTML("cityblock", "<h3>" + cityName + "</h3>" + blockTypes[blocks[4].type] + "<br />" + blockImprovements[blocks[4].improvement]).style.backgroundImage = "url(" + blockGraphics[blocks[4].type] + ")";
+changeHTML("cityblock", "<h3>" + cityName + "</h3>" + blockTypes[blocks[4].type] + "<br />" + blockImprovements[blocks[4].improvement]).style.backgroundImage = "url(" + blockGraphics[blocks[4].type] + ")"; // please ensure the similar line in writeStats() matches
 changeHTML("E", "<h4>" + blockTypes[blocks[5].type] + "</h4>" + blockImprovements[blocks[5].improvement]).style.backgroundImage="url(" + blockGraphics[blocks[5].type] + ")";
 changeHTML("SW", "<h4>" + blockTypes[blocks[6].type] + "</h4>" + blockImprovements[blocks[6].improvement]).style.backgroundImage="url(" + blockGraphics[blocks[6].type] + ")";
 changeHTML("S", "<h4>" + blockTypes[blocks[7].type] + "</h4>" + blockImprovements[blocks[7].improvement]).style.backgroundImage="url(" + blockGraphics[blocks[7].type] + ")";
