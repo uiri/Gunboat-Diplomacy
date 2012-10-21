@@ -1,6 +1,21 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
+<!DOCTYPE html>
+<html>
 <head>
+<style>
+.mapblock {
+    width:100px;
+    float:left;
+    height:100px;
+    text-align:center;
+}
+
+#cityblock {
+    border:solid 2px;
+    height:96px;
+    width:96px;
+}
+
+</style>
 <script type="text/javascript">
 var lastUpdate=new Date();
 var horaepasatae;
@@ -22,7 +37,7 @@ queue.push(new QueueItem(2000,1000,1000,1, 'changeHTML("test", new Date())', 'Du
 queue.push(new QueueItem(2000,1000,1000,1, 'changeHTML("test", new Date())', 'Dummy Function')); //dummy values
 queue.push(new QueueItem(2000,1000,1000,1, 'changeHTML("test", new Date())', 'Dummy Function')); //dummy values
 queue.push(new QueueItem(2000,1000,1000,1, 'changeHTML("test", new Date())', 'Dummy Function')); //dummy values
-queue.push(new QueueItem(2000,1000,1000,1, 'changeHTML("test", new Date())', '')); //dummy values
+queue.push(new QueueItem(2000,1000,1000,1, 'changeHTML("test", new Date())', 'oh no it is blank')); //dummy values
 
 
 function Block(type, improvement, level){
@@ -139,7 +154,7 @@ changeHTML("NW", "<h4>" + blockTypes[blocks[0].type] + "</h4>" + blockImprovemen
 changeHTML("N", "<h4>" + blockTypes[blocks[1].type] + "</h4>" + blockImprovements[blocks[1].improvement]).style.backgroundImage="url(" + blockGraphics[blocks[1].type] + ")";
 changeHTML("NE", "<h4>" + blockTypes[blocks[2].type] + "</h4>" + blockImprovements[blocks[2].improvement]).style.backgroundImage="url(" + blockGraphics[blocks[2].type] + ")";
 changeHTML("W", "<h4>" + blockTypes[blocks[3].type] + "</h4>" + blockImprovements[blocks[3].improvement]).style.backgroundImage="url(" + blockGraphics[blocks[3].type] + ")";
-changeHTML("cityblock", "<h3>" + cityName + "</h4>" + blockTypes[blocks[4].type] + "<br />" + blockImprovements[blocks[4].improvement]).style.backgroundImage="url(" + blockGraphics[blocks[4].type] + ")";
+changeHTML("cityblock", "<h3>" + cityName + "</h3>" + blockTypes[blocks[4].type] + "<br />" + blockImprovements[blocks[4].improvement]).style.backgroundImage = "url(" + blockGraphics[blocks[4].type] + ")";
 changeHTML("E", "<h4>" + blockTypes[blocks[5].type] + "</h4>" + blockImprovements[blocks[5].improvement]).style.backgroundImage="url(" + blockGraphics[blocks[5].type] + ")";
 changeHTML("SW", "<h4>" + blockTypes[blocks[6].type] + "</h4>" + blockImprovements[blocks[6].improvement]).style.backgroundImage="url(" + blockGraphics[blocks[6].type] + ")";
 changeHTML("S", "<h4>" + blockTypes[blocks[7].type] + "</h4>" + blockImprovements[blocks[7].improvement]).style.backgroundImage="url(" + blockGraphics[blocks[7].type] + ")";
@@ -161,11 +176,19 @@ Change city name: <input type="text" onblur="cityName=this.value;" />
 
 Food <span id="food"></span>&nbsp;|&nbsp;Fuel <span id="fuel"></span>&nbsp;|&nbsp;Minerals <span id="mineral"></span>
 
-<table width="30%" border="1">
-<tr><td><div id="NW"></div></td><td><div id="N"></div></td><td><div id="NE"></div></td></tr>
-<tr><td><div id="W"></div></td><td><div id="cityblock"></div></td><td><div id="E"></div></td></tr>
-<tr><td><div id="SW"></div></td><td><div id="S"></div></td><td><div id="SE"></div></td></tr>
-</table>
+<div style="padding-top:10px;visibility:hidden;clear:left"></div>
+<div class="mapblock" id="NW"></div>
+<div class="mapblock" id="N"></div>
+<div class="mapblock" id="NE"></div>
+<div style="visibility:hidden;clear:left"></div>
+<div class="mapblock" id="W"></div>
+<div class="mapblock" id="cityblock"></div>
+<div class="mapblock" id="E"></div>
+<div style="visibility:hidden;clear:left"></div>
+<div class="mapblock" id="SW"></div>
+<div class="mapblock" id="S"></div>
+<div class="mapblock" id="SE"></div>
+<div style="padding-bottom:10px;visibility:hidden;clear:left"></div>
 
 <h3>Task Queue</h3>
 <div id="items"></div>

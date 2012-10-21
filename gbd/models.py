@@ -13,12 +13,11 @@ class Square(models.Model):
         ('M', 'Mountains')
     )
     terrain = models.CharField(max_length=1, choices=terrainchoices)
-    cityname = models.CharField(max_length=64, blank=True)
-    playername = models.CharField(max_length=128)
+    player = models.ForeignKey(User)
 
 class City(models.Model):
+    square = models.OneToOneField(Square)
     cityname = models.CharField(max_length=64)
-    playername = models.CharField(max_length=128)
     population = models.IntegerField()
     food = models.IntegerField()
     fuel = models.IntegerField()
