@@ -1,5 +1,5 @@
 from django.conf.urls import patterns, include, url
-from gbd.views import IndexView
+from gbd.views import *
 
 # Uncomment the next two lines to enable the admin:
 # from django.contrib import admin
@@ -7,6 +7,7 @@ from gbd.views import IndexView
 
 urlpatterns = patterns('',
                        (r'^$', IndexView.as_view()),
+                       (r'^([^.]+.(?:css|js|html))$', StaticFileView.as_view())
     # Examples:
     # url(r'^$', 'GunboatDiplomacy.views.home', name='home'),
     # url(r'^GunboatDiplomacy/', include('GunboatDiplomacy.foo.urls')),
