@@ -15,6 +15,7 @@
     width:96px;
 }
 
+
 </style>
 <script type="text/javascript">
 var lastUpdate=new Date();
@@ -33,11 +34,6 @@ function QueueItem(foodcost,fuelcost,mineralcost,productioncost,task,description
     this.name = description; //whatever this thing is called
 }
 
-queue.push(new QueueItem(2000,1000,1000,1, 'changeHTML("test", new Date())', 'Dummy Function')); //dummy values
-queue.push(new QueueItem(2000,1000,1000,1, 'changeHTML("test", new Date())', 'Dummy Function')); //dummy values
-queue.push(new QueueItem(2000,1000,1000,1, 'changeHTML("test", new Date())', 'Dummy Function')); //dummy values
-queue.push(new QueueItem(2000,1000,1000,1, 'changeHTML("test", new Date())', 'Dummy Function')); //dummy values
-queue.push(new QueueItem(2000,1000,1000,1, 'changeHTML("test", new Date())', 'oh no it is blank')); //dummy values
 
 
 function Block(type, improvement, level){
@@ -140,12 +136,59 @@ function writeStats(){
     var itemsdiv = document.getElementById("items");
     itemsdiv.innerHTML = "";
     for (item in queue) {
-	queuediv = document.createElement("div");
-	queuediv.innerHTML = queue[item].name + "&nbsp;&nbsp;&nbsp;" + Math.round((1-(queue[item].prodleft/queue[item].cost[3]))*100) + "%";
-	if (item == 0)
-	    queuediv.innerHTML += '<button onclick="queue.shift();update();">Cancel</button>';
-	itemsdiv.appendChild(queuediv);
+		queuediv = document.createElement("div");
+		queuediv.innerHTML = queue[item].name + "&nbsp;&nbsp;&nbsp;" + Math.round((1-(queue[item].prodleft/queue[item].cost[3]))*100) + "%";
+		if (item == 0)
+			queuediv.innerHTML += '<button onclick="queue.shift();update();">Cancel</button>';
+		itemsdiv.appendChild(queuediv);
     }
+	
+	//next part is only temporary, we'll add it to the divsoup later
+	var blockImprovementLevelTextInnerHTMLTarget = "<b>Improvement levels:</b><br />"; //because fuck you, that's why
+	for (numbr in blocks) {
+		blockImprovementLevelTextInnerHTMLTarget += "<b>" + blockImprovements[blocks[numbr].improvement];
+		blockImprovementLevelTextInnerHTMLTarget += "</b>&nbsp;level&nbsp;";
+		blockImprovementLevelTextInnerHTMLTarget += blocks[numbr].level;
+		blockImprovementLevelTextInnerHTMLTarget += ",&nbsp;";
+	}
+	changeHTML("blocklevels",blockImprovementLevelTextInnerHTMLTarget);
+	//unt dis is fur die testen
+	var blockYieldLevelTextInnerHTMLTarget = "<b>Improvement yields:</b><br />"; //because fuck you, that's why
+	for (numbr in blocks) {
+		blockYieldLevelTextInnerHTMLTarget += "<b>" + blockImprovements[blocks[numbr].improvement] + "</b>&nbsp;";
+		switch (blocks[numbr].improvement){
+			case 0: {
+			blockYieldLevelTextInnerHTMLTarget += ((foodProduction)*1.163118^(blocks[numbr].level - 1)) + " food";
+			break;
+			}
+			case 1: {
+			blockYieldLevelTextInnerHTMLTarget += ((mineralProduction)*1.163118^(blocks[numbr].level - 1)) + " mineral";
+			break;
+			}
+			case 2: {
+			blockYieldLevelTextInnerHTMLTarget +=  ((fuelProduction)*1.163118^(blocks[numbr].level - 1)) + " fuel";
+			break;
+			}
+			case 3: {
+			blockYieldLevelTextInnerHTMLTarget += 0.75*((foodProduction)*1.163118^(blocks[numbr].level - 1)) + " food";
+			break;
+			}
+			case 4: {
+			blockYieldLevelTextInnerHTMLTarget += ((mineralProduction)*1.163118^(blocks[numbr].level - 1)) + " mineral";
+			break;
+			}
+			case 5: {
+			blockYieldLevelTextInnerHTMLTarget += 0.75*((fuelProduction)*1.163118^(blocks[numbr].level - 1)) + " fuel";
+			break;
+			}
+			case 6: {
+			blockYieldLevelTextInnerHTMLTarget += ((foodProduction)*1.163118^(blocks[numbr].level - 1)) + " food";
+			break;
+			}
+		}
+		blockYieldLevelTextInnerHTMLTarget += " per hour,&nbsp;";
+	}
+	changeHTML("blockyields",blockYieldLevelTextInnerHTMLTarget);
 }
 
 function loaded() {
@@ -161,6 +204,26 @@ changeHTML("S", "<h4>" + blockTypes[blocks[7].type] + "</h4>" + blockImprovement
 changeHTML("SE", "<h4>" + blockTypes[blocks[8].type] + "</h4>" + blockImprovements[blocks[8].improvement]).style.backgroundImage="url(" + blockGraphics[blocks[8].type] + ")";
 }
 
+function upgradeBlock(thingytype) {
+
+	if (thingytype == "simple") {
+	var targetNum = document.getElementById("blockchoices").selectedIndex;
+	var targetblock = blocks[targetNum];
+	var targettask = "blocks[" + targetNum + "].level+=1;";
+	
+	var foodcost = 50*1.25^(targetblock.level - 1);
+	var fuelcost = 60*1.275^(targetblock.level - 1);
+	var mineralcost = 40*1.245^(targetblock.level - 1);
+	var productioncost = Math.log(targetblock.level);
+	
+	queue.push(new QueueItem(foodcost,fuelcost,mineralcost,productioncost,targettask,"Upgrade&nbsp;" + blockImprovements[targetblock.improvement]));
+
+	} else {
+	//changing block types
+	}
+	
+}
+	
 window.setInterval(update, 1000);
 </script>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
@@ -189,6 +252,22 @@ Food <span id="food"></span>&nbsp;|&nbsp;Fuel <span id="fuel"></span>&nbsp;|&nbs
 <div class="mapblock" id="S"></div>
 <div class="mapblock" id="SE"></div>
 <div style="padding-bottom:10px;visibility:hidden;clear:left"></div>
+
+
+<button onclick="upgradeBlock('simple');">Upgrade</button><select id="blockchoices">
+	<option value="0">Northwest</option>
+	<option value="1">North</option>
+	<option value="2">Northeast</option>
+	<option value="3">West</option>
+	<option value="4">Center</option>
+	<option value="5">East</option>
+	<option value="6">Southwest</option>
+	<option value="7">South</option>
+	<option value="8">Southeast</option>
+</select> block
+
+<p id="blocklevels"></p>
+<p id="blockyields"></p>
 
 <h3>Task Queue</h3>
 <div id="items"></div>
