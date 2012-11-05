@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 <style>
 .mapblock {
     width:100px;
@@ -18,61 +19,189 @@
 
 </style>
 <script type="text/javascript">
-var lastUpdate=new Date();
+//lrn2latin uirifag - significat anglice "hours passed"
 var horaepasatae;
 
-//all of these city properties should go into the django model
+//all of these city properties should go into the django model (unless marked otherwise)
+var lastUpdate=new Date();
 var cityName = "New City";
-var player = "King Medi";
+var owner = "";
+var xcoord;
+var ycoord;
 var population=100000;
 var queue = new Array();
+var food=110000;
+    var foodProduction = 300; //production per worker; normally we would derive this from tech and such
+var fuel=100000;
+	var fuelProduction = 250; //production per worker; normally we would derive this from tech and such
+var mineral=100000;
+	var mineralProduction = 250; //production per worker; normally we would derive this from tech and such
+var buildings = [0,0,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0]; //each of these values should be a column in the DB; also goes into django model
+	var buildingTargets = [0,0,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0]; //for queue purposes - still saved in city DB
+	var buildingnames = ["School", "Barracks", "Fortifications", "Municipal Works", "Hospital", "Transportation", "Broadcast Tower", "Workshop", "Foundry", "Airport", "Shipyards","Laboratory","Ethanol Plant","Hydroponics Plant","Recycling Plant","Nuclear Plant","Supercomputer","Launch Pad"];
+	var buildingcosts = [new Array(900,800,700,150),new Array(2000,1700,900,300),new Array(500,1000,200,600),new Array(450,400,300,200),new Array(1600,2000,500,150),new Array(2000,2000,2000,600),new Array(2200,1800,2400,200),new Array(2700,2400,2600,1000),new Array(3000,2400,2600,1000),new Array(5000,10000,12500,3400),new Array(7500,15000,10000,5000)]; //hardcoded
+	//still have to add costs to hightechs
+	var production = 1000; //normally we'd derive this from population, economy, buildings and tech
+	var productionTech = 1; //normally would be sum of all pertinent techs; techs exist in player model/DB
+var primarySector = 20000;
+var secondarySector = 1000; //will be in the django model, but will grow based on update
+var tertiarySector = 100; //will be in the django model, but will grow based on update
 
-function QueueItem(foodcost,fuelcost,mineralcost,productioncost,task,description) {
-    this.cost = [foodcost,fuelcost,mineralcost,productioncost];
-    this.prodleft = this.cost[3];
-    this.task = task; //raw code executed after completion
-    this.name = description; //whatever this thing is called
+
+function QueueItem(foodcost,fuelcost,mineralcost,productioncost,task,description,onCancel) {
+this.cancel = function() { eval(onCancel);}
+this.cost = [foodcost,fuelcost,mineralcost,productioncost];
+this.prodleft = this.cost[3];
+this.task = task; //raw code executed after completion
+this.name = description; //whatever this thing is called
 }
 
-
-
-function Block(type, improvement, level){
+function Block(type, improvement, level, target){
 this.type=type;
 this.improvement=improvement;
 this.level=level;
+this.target=level; //for queue purposes
 
 return this.type;
 }
 
-// it goes NW, N, NE, W, city's own, E, SW, W, SE
-var blocks = [new Block(0,0,5), new Block(0,4,5), new Block(1,1,5), new Block(1,5,5), new Block(2,2,5), new Block(2,6,5), new Block(3,3,5), new Block(4,2,5), new Block(4,5,5)]; //dummy values, normally we'd get from ajax
-var blockTypes = ["Plains", "Hills", "Desert", "Water", "Mountain"];
+// it goes NW, N, NE, W, city's own, E, SW, W, SE; derived from block DB
+var blocks = [new Block(0,0,5), new Block(0,4,5), new Block(1,1,5), new Block(1,5,5), new Block(2,2,5), new Block(2,6,5), new Block(3,3,5), new Block(4,1,5), new Block(4,5,5)]; //dummy values, normally we'd get from ajax
+var blockTypes = ["Plains", "Hills", "Desert", "Water", "Mountain"]; //hardcoded
 var blockImprovements = ["Farm", "Mine", "Oil Well", "Fishery", "Quarry", "Coal Mine", "Pasture"];
 var blockGraphics = ["http://kingbushido95.ki.funpic.de/ModernDS/graphic/map/gras1.png", "http://kingbushido95.ki.funpic.de/ModernDS/graphic/map/berg2.png", "http://i.imgur.com/CqMI5.png", "http://i.imgur.com/cWv4h.png", "http://i.imgur.com/cE9RQ.png"];
 
-//all dummy values to be filled in with ajax
-var food=200000;
-    var foodProduction = 30;
-	//production per workier; normally we would derive this from tech and such
-var fuel=100000;
-	var fuelProduction = 25;
-var mineral=100000;
-	var mineralProduction = 25;
-	
-var production = 1000;
-	//normally we'd derive this from population, economy, buildings and tech
-
 function changeHTML(id, changeTo){
-document.getElementById(id).innerHTML = changeTo;
+if (changeTo)
+	document.getElementById(id).innerHTML = changeTo;
 return document.getElementById(id);
 }
 
-function update(){
-    var iam = new Date();
-    horaepasatae = (iam-lastUpdate)/21600000;
+function upgradeBlock(thingytype) {
+var targetNum = document.getElementById("blockchoices").selectedIndex;
+var targetBlock = blocks[targetNum];
+	targetBlock.target += 1;
+var targetTask = "";
+var targetName = "";
+var cancellation = "blocks[" + targetNum + "].target -= 1;"
 
+var foodcost = 50*1.25^(targetBlock.target);
+var fuelcost = 60*1.275^(targetBlock.target);
+var mineralcost = 40*1.245^(targetBlock.target);
+var productioncost = Math.log(targetBlock.target);
 	
-	for (number in blocks) {
+if (thingytype=='simple') {
+	targetTask = "blocks[" + targetNum + "].level+=1;";
+	targetName = "Upgrade&nbsp;" + blockImprovements[targetBlock.improvement];	
+} else {
+	var targetType = document.getElementById("typechoices").selectedIndex;
+
+	if ((targetBlock.type == 0) && (targetType != 0 && targetType !=4)) {
+		window.alert ("You can only build a Farm or a Quarry on this block!");
+		return false;
+		}
+	if ((targetBlock.type == 1) && (targetType != 1 && targetType !=5)) {
+		alert ("You can only build a Mine or a Coal Mine on this block!");
+		return false;
+		}
+	if ((targetBlock.type == 2) && (targetType != 2 && targetType !=6)) {
+		alert ("You can only build an Oil Well or a Pasture on this block!");
+		return false;
+		}
+	if ((targetBlock.type == 3) && targetType !=3) {
+		alert ("You can only build a Fishery this block!");
+		return false;
+		}
+	if ((targetBlock.type == 4) && (targetType != 1 && targetType != 5)) {
+		alert ("You can only build a Mine or a Coal Mine on this block!");
+		return false;
+		}
+	if (targetBlock.improvement == targetType) {
+		window.alert ("That block is already a " + blockImprovements[targetBlock.improvement] + ".");
+		return false;
+		}
+
+	targetTask = "blocks[" + targetNum + "].improvement=" + targetType + "; blocks[" + targetNum + "].level=5;";
+	targetName = "Change " + blockImprovements[targetBlock.improvement] + " to " + blockImprovements[targetType];
+}
+	
+queue.push(new QueueItem(foodcost,fuelcost,mineralcost,productioncost,targetTask,targetName,cancellation));
+}
+	
+function upgradeBuilding(targetBuilding,type) {
+var targetTask = "";
+var targetName = "";
+var currentLevel = buildingTargets[targetBuilding];
+	buildingTargets[targetBuilding] += (type-1);
+var cancellation = "buildingTargets[" + targetBuilding + "]-=" + (type-1) + ";"
+
+if (!currentLevel)
+	currentLevel += 1;
+	
+var foodcost = buildingcosts[targetBuilding][0]*1.25^(currentLevel);
+var fuelcost = buildingcosts[targetBuilding][1]*1.275^(currentLevel);
+var mineralcost = buildingcosts[targetBuilding][2]*1.245^(currentLevel);
+var productioncost = Math.log(currentLevel*buildingcosts[targetBuilding][3]);
+	
+targetTask = "buildings[" + targetBuilding + "] +=" + (type-1) + ";";
+	
+if (type)
+	targetName = "Up";
+else
+	targetName = "Down";
+	
+	
+targetName += "grade&nbsp;" + buildingnames[targetBuilding];
+queue.push(new QueueItem(foodcost,fuelcost,mineralcost,productioncost,targetTask,targetName,cancellation));
+}
+
+//lrn2latin uirifag - significat anglice "can build"
+function potesseAedifacere(numerus) {
+if (buildings[numerus] > 0)
+	return true;
+//we should probably tweak some of these requirements later
+else if (numerus == 4 && (buildings[0] < 1 || buildings[3] < 1))
+	return false;
+else if (numerus == 6 && ((buildings[0] < 1) || (buildings[5] < 5)))
+	return false;
+else if (numerus == 7 && (buildings[1] < 5 || buildings[5] < 5))
+	return false;
+else if (numerus == 8 && (buildings[5] < 5 || buildings[7] < 10))
+	return false;
+else if (numerus == 9 && (buildings[5] < 20 || buildings[8] < 10))
+	return false;
+else if (numerus == 10 && (buildings[5] < 20 || buildings[8] < 20))
+	return false;
+else if (numerus == 11 && (buildings[0] < 10 || buildings[7] < 5))
+	return false;
+else if (numerus > 11 && (!buildings[11]/*|| science < buildingcosts[numerus][4]*/))
+	return false; //all science buildings - will edit when we add the playerwide science system 
+else
+	return true;
+}//fin functionis "potesseAedifacere"; nolite illam futuere!
+
+
+function update(){
+var iam = new Date();
+horaepasatae = (iam-lastUpdate)/3600000;
+
+if (queue.length) {
+	if (queue[0].cost[0] < food && queue[0].cost[1] < fuel && queue[0].cost[2] < mineral) {
+		queue[0].prodleft -= production*horaepasatae;
+		changeHTML("queuestatus", "");
+		}
+	else
+		changeHTML("queuestatus", "Requires more resources!");
+		if (queue[0].prodleft < 0.01) {
+			eval(queue[0].task);
+			food -= queue[0].cost[0];
+			fuel -= queue[0].cost[1];
+			mineral -= queue[0].cost[2];
+			queue.shift();
+		}
+}
+	
+for (number in blocks) {
 		switch (blocks[number].type){
 			case 0: {
 			food += horaepasatae*((foodProduction)*1.163118^(blocks[number].level - 1));
@@ -87,157 +216,123 @@ function update(){
 			break;
 			}
 			case 3: {
-			food += 0.75*horaepasatae*((foodProduction)*1.163118^(blocks[number].level - 1));
-			break;
-			}
-			case 4: {
-			mineral += horaepasatae*((mineralProduction)*1.163118^(blocks[number].level - 1));
-			break;
-			}
-			case 5: {
-			fuel += 0.75*horaepasatae*((fuelProduction)*1.163118^(blocks[number].level - 1));
-			break;
-			}
-			case 6: {
 			food += horaepasatae*((foodProduction)*1.163118^(blocks[number].level - 1));
 			break;
 			}
-		}
-	}
-
-	
-    population += (Math.log((food+1)/population)*population)*horaepasatae;
-    if (queue.length) {
-	queue[0].prodleft -= production*horaepasatae;
-		if (queue[0].prodleft < 0.01) {
-			eval(queue[0].task);
-			food -= queue[0].cost[0];
-			fuel -= queue[0].cost[1];
-			mineral -= queue[0].cost[2];
-			queue.shift();
-		}
-}
-
-writeStats();
-lastUpdate = new Date();
-}
-
-function writeStats(){
-    document.title = cityName + " | Gunship Diplomacy";
-    
-	changeHTML("name", cityName);
-    changeHTML("cityblock", "<h3>" + cityName + "</h3>" + blockTypes[blocks[4].type] + "<br />" + blockImprovements[blocks[4].improvement]);
-    changeHTML("population", parseInt(population) + " working population");
-    
-    changeHTML("food", parseInt(food));
-    changeHTML("fuel", parseInt(fuel));
-    changeHTML("mineral", parseInt(mineral));
-
-    var itemsdiv = document.getElementById("items");
-    itemsdiv.innerHTML = "";
-    for (item in queue) {
-		queuediv = document.createElement("div");
-		queuediv.innerHTML = queue[item].name + "&nbsp;&nbsp;&nbsp;" + Math.round((1-(queue[item].prodleft/queue[item].cost[3]))*100) + "%";
-		if (item == 0)
-			queuediv.innerHTML += '<button onclick="queue.shift();update();">Cancel</button>';
-		itemsdiv.appendChild(queuediv);
-    }
-	
-	//next part is only temporary, we'll add it to the divsoup later
-	var blockImprovementLevelTextInnerHTMLTarget = "<b>Improvement levels:</b><br />"; //because fuck you, that's why
-	for (numbr in blocks) {
-		blockImprovementLevelTextInnerHTMLTarget += "<b>" + blockImprovements[blocks[numbr].improvement];
-		blockImprovementLevelTextInnerHTMLTarget += "</b>&nbsp;level&nbsp;";
-		blockImprovementLevelTextInnerHTMLTarget += blocks[numbr].level;
-		blockImprovementLevelTextInnerHTMLTarget += ",&nbsp;";
-	}
-	changeHTML("blocklevels",blockImprovementLevelTextInnerHTMLTarget);
-	//unt dis is fur die testen
-	var blockYieldLevelTextInnerHTMLTarget = "<b>Improvement yields:</b><br />"; //because fuck you, that's why
-	for (numbr in blocks) {
-		blockYieldLevelTextInnerHTMLTarget += "<b>" + blockImprovements[blocks[numbr].improvement] + "</b>&nbsp;";
-		switch (blocks[numbr].improvement){
-			case 0: {
-			blockYieldLevelTextInnerHTMLTarget += ((foodProduction)*1.163118^(blocks[numbr].level - 1)) + " food";
-			break;
-			}
-			case 1: {
-			blockYieldLevelTextInnerHTMLTarget += ((mineralProduction)*1.163118^(blocks[numbr].level - 1)) + " mineral";
-			break;
-			}
-			case 2: {
-			blockYieldLevelTextInnerHTMLTarget +=  ((fuelProduction)*1.163118^(blocks[numbr].level - 1)) + " fuel";
-			break;
-			}
-			case 3: {
-			blockYieldLevelTextInnerHTMLTarget += 0.75*((foodProduction)*1.163118^(blocks[numbr].level - 1)) + " food";
-			break;
-			}
 			case 4: {
-			blockYieldLevelTextInnerHTMLTarget += ((mineralProduction)*1.163118^(blocks[numbr].level - 1)) + " mineral";
+			mineral += 0.5*horaepasatae*((mineralProduction)*1.163118^(blocks[number].level - 1));
 			break;
 			}
 			case 5: {
-			blockYieldLevelTextInnerHTMLTarget += 0.75*((fuelProduction)*1.163118^(blocks[numbr].level - 1)) + " fuel";
+			fuel += 0.5*horaepasatae*((fuelProduction)*1.163118^(blocks[number].level - 1));
 			break;
 			}
 			case 6: {
-			blockYieldLevelTextInnerHTMLTarget += ((foodProduction)*1.163118^(blocks[numbr].level - 1)) + " food";
+			food += 0.5*horaepasatae*((foodProduction)*1.163118^(blocks[number].level - 1));
 			break;
 			}
 		}
-		blockYieldLevelTextInnerHTMLTarget += " per hour,&nbsp;";
 	}
-	changeHTML("blockyields",blockYieldLevelTextInnerHTMLTarget);
+
+if (food < 1)
+	food = 1;
+if (fuel < 1)
+	fuel = 1;
+if (mineral < 1)
+	mineral = 1;
+
+var health = 0.1+((population-100000)/(1000*1.172103^(buildings[4] - 1)));
+population += health*horaepasatae*(Math.log((food+1)/population)*population);
+
+primarySector = 0;
+	for (primary in blocks)
+	primarySector += 100*(1.17^(blocks[primary].level - 1));
+secondarySector += horaepasatae*(Math.log((fuel+1)/secondarySector)*secondarySector)*((buildings[3]+(buildings[5]*2)+(buildings[7]*2)+(buildings[8]*3)+(buildings[10]*2))/10);
+tertiarySector += horaepasatae*(Math.log((secondarySector+1)/tertiarySector)*tertiarySector)*(((buildings[0]*3)+buildings[3]+(buildings[6]*2)+(buildings[9]*2)+buildings[11])+buildings[16]/10); //we'll make it a bit more complex later
+productionTech = ((tertiarySector/secondarySector) + 0.1)*((1+buildings[11])/2);
+
+if ((primarySector+secondarySector+tertiarySector) > population)
+	tertiarySector = population-(primarySector+secondarySector);
+	
+production = secondarySector*productionTech;
+
+writeStats();
+lastUpdate = new Date();
+} //end up update function don't f with this {
+
+function writeStats(){
+document.title = cityName + " | Gunship Diplomacy";
+	
+changeHTML("name", cityName);
+changeHTML("cityblock", "<h3>" + cityName + "</h3>" + blockTypes[blocks[4].type] + "<br />" + blockImprovements[blocks[4].improvement]);
+changeHTML("population", parseInt(population) + " citizens");
+
+changeHTML("primary",parseInt(primarySector));
+changeHTML("secondary",parseInt(secondarySector));
+changeHTML("tertiary",parseInt(tertiarySector));
+
+changeHTML("food", parseInt(food));
+changeHTML("fuel", parseInt(fuel));
+changeHTML("mineral", parseInt(mineral));
+	
+changeHTML("NW", "<b>" + blockTypes[blocks[0].type] + "</b><br />" + blockImprovements[blocks[0].improvement] + "<br />Level&nbsp;" + blocks[0].level).style.backgroundImage="url(" + blockGraphics[blocks[0].type] + ")";
+changeHTML("N", "<b>" + blockTypes[blocks[1].type] + "</b><br />" + blockImprovements[blocks[1].improvement] + "<br />Level&nbsp;" + blocks[1].level).style.backgroundImage="url(" + blockGraphics[blocks[1].type] + ")";
+changeHTML("NE",  "<b>" + blockTypes[blocks[2].type] + "</b><br />" + blockImprovements[blocks[2].improvement] + "<br />Level&nbsp;" + blocks[2].level).style.backgroundImage="url(" + blockGraphics[blocks[2].type] + ")";
+changeHTML("W",  "<b>" + blockTypes[blocks[3].type] + "</b><br />" + blockImprovements[blocks[3].improvement] + "<br />Level&nbsp;" + blocks[3].level).style.backgroundImage="url(" + blockGraphics[blocks[3].type] + ")";
+changeHTML("cityblock", "<b>" + cityName + "</b><br />" + blockTypes[blocks[4].type] + "<br />" + blockImprovements[blocks[4].improvement] + "<br />Level&nbsp;" + blocks[4].level).style.backgroundImage = "url(" + blockGraphics[blocks[4].type] + ")"; // please ensure the similar line in writeStats() matches
+changeHTML("E",  "<b>" + blockTypes[blocks[5].type] + "</b><br />" + blockImprovements[blocks[5].improvement] + "<br />Level&nbsp;" + blocks[5].level).style.backgroundImage="url(" + blockGraphics[blocks[5].type] + ")";
+changeHTML("SW",  "<b>" + blockTypes[blocks[6].type] + "</b><br />" + blockImprovements[blocks[6].improvement] + "<br />Level&nbsp;" + blocks[6].level).style.backgroundImage="url(" + blockGraphics[blocks[6].type] + ")";
+changeHTML("S",  "<b>" + blockTypes[blocks[7].type] + "</b><br />" + blockImprovements[blocks[7].improvement] + "<br />Level&nbsp;" + blocks[7].level).style.backgroundImage="url(" + blockGraphics[blocks[7].type] + ")";
+changeHTML("SE", "<b>" + blockTypes[blocks[8].type] + "</b><br />" + blockImprovements[blocks[8].improvement] + "<br />Level&nbsp;" + blocks[8].level).style.backgroundImage="url(" + blockGraphics[blocks[8].type] + ")";
+
+var itemsdiv = document.getElementById("items");
+itemsdiv.innerHTML = "<h2>Industry Contracts</h2>";
+for (item in queue) {
+	queuediv = document.createElement("div");
+	queuediv.innerHTML = queue[item].name + "&nbsp;&nbsp;&nbsp;" + Math.round((1-(queue[item].prodleft/queue[item].cost[3]))*100) + "%&nbsp;&nbsp;&nbsp;";
+	queuediv.innerHTML += Math.floor((queue[item].prodleft/production)*60) + " minutes " + Math.floor(((queue[item].prodleft/production)*3600)-60*Math.floor((queue[item].prodleft/production)*60)) + " seconds left";
+	if (item == 0)
+		queuediv.innerHTML += '<button onclick="queue[0].cancel();queue.shift();update();">Cancel</button>';
+	itemsdiv.appendChild(queuediv);
 }
 
-function loaded() {
-update();
-changeHTML("NW", "<h4>" + blockTypes[blocks[0].type] + "</h4>" + blockImprovements[blocks[0].improvement]).style.backgroundImage="url(" + blockGraphics[blocks[0].type] + ")";
-changeHTML("N", "<h4>" + blockTypes[blocks[1].type] + "</h4>" + blockImprovements[blocks[1].improvement]).style.backgroundImage="url(" + blockGraphics[blocks[1].type] + ")";
-changeHTML("NE", "<h4>" + blockTypes[blocks[2].type] + "</h4>" + blockImprovements[blocks[2].improvement]).style.backgroundImage="url(" + blockGraphics[blocks[2].type] + ")";
-changeHTML("W", "<h4>" + blockTypes[blocks[3].type] + "</h4>" + blockImprovements[blocks[3].improvement]).style.backgroundImage="url(" + blockGraphics[blocks[3].type] + ")";
-changeHTML("cityblock", "<h3>" + cityName + "</h3>" + blockTypes[blocks[4].type] + "<br />" + blockImprovements[blocks[4].improvement]).style.backgroundImage = "url(" + blockGraphics[blocks[4].type] + ")"; // please ensure the similar line in writeStats() matches
-changeHTML("E", "<h4>" + blockTypes[blocks[5].type] + "</h4>" + blockImprovements[blocks[5].improvement]).style.backgroundImage="url(" + blockGraphics[blocks[5].type] + ")";
-changeHTML("SW", "<h4>" + blockTypes[blocks[6].type] + "</h4>" + blockImprovements[blocks[6].improvement]).style.backgroundImage="url(" + blockGraphics[blocks[6].type] + ")";
-changeHTML("S", "<h4>" + blockTypes[blocks[7].type] + "</h4>" + blockImprovements[blocks[7].improvement]).style.backgroundImage="url(" + blockGraphics[blocks[7].type] + ")";
-changeHTML("SE", "<h4>" + blockTypes[blocks[8].type] + "</h4>" + blockImprovements[blocks[8].improvement]).style.backgroundImage="url(" + blockGraphics[blocks[8].type] + ")";
-}
-
-function upgradeBlock(thingytype) {
-
-	if (thingytype == "simple") {
-	var targetNum = document.getElementById("blockchoices").selectedIndex;
-	var targetblock = blocks[targetNum];
-	var targettask = "blocks[" + targetNum + "].level+=1;";
-	
-	var foodcost = 50*1.25^(targetblock.level - 1);
-	var fuelcost = 60*1.275^(targetblock.level - 1);
-	var mineralcost = 40*1.245^(targetblock.level - 1);
-	var productioncost = Math.log(targetblock.level);
-	
-	queue.push(new QueueItem(foodcost,fuelcost,mineralcost,productioncost,targettask,"Upgrade&nbsp;" + blockImprovements[targetblock.improvement]));
-
-	} else {
-	//changing block types
+var buildingsdiv = document.getElementById("buildlevels");
+buildingsdiv.innerHTML = "";
+for (what in buildings) {
+	if (potesseAedifacere(what)){
+		var buildingdiv = document.createElement("div");
+		buildingdiv.innerHTML = "<b>" + buildingnames[what] + "</b>:&nbsp;Level " + buildings[what];
+		buildingdiv.innerHTML += '&nbsp;<button onclick="upgradeBuilding(' + what + ', 2);update();">Upgrade</button>';
+		if (buildings[what] != 0)
+			buildingdiv.innerHTML += '<button onclick="upgradeBuilding(' + what + ', 0);">Downgrade</button>';
+		buildingsdiv.appendChild(buildingdiv);
 	}
-	
 }
-	
+
+}//end of write function don't f with this }
+
 window.setInterval(update, 1000);
 </script>
-<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
 <title>My City</title>
 </head>
 
-<body onload="loaded();">
+<body onload="document.body.style.visibility='hidden';update();document.body.style.visibility='';">
+<noscript>Sorry, your browser does not support this game. Turn Javascript on to play.</noscript>
 
 <h1 id="name"></h1>
 Change city name: <input type="text" onblur="cityName=this.value;" />
-<div id="test"></div>
+
+<div style="float:right;padding-right:25%;"><b id="queuestatus" style="color:red;"></b>
+<span id="items"></span>
+</div>
+
 <p id="population"></p>
 
-Food <span id="food"></span>&nbsp;|&nbsp;Fuel <span id="fuel"></span>&nbsp;|&nbsp;Minerals <span id="mineral"></span>
+<p>Food <span id="food"></span>&nbsp;|&nbsp;Fuel <span id="fuel"></span>&nbsp;|&nbsp;Minerals <span id="mineral"></span></p>
+<p><b>Resource</b> production employs <b><span id="primary"></span> workers</b><br />
+<b>Industrial</b> production employs <b><span id="secondary"></span> workers</b><br />
+<b>Business</b> and services employs <b><span id="tertiary"></span> workers</b></p>
 
 <div style="padding-top:10px;visibility:hidden;clear:left"></div>
 <div class="mapblock" id="NW"></div>
@@ -253,8 +348,7 @@ Food <span id="food"></span>&nbsp;|&nbsp;Fuel <span id="fuel"></span>&nbsp;|&nbs
 <div class="mapblock" id="SE"></div>
 <div style="padding-bottom:10px;visibility:hidden;clear:left"></div>
 
-
-<button onclick="upgradeBlock('simple');">Upgrade</button><select id="blockchoices">
+<select id="blockchoices">
 	<option value="0">Northwest</option>
 	<option value="1">North</option>
 	<option value="2">Northeast</option>
@@ -264,12 +358,19 @@ Food <span id="food"></span>&nbsp;|&nbsp;Fuel <span id="fuel"></span>&nbsp;|&nbs
 	<option value="6">Southwest</option>
 	<option value="7">South</option>
 	<option value="8">Southeast</option>
-</select> block
+</select> block:
+<br />
+<button onclick="upgradeBlock('simple');update();">Upgrade</button>
+<br /><button onclick="upgradeBlock('change');update()">Change to</button><select id="typechoices">
+	<option value="0">Farm</option>
+	<option value="1">Mine</option>
+	<option value="2">Oil Well</option>
+	<option value="3">Fishery</option>
+	<option value="4">Quarry</option>
+	<option value="5">Coal Mine</option>
+	<option value="6">Pasture</option>
+</select>
 
-<p id="blocklevels"></p>
-<p id="blockyields"></p>
-
-<h3>Task Queue</h3>
-<div id="items"></div>
+<a name="buildings"><h2>Infrastructure</h2><div id="buildlevels"></div></a>
 </body>
 </html>
