@@ -26,26 +26,26 @@ var horaepasatae;
 var lastUpdate=new Date();
 var cityName = "New City";
 var owner = "";
-var xcoord;
-var ycoord;
+var xcoord = 0;
+var ycoord = 0;
 var population=100000;
 var queue = new Array();
 var food=110000;
-    var foodProduction = 300; //production per worker; normally we would derive this from tech and such
+    var foodProduction = 600; //production per worker; normally we would derive this from tech and such
 var fuel=100000;
-	var fuelProduction = 250; //production per worker; normally we would derive this from tech and such
+	var fuelProduction = 500; //production per worker; normally we would derive this from tech and such
 var mineral=100000;
-	var mineralProduction = 250; //production per worker; normally we would derive this from tech and such
+	var mineralProduction = 500; //production per worker; normally we would derive this from tech and such
 var buildings = [0,0,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0]; //each of these values should be a column in the DB; also goes into django model
 	var buildingTargets = [0,0,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0]; //for queue purposes - still saved in city DB
-	var buildingnames = ["School", "Barracks", "Fortifications", "Municipal Works", "Hospital", "Transportation", "Broadcast Tower", "Workshop", "Foundry", "Airport", "Shipyards","Laboratory","Ethanol Plant","Hydroponics Plant","Recycling Plant","Nuclear Plant","Supercomputer","Launch Pad"];
+	var buildingnames = ["School", "Barracks", "Fortifications", "Municipal Works", "Hospital", "Transportation", "Broadcast Tower", "Workshop", "Foundry", "Airport", "Shipyard","Laboratory","Ethanol Plant","Hydroponics Plant","Recycling Plant","Nuclear Plant","Supercomputer","Space Center"];
 	var buildingcosts = [new Array(900,800,700,150),new Array(2000,1700,900,300),new Array(500,1000,200,600),new Array(450,400,300,200),new Array(1600,2000,500,150),new Array(2000,2000,2000,600),new Array(2200,1800,2400,200),new Array(2700,2400,2600,1000),new Array(3000,2400,2600,1000),new Array(5000,10000,12500,3400),new Array(7500,15000,10000,5000)]; //hardcoded
 	//still have to add costs to hightechs
 	var production = 1000; //normally we'd derive this from population, economy, buildings and tech
 	var productionTech = 1; //normally would be sum of all pertinent techs; techs exist in player model/DB
 var primarySector = 20000;
-var secondarySector = 1000; //will be in the django model, but will grow based on update
-var tertiarySector = 100; //will be in the django model, but will grow based on update
+var secondarySector = 45000; //will be in the django model, but will grow based on update
+var tertiarySector = 1000; //will be in the django model, but will grow based on update
 
 
 function QueueItem(foodcost,fuelcost,mineralcost,productioncost,task,description,onCancel) {
@@ -83,12 +83,12 @@ var targetBlock = blocks[targetNum];
 	targetBlock.target += 1;
 var targetTask = "";
 var targetName = "";
-var cancellation = "blocks[" + targetNum + "].target -= 1;"
+var cancellation = "blocks[" + targetNum + "].target -= 1;";
 
-var foodcost = 50*1.25^(targetBlock.target);
-var fuelcost = 60*1.275^(targetBlock.target);
-var mineralcost = 40*1.245^(targetBlock.target);
-var productioncost = Math.log(targetBlock.target);
+var foodcost = 50*(1.25^targetBlock.target);
+var fuelcost = 60*(1.275^targetBlock.target);
+var mineralcost = 40*(1.245^targetBlock.target);
+var productioncost = 50*(2^targetBlock.target);
 	
 if (thingytype=='simple') {
 	targetTask = "blocks[" + targetNum + "].level+=1;";
@@ -141,7 +141,7 @@ if (!currentLevel)
 var foodcost = buildingcosts[targetBuilding][0]*1.25^(currentLevel);
 var fuelcost = buildingcosts[targetBuilding][1]*1.275^(currentLevel);
 var mineralcost = buildingcosts[targetBuilding][2]*1.245^(currentLevel);
-var productioncost = Math.log(currentLevel*buildingcosts[targetBuilding][3]);
+var productioncost = buildingcosts[targetBuilding][3]*1.25^(currentLevel);
 	
 targetTask = "buildings[" + targetBuilding + "] +=" + (type-1) + ";";
 	
@@ -251,7 +251,9 @@ secondarySector += horaepasatae*(Math.log((fuel+1)/secondarySector)*secondarySec
 tertiarySector += horaepasatae*(Math.log((secondarySector+1)/tertiarySector)*tertiarySector)*(((buildings[0]*3)+buildings[3]+(buildings[6]*2)+(buildings[9]*2)+buildings[11])+buildings[16]/10); //we'll make it a bit more complex later
 productionTech = ((tertiarySector/secondarySector) + 0.1)*((1+buildings[11])/2);
 
-if ((primarySector+secondarySector+tertiarySector) > population)
+if ((primarySector+secondarySector) > population)
+	secondarySector = population-primarySector;
+else if ((primarySector+secondarySector+tertiarySector) > population)
 	tertiarySector = population-(primarySector+secondarySector);
 	
 production = secondarySector*productionTech;
@@ -274,6 +276,15 @@ changeHTML("tertiary",parseInt(tertiarySector));
 changeHTML("food", parseInt(food));
 changeHTML("fuel", parseInt(fuel));
 changeHTML("mineral", parseInt(mineral));
+
+	if (food > population)
+		changeHTML("surplusfood", "Surplus: " + Math.floor(food-population)).style.color = "green";
+	else
+		changeHTML("surplusfood", "Deficit: " + Math.floor(population-food)).style.color = "red";
+	if (food > population)
+		changeHTML("surplusfuel", "Surplus: " + Math.floor(fuel-secondarySector)).style.color = "green";
+	else
+		changeHTML("surplusfuel", "Deficit: " + Math.floor(secondarySector-fuel)).style.color = "red";
 	
 changeHTML("NW", "<b>" + blockTypes[blocks[0].type] + "</b><br />" + blockImprovements[blocks[0].improvement] + "<br />Level&nbsp;" + blocks[0].level).style.backgroundImage="url(" + blockGraphics[blocks[0].type] + ")";
 changeHTML("N", "<b>" + blockTypes[blocks[1].type] + "</b><br />" + blockImprovements[blocks[1].improvement] + "<br />Level&nbsp;" + blocks[1].level).style.backgroundImage="url(" + blockGraphics[blocks[1].type] + ")";
@@ -329,7 +340,9 @@ Change city name: <input type="text" onblur="cityName=this.value;" />
 
 <p id="population"></p>
 
-<p>Food <span id="food"></span>&nbsp;|&nbsp;Fuel <span id="fuel"></span>&nbsp;|&nbsp;Minerals <span id="mineral"></span></p>
+<p>Food <span id="food"></span>&nbsp;|&nbsp;Fuel <span id="fuel"></span>&nbsp;|&nbsp;Minerals <span id="mineral"></span>
+<br /><span id="surplusfood"></span> | <span id="surplusfuel"></span></p>
+
 <p><b>Resource</b> production employs <b><span id="primary"></span> workers</b><br />
 <b>Industrial</b> production employs <b><span id="secondary"></span> workers</b><br />
 <b>Business</b> and services employs <b><span id="tertiary"></span> workers</b></p>
