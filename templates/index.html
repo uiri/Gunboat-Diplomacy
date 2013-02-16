@@ -204,31 +204,31 @@ if (queue.length) {
 for (number in blocks) {
 		switch (blocks[number].type){
 			case 0: {
-			food += horaepasatae*((foodProduction)*Math.pow(1.163118,(blocks[number].level - 1));
+			food += horaepasatae*(foodProduction*Math.pow(1.163118,(blocks[number].level - 1)));
 			break;
 			}
 			case 1: {
-			mineral += horaepasatae*((mineralProduction)*Math.pow(1.163118,(blocks[number].level - 1));
+			mineral += horaepasatae*(mineralProduction*Math.pow(1.163118,(blocks[number].level - 1)));
 			break;
 			}
 			case 2: {
-			fuel += horaepasatae*((fuelProduction)*Math.pow(1.163118,(blocks[number].level - 1));
+			fuel += horaepasatae*(fuelProduction*Math.pow(1.163118,(blocks[number].level - 1)));
 			break;
 			}
 			case 3: {
-			food += horaepasatae*((foodProduction)*Math.pow(1.163118,(blocks[number].level - 1));
+			food += horaepasatae*(foodProduction*Math.pow(1.163118,(blocks[number].level - 1)));
 			break;
 			}
 			case 4: {
-			mineral += 0.5*horaepasatae*((mineralProduction)*Math.pow(1.163118,(blocks[number].level - 1));
+			mineral += 0.5*horaepasatae*(mineralProduction*Math.pow(1.163118,(blocks[number].level - 1)));
 			break;
 			}
 			case 5: {
-			fuel += 0.5*horaepasatae*((fuelProduction)*Math.pow(1.163118,(blocks[number].level - 1));
+			fuel += 0.5*horaepasatae*(fuelProduction*Math.pow(1.163118,(blocks[number].level - 1)));
 			break;
 			}
 			case 6: {
-			food += 0.5*horaepasatae*((foodProduction)*Math.pow(1.163118,(blocks[number].level - 1));
+			food += 0.5*horaepasatae*(foodProduction*Math.pow(1.163118,(blocks[number].level - 1)));
 			break;
 			}
 		}
@@ -241,7 +241,7 @@ if (fuel < 1)
 if (mineral < 1)
 	mineral = 1;
 
-var health = 0.1+((population-100000)/(1000*Math.pow(1.172103,(buildings[4] - 1)));
+var health = 0.1+((population-100000)/(1000*Math.pow(1.172103,(buildings[4] - 1))));
 population += health*horaepasatae*(Math.log((food+1)/population)*population);
 
 primarySector = 0;
