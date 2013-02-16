@@ -46,6 +46,9 @@ var buildings = [0,0,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0]; //each of these values shou
 var primarySector = 20000;
 var secondarySector = 45000; //will be in the django model, but will grow based on update
 var tertiarySector = 1000; //will be in the django model, but will grow based on update
+var baseStability = 100; //will be in the django model, but will grow based on update
+	var battleStability = 0; //will also be in the django model and grow based on update
+	var stability = 100; //will be derived from baseStability and battleStability;
 
 
 function QueueItem(foodcost,fuelcost,mineralcost,productioncost,task,description,onCancel) {
@@ -258,6 +261,10 @@ else if ((primarySector+secondarySector+tertiarySector) > population)
 	
 production = secondarySector*productionTech;
 
+var unemployment = (population-(primarySector+secondarySector+tertiarySector))/population;
+baseStability = 40*(health+unemployment)+20*(food/population);
+stability = baseStability - battleStability;
+
 writeStats();
 lastUpdate = new Date();
 } //end up update function don't f with this {
@@ -295,6 +302,7 @@ changeHTML("E",  "<b>" + blockTypes[blocks[5].type] + "</b><br />" + blockImprov
 changeHTML("SW",  "<b>" + blockTypes[blocks[6].type] + "</b><br />" + blockImprovements[blocks[6].improvement] + "<br />Level&nbsp;" + blocks[6].level).style.backgroundImage="url(" + blockGraphics[blocks[6].type] + ")";
 changeHTML("S",  "<b>" + blockTypes[blocks[7].type] + "</b><br />" + blockImprovements[blocks[7].improvement] + "<br />Level&nbsp;" + blocks[7].level).style.backgroundImage="url(" + blockGraphics[blocks[7].type] + ")";
 changeHTML("SE", "<b>" + blockTypes[blocks[8].type] + "</b><br />" + blockImprovements[blocks[8].improvement] + "<br />Level&nbsp;" + blocks[8].level).style.backgroundImage="url(" + blockGraphics[blocks[8].type] + ")";
+changeHTML("stability", Math.round(stability));
 
 var itemsdiv = document.getElementById("items");
 itemsdiv.innerHTML = "<h2>Industry Contracts</h2>";
@@ -340,8 +348,9 @@ Change city name: <input type="text" onblur="cityName=this.value;" />
 
 <p id="population"></p>
 
-<p>Food <span id="food"></span>&nbsp;|&nbsp;Fuel <span id="fuel"></span>&nbsp;|&nbsp;Minerals <span id="mineral"></span>
-<br /><span id="surplusfood"></span> | <span id="surplusfuel"></span></p>
+Food <span id="food"></span>&nbsp;|&nbsp;Fuel <span id="fuel"></span>&nbsp;|&nbsp;Minerals <span id="mineral"></span>
+<br /><span id="surplusfood"></span> | <span id="surplusfuel"></span>
+<div>Stability: <span id="stability"></span>%</div>
 
 <p><b>Resource</b> production employs <b><span id="primary"></span> workers</b><br />
 <b>Industrial</b> production employs <b><span id="secondary"></span> workers</b><br />
