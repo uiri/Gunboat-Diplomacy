@@ -88,7 +88,7 @@ var cancellation = "blocks[" + targetNum + "].target -= 1;";
 var foodcost = 50*Math.pow(1.25,targetBlock.target);
 var fuelcost = 60*Math.pow(1.275,targetBlock.target);
 var mineralcost = 40*Math.pow(1.245,targetBlock.target);
-var productioncost = 50*Math.pow(2,(targetBlock.target));
+var productioncost = 50*Math.pow(1.25,(targetBlock.target));
 	
 if (thingytype=='simple') {
 	targetTask = "blocks[" + targetNum + "].level+=1;";
