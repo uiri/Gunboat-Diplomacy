@@ -31,12 +31,12 @@ var ycoord = 0;
 var population=100000;
 	var health = 0.1; //not in the django model
 var queue = new Array();
-var food=110000;
+var food=101000;
     var foodProduction = 60; //production per worker; normally we would derive this from tech and such
-	var foodSurplus = 10000; //not in the django model
-var fuel=100000;
+	var foodSurplus = 1000; //not in the django model
+var fuel=101000;
 	var fuelProduction = 50; //production per worker; normally we would derive this from tech and such
-	var fuelSurplus = 10000; //not in the django model
+	var fuelSurplus = 1000; //not in the django model
 var mineral=100000;
 	var mineralProduction = 50; //production per worker; normally we would derive this from tech and such
 var buildings = [0,0,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0]; //each of these values should be a column in the DB; also goes into django model
@@ -46,8 +46,8 @@ var buildings = [0,0,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0]; //each of these values shou
 	//still have to add costs to hightechs
 	var production = 1000; //normally we'd derive this from population, economy, buildings and tech
 	var productionTech = 1; //normally would be sum of all pertinent techs; techs exist in player model/DB
-var primarySector = 20000;
-var secondarySector = 45000;
+var primarySector = 1686;
+var secondarySector = 90000;
 var tertiarySector = 1000;
 var baseStability = 100;
 	var battleStability = 0; //will also be in the django model and grow based on update
@@ -138,15 +138,18 @@ function upgradeBuilding(targetBuilding,type) {
 var targetTask = "";
 var targetName = "";
 var currentLevel = buildingTargets[targetBuilding];
+	if (buildingTargets[targetBuilding] < 1) {
+	alert("You cannot downgrade this building further!");
+	return false; }
 	buildingTargets[targetBuilding] += (type-1);
 var cancellation = "buildingTargets[" + targetBuilding + "]-=" + (type-1) + ";"
 
 if (!currentLevel)
 	currentLevel += 1;
 	
-var foodcost = buildingcosts[targetBuilding][0]*Math.pow(1.25,currentLevel);
-var fuelcost = buildingcosts[targetBuilding][1]*Math.pow(1.275,currentLevel);
-var mineralcost = buildingcosts[targetBuilding][2]*Math.pow(1.245,currentLevel);
+var foodcost = (type-1)*buildingcosts[targetBuilding][0]*Math.pow(1.25,currentLevel);
+var fuelcost = (type-1)*buildingcosts[targetBuilding][1]*Math.pow(1.275,currentLevel);
+var mineralcost = (type-1)*buildingcosts[targetBuilding][2]*Math.pow(1.245,currentLevel);
 var productioncost = buildingcosts[targetBuilding][3]*Math.pow(1.25,currentLevel);
 	
 targetTask = "buildings[" + targetBuilding + "] +=" + (type-1) + ";";
@@ -194,10 +197,10 @@ horaepasatae = (iam-lastUpdate)/3600000;
 if (queue.length) {
 	if (queue[0].cost[0] < foodSurplus && queue[0].cost[1] < fuelSurplus && queue[0].cost[2] < mineral) {
 		queue[0].prodleft -= production*horaepasatae;
-		changeHTML("queuestatus", "");
+		changeHTML("queuestatus", "&nbsp;");
 		}
 	else
-		changeHTML("queuestatus", "Requires more resources!");
+		changeHTML("queuestatus", "Requires more resources! Production halted!");
 		if (queue[0].prodleft < 0.01) {
 			eval(queue[0].task);
 			food -= queue[0].cost[0];
@@ -321,8 +324,6 @@ for (item in queue) {
 	queuediv = document.createElement("div");
 	queuediv.innerHTML = queue[item].name + "&nbsp;&nbsp;&nbsp;" + Math.round((1-(queue[item].prodleft/queue[item].cost[3]))*100) + "%&nbsp;&nbsp;&nbsp;";
 	queuediv.innerHTML += Math.floor((queue[item].prodleft/production)*60) + " minutes " + Math.floor(((queue[item].prodleft/production)*3600)-60*Math.floor((queue[item].prodleft/production)*60)) + " seconds left";
-	if (item == 0)
-		queuediv.innerHTML += '<button onclick="queue[0].cancel();queue.shift();update();">Cancel</button>';
 	itemsdiv.appendChild(queuediv);
 }
 
