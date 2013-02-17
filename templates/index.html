@@ -32,13 +32,13 @@ var population=100000;
 	var health = 0.1; //not in the django model
 var queue = new Array();
 var food=110000;
-    var foodProduction = 600; //production per worker; normally we would derive this from tech and such
+    var foodProduction = 60; //production per worker; normally we would derive this from tech and such
 	var foodSurplus = 10000; //not in the django model
 var fuel=100000;
-	var fuelProduction = 500; //production per worker; normally we would derive this from tech and such
+	var fuelProduction = 50; //production per worker; normally we would derive this from tech and such
 	var fuelSurplus = 10000; //not in the django model
 var mineral=100000;
-	var mineralProduction = 500; //production per worker; normally we would derive this from tech and such
+	var mineralProduction = 50; //production per worker; normally we would derive this from tech and such
 var buildings = [0,0,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0]; //each of these values should be a column in the DB; also goes into django model
 	var buildingTargets = [0,0,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0]; //for queue purposes - still saved in city DB
 	var buildingnames = ["School", "Barracks", "Fortifications", "Municipal Works", "Hospital", "Transportation", "Broadcast Tower", "Workshop", "Foundry", "Airport", "Shipyard","Laboratory","Ethanol Plant","Hydroponics Plant","Recycling Plant","Nuclear Plant","Supercomputer","Space Center"];
@@ -355,6 +355,7 @@ Change city name: <input type="text" onblur="cityName=this.value;" />
 
 <div style="float:right;padding-right:25%;"><b id="queuestatus" style="color:red;"></b>
 <span id="items"></span>
+<button onclick="queue[(queue.length-1)].cancel();queue.pop();update();">Cancel</button>
 </div>
 
 <p id="population"></p>
