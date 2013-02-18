@@ -78,9 +78,8 @@ class City(models.Model):
     food = models.IntegerField()
     fuel = models.IntegerField()
     metal = models.IntegerField()
-    foodworkers = models.IntegerField()
-    fuelworkers = models.IntegerField()
-    production = models.IntegerField()
-    productionmodifier = models.IntegerField()
-    loyalty = models.IntegerField()
+    secondarySector = models.IntegerField()
+    tertiarySector = models.IntegerField()
+    baseStability = models.IntegerField()
+    battleStability = models.IntegerField()
     
