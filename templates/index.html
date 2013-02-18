@@ -291,13 +291,13 @@ changeHTML("tertiary",parseInt(tertiarySector));
 changeHTML("mineral",parseInt(mineral));
 
 	if (food > (population/2))
-		changeHTML("food", Math.floor(food) + " (pop. growth)").style.color = "green";
+		changeHTML("food", Math.floor(food) + " (+" + parseInt(food-(population/2)) + " surplus)").style.color = "green";
 	else
-		changeHTML("food", Math.floor(food) + " (starvation!)").style.color = "red";
-	if (fuel > 0)
-		changeHTML("fuel", Math.floor(fuel) + " (econ. growth)").style.color = "green";
+		changeHTML("food", Math.floor(food) + " (-" + parseInt((population/2)-food) + " starvation!)").style.color = "red";
+	if (fuel > (secondarySector/2))
+		changeHTML("fuel", Math.floor(fuel) + " (+" + parseInt(fuel-(secondarySector/2)) + " surplus)").style.color = "green";
 	else
-		changeHTML("fuel",  Math.floor(fuel) + " (econ. collapse!)").style.color = "red";
+		changeHTML("fuel",  Math.floor(fuel) + " (-" + parseInt((secondarySector/2)-fuel) + " shortage!)").style.color = "red";
 	
 changeHTML("NW", "<b>" + blockTypes[blocks[0].type] + "</b><br />" + blockImprovements[blocks[0].improvement] + "<br />Level&nbsp;" + blocks[0].level).style.backgroundImage="url(" + blockGraphics[blocks[0].type] + ")";
 changeHTML("N", "<b>" + blockTypes[blocks[1].type] + "</b><br />" + blockImprovements[blocks[1].improvement] + "<br />Level&nbsp;" + blocks[1].level).style.backgroundImage="url(" + blockGraphics[blocks[1].type] + ")";
