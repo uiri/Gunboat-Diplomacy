@@ -31,14 +31,12 @@ var ycoord = 0;
 var population=100000;
 	var health = 0.1; //not in the django model
 var queue = new Array();
-var food=110000;
-    var foodProduction = 60; //production per worker; normally we would derive this from tech and such
-	var foodSurplus = 1000; //not in the django model
-var fuel=110000;
-	var fuelProduction = 50; //production per worker; normally we would derive this from tech and such
-	var fuelSurplus = 1000; //not in the django model
-var mineral=110000;
-	var mineralProduction = 50; //production per worker; normally we would derive this from tech and such
+var food=55000;
+    var foodProduction = 120; //production per worker; normally we would derive this from tech and such
+var fuel=50000;
+	var fuelProduction = 100; //production per worker; normally we would derive this from tech and such
+var mineral=50000;
+	var mineralProduction = 100; //production per worker; normally we would derive this from tech and such
 var buildings = [0,0,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0]; //each of these values should be a column in the DB; also goes into django model
 	var buildingTargets = [0,0,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0]; //for queue purposes - still saved in city DB
 	var buildingnames = ["School", "Barracks", "Fortifications", "Municipal Works", "Hospital", "Transportation", "Broadcast Tower", "Workshop", "Foundry", "Airport", "Shipyard","Laboratory","Ethanol Plant","Hydroponics Plant","Recycling Plant","Nuclear Plant","Supercomputer","Space Center"];
@@ -195,7 +193,7 @@ var iam = new Date();
 horaepasatae = (iam-lastUpdate)/3600000;
 
 if (queue.length) {
-	if (queue[0].cost[0] < foodSurplus && queue[0].cost[1] < fuelSurplus && queue[0].cost[2] < mineral) {
+	if (queue[0].cost[0] < food && queue[0].cost[1] < fuel && queue[0].cost[2] < mineral) {
 		queue[0].prodleft -= production*horaepasatae;
 		changeHTML("queuestatus", "&nbsp;");
 		}
@@ -250,17 +248,15 @@ if (fuel < 1)
 if (mineral < 1)
 	mineral = 1;
 
-foodSurplus = food-population;
-fuelSurplus = fuel-secondarySector;
 	
 health = 0.1+((buildings[3]+buildings[4]+buildings[5]+buildings[14])*20000/population);
-population += 0.5*health*horaepasatae*(Math.log((food+1)/population)*population);
+population += health*horaepasatae*(Math.log((food+(population/2))/population)*population);
 
 primarySector = 0;
 	for (primary in blocks)
 	primarySector += 100*Math.pow(1.17,(blocks[primary].level - 1));
-secondarySector += 0.5*horaepasatae*(Math.log((fuel+1)/secondarySector)*secondarySector)*((buildings[3]+(buildings[5]*2)+(buildings[7]*2)+(buildings[8]*3)+(buildings[10]*2))/10);
-tertiarySector += 0.5*horaepasatae*(Math.log((secondarySector+1)/tertiarySector)*tertiarySector)*(((buildings[0]*3)+buildings[3]+(buildings[6]*2)+(buildings[9]*2)+buildings[11])+buildings[16]/10); //we'll make it a bit more complex later
+secondarySector += horaepasatae*(Math.log((fuel+(secondarySector/2))/secondarySector)*secondarySector)*((buildings[3]+(buildings[5]*2)+(buildings[7]*2)+(buildings[8]*3)+(buildings[10]*2))/10);
+tertiarySector += horaepasatae*(Math.log((secondarySector+1)/tertiarySector)*tertiarySector)*(((buildings[0]*3)+buildings[3]+(buildings[6]*2)+(buildings[9]*2)+buildings[11])+buildings[16]/10); //we'll make it a bit more complex later
 productionTech = ((tertiarySector/secondarySector) + 0.1)*((1+buildings[11])/2);
 
 if ((primarySector+secondarySector) > population)
@@ -292,19 +288,16 @@ changeHTML("population", parseInt(population) + " citizens");
 changeHTML("primary",parseInt(primarySector));
 changeHTML("secondary",parseInt(secondarySector));
 changeHTML("tertiary",parseInt(tertiarySector));
+changeHTML("mineral",parseInt(mineral));
 
-changeHTML("food", parseInt(food));
-changeHTML("fuel", parseInt(fuel));
-changeHTML("mineral", parseInt(mineral));
-
-	if (foodSurplus > 0)
-		changeHTML("foodSurplus", Math.floor(foodSurplus) + " surplus food").style.color = "green";
+	if (food > (population/2))
+		changeHTML("food", Math.floor(food) + " (pop. growth)").style.color = "green";
 	else
-		changeHTML("foodSurplus", Math.floor(foodSurplus) + " lack of food").style.color = "red";
-	if (fuelSurplus > 0)
-		changeHTML("fuelSurplus", Math.floor(fuelSurplus) + " surplus fuel").style.color = "green";
+		changeHTML("food", Math.floor(food) + " (starvation!)").style.color = "red";
+	if (fuel > 0)
+		changeHTML("fuel", Math.floor(fuel) + " (econ. growth)").style.color = "green";
 	else
-		changeHTML("fuelSurplus",  Math.floor(fuelSurplus) + " lack of fuel").style.color = "red";
+		changeHTML("fuel",  Math.floor(fuel) + " (econ. collapse!)").style.color = "red";
 	
 changeHTML("NW", "<b>" + blockTypes[blocks[0].type] + "</b><br />" + blockImprovements[blocks[0].improvement] + "<br />Level&nbsp;" + blocks[0].level).style.backgroundImage="url(" + blockGraphics[blocks[0].type] + ")";
 changeHTML("N", "<b>" + blockTypes[blocks[1].type] + "</b><br />" + blockImprovements[blocks[1].improvement] + "<br />Level&nbsp;" + blocks[1].level).style.backgroundImage="url(" + blockGraphics[blocks[1].type] + ")";
@@ -319,7 +312,7 @@ changeHTML("stability", Math.round(stability));
 changeHTML("health", Math.round(health*100));
 
 var itemsdiv = document.getElementById("items");
-itemsdiv.innerHTML = "<h2>Industry Contracts</h2>";
+itemsdiv.innerHTML = '';
 for (item in queue) {
 	queuediv = document.createElement("div");
 	queuediv.innerHTML = queue[item].name + "&nbsp;&nbsp;&nbsp;" + Math.round((1-(queue[item].prodleft/queue[item].cost[3]))*100) + "%&nbsp;&nbsp;&nbsp;";
@@ -336,7 +329,14 @@ for (what in buildings) {
 		buildingdiv.innerHTML += '&nbsp;<button onclick="upgradeBuilding(' + what + ', 2);update();">Upgrade</button>';
 		if (buildings[what] != 0)
 			buildingdiv.innerHTML += '<button onclick="upgradeBuilding(' + what + ', 0);">Downgrade</button>';
-		buildingsdiv.appendChild(buildingdiv);
+		buildingdiv.innerHTML += '<br />&nbsp;&nbsp;&nbsp;Cost to upgrade:&nbsp;';
+			buildingdiv.innerHTML += '<img src="http://forums.civfanatics.com/images/smilies/civ4/food.gif" alt="Food"/>&nbsp;';
+			buildingdiv.innerHTML += parseInt(buildingcosts[what][0]*Math.pow(1.25,buildingTargets[what]));
+			buildingdiv.innerHTML += '&nbsp;<img src="http://forums.civfanatics.com/images/smilies/civ4/science.gif" alt="Fuel"/>&nbsp;';
+			buildingdiv.innerHTML += parseInt(buildingcosts[what][1]*Math.pow(1.275,buildingTargets[what]));
+			buildingdiv.innerHTML += '&nbsp;<img src="http://cdn2.tribalwars.net/graphic/eisen.png?0e9e5" alt="Minerals"/>&nbsp;';			
+			buildingdiv.innerHTML += parseInt(buildingcosts[what][2]*Math.pow(1.245,buildingTargets[what]));
+			buildingsdiv.appendChild(buildingdiv);
 	}
 }
 
@@ -355,14 +355,19 @@ window.setInterval(update, 1000);
 Change city name: <input type="text" onblur="cityName=this.value;" />
 
 <div style="float:right;padding-right:25%;"><b id="queuestatus" style="color:red;"></b>
+<h2>Industry Contracts</h2><button onclick="queue[0].cancel();queue.push();update();">Cancel</button>
 <span id="items"></span>
 <button onclick="queue[(queue.length-1)].cancel();queue.pop();update();">Cancel</button>
 </div>
 
 <p id="population"></p>
 
-Food <span id="food"></span>&nbsp;|&nbsp;Fuel <span id="fuel"></span>&nbsp;|&nbsp;Minerals <span id="mineral"></span>
-<br /><span id="foodSurplus"></span> | <span id="fuelSurplus"></span>
+<img src="http://forums.civfanatics.com/images/smilies/civ4/food.gif" alt="Food"/>
+<span id="food"></span>&nbsp;|&nbsp;
+<img src="http://forums.civfanatics.com/images/smilies/civ4/science.gif" alt="Fuel" />
+<span id="fuel"></span>&nbsp;|&nbsp;
+<img src="http://cdn2.tribalwars.net/graphic/eisen.png?0e9e5" alt="Minerals" />
+<span id="mineral" style="color:green;"></span>
 <div>Stability: <span id="stability"></span>% | Health: <span id="health"></span>% </div>
 
 <p><b>Resource</b> production employs <b><span id="primary"></span> workers</b><br />
