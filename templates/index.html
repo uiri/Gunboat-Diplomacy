@@ -30,17 +30,18 @@ var xcoord = 0;
 var ycoord = 0;
 var population=100000;
 	var health = 0.1; //not in the django model
+	var unemploymeny = 0; //not in the django model
 var queue = new Array();
 var food=55000;
-    var foodProduction = 120; //production per worker; normally we would derive this from tech and such
+    var foodProduction = 500; //production per worker; normally we would derive this from tech and such
 var fuel=50000;
-	var fuelProduction = 100; //production per worker; normally we would derive this from tech and such
+	var fuelProduction = 500; //production per worker; normally we would derive this from tech and such
 var mineral=50000;
-	var mineralProduction = 100; //production per worker; normally we would derive this from tech and such
+	var mineralProduction = 500; //production per worker; normally we would derive this from tech and such
 var buildings = [0,0,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0]; //each of these values should be a column in the DB; also goes into django model
 	var buildingTargets = [0,0,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0]; //for queue purposes - still saved in city DB
 	var buildingnames = ["School", "Barracks", "Fortifications", "Municipal Works", "Hospital", "Transportation", "Broadcast Tower", "Workshop", "Foundry", "Airport", "Shipyard","Laboratory","Ethanol Plant","Hydroponics Plant","Recycling Plant","Nuclear Plant","Supercomputer","Space Center"];
-	var buildingcosts = [new Array(900,800,700,150),new Array(2000,1700,900,300),new Array(500,1000,200,600),new Array(450,400,300,200),new Array(1600,2000,500,150),new Array(2000,2000,2000,600),new Array(2200,1800,2400,200),new Array(2700,2400,2600,1000),new Array(3000,2400,2600,1000),new Array(5000,10000,12500,3400),new Array(7500,15000,10000,5000)]; //hardcoded
+	var buildingcosts = [new Array(900,800,700,750),new Array(2000,1700,900,1500),new Array(500,1000,200,3000),new Array(450,400,300,1000),new Array(1600,2000,500,750),new Array(2000,2000,2000,3000),new Array(2200,1800,2400,1000),new Array(2700,2400,2600,5000),new Array(3000,2400,2600,5000),new Array(5000,10000,12500,17000),new Array(7500,15000,5000,50000)]; //hardcoded
 	//still have to add costs to hightechs
 	var production = 1000; //normally we'd derive this from population, economy, buildings and tech
 	var productionTech = 1; //normally would be sum of all pertinent techs; techs exist in player model/DB
@@ -89,10 +90,10 @@ var targetTask = "";
 var targetName = "";
 var cancellation = "blocks[" + targetNum + "].target -= 1;";
 
-var foodcost = 50*Math.pow(1.25,targetBlock.target);
-var fuelcost = 60*Math.pow(1.275,targetBlock.target);
-var mineralcost = 40*Math.pow(1.245,targetBlock.target);
-var productioncost = 50*Math.pow(1.25,(targetBlock.target));
+var foodcost = 250*Math.pow(1.25,targetBlock.target);
+var fuelcost = 300*Math.pow(1.275,targetBlock.target);
+var mineralcost = 200*Math.pow(1.245,targetBlock.target);
+var productioncost = 250*Math.pow(1.25,(targetBlock.target));
 	
 if (thingytype=='simple') {
 	targetTask = "blocks[" + targetNum + "].level+=1;";
@@ -132,33 +133,23 @@ if (thingytype=='simple') {
 queue.push(new QueueItem(foodcost,fuelcost,mineralcost,productioncost,targetTask,targetName,cancellation));
 }
 	
-function upgradeBuilding(targetBuilding,type) {
+function upgradeBuilding(targetBuilding) {
+var targetName = "Upgrade&nbsp;" + buildingnames[targetBuilding];
 var targetTask = "";
-var targetName = "";
 var currentLevel = buildingTargets[targetBuilding];
-	if (buildingTargets[targetBuilding] < 0) {
-	alert("You cannot downgrade this building further!");
-	return false; }
-	buildingTargets[targetBuilding] += (type-1);
-var cancellation = "buildingTargets[" + targetBuilding + "]-=" + (type-1) + ";"
+	buildingTargets[targetBuilding] += 1;
+var cancellation = "buildingTargets[" + targetBuilding + "]-=1;";
 
 if (!currentLevel)
 	currentLevel += 1;
 	
-var foodcost = (type-1)*buildingcosts[targetBuilding][0]*Math.pow(1.25,currentLevel);
-var fuelcost = (type-1)*buildingcosts[targetBuilding][1]*Math.pow(1.275,currentLevel);
-var mineralcost = (type-1)*buildingcosts[targetBuilding][2]*Math.pow(1.245,currentLevel);
+var foodcost = buildingcosts[targetBuilding][0]*Math.pow(1.25,currentLevel);
+var fuelcost = buildingcosts[targetBuilding][1]*Math.pow(1.275,currentLevel);
+var mineralcost = buildingcosts[targetBuilding][2]*Math.pow(1.245,currentLevel);
 var productioncost = buildingcosts[targetBuilding][3]*Math.pow(1.25,currentLevel);
 	
-targetTask = "buildings[" + targetBuilding + "] +=" + (type-1) + ";";
+targetTask = "buildings[" + targetBuilding + "] +=1;";
 	
-if (type)
-	targetName = "Up";
-else
-	targetName = "Down";
-	
-	
-targetName += "grade&nbsp;" + buildingnames[targetBuilding];
 queue.push(new QueueItem(foodcost,fuelcost,mineralcost,productioncost,targetTask,targetName,cancellation));
 }
 
@@ -193,21 +184,23 @@ var iam = new Date();
 horaepasatae = (iam-lastUpdate)/3600000;
 
 if (queue.length) {
-	if (queue[0].cost[0] < food && queue[0].cost[1] < fuel && queue[0].cost[2] < mineral) {
+	var q = (horaepasatae*production)/queue[0].cost[3];
+	if (queue[0].cost[0]*q < food && queue[0].cost[1]*q < fuel && queue[0].cost[2]*q < mineral) {
 		queue[0].prodleft -= production*horaepasatae;
+		food -= queue[0].cost[0]*q;
+		fuel -= queue[0].cost[1]*q;
+		mineral -= queue[0].cost[2]*q;
 		changeHTML("queuestatus", "&nbsp;");
 		}
 	else
 		changeHTML("queuestatus", "Requires more resources! Production halted!");
 		if (queue[0].prodleft < 0.01) {
 			eval(queue[0].task);
-			food -= queue[0].cost[0];
-			fuel -= queue[0].cost[1];
-			mineral -= queue[0].cost[2];
 			queue.shift();
 		}
 }
-	
+
+
 for (number in blocks) {
 		switch (blocks[number].type){
 			case 0: {
@@ -249,15 +242,19 @@ if (mineral < 1)
 	mineral = 1;
 
 	
-health = 0.1+((buildings[3]+buildings[4]+buildings[5]+buildings[14])*20000/population);
+health = 0.1;
+	health += (200*Math.pow(1.25,buildings[3]))/population;
+	health += (200*Math.pow(1.25,buildings[4]))/population;
+	health += (50*Math.pow(1.25,buildings[5]))/population;
 population += health*horaepasatae*(Math.log((food+(population/2))/population)*population);
+unemployment = (population-(primarySector+secondarySector+tertiarySector))/population;
 
 primarySector = 0;
 	for (primary in blocks)
 	primarySector += 100*Math.pow(1.17,(blocks[primary].level - 1));
 secondarySector += horaepasatae*(Math.log((fuel+(secondarySector/2))/secondarySector)*secondarySector)*((buildings[3]+(buildings[5]*2)+(buildings[7]*2)+(buildings[8]*3)+(buildings[10]*2))/10);
 tertiarySector += horaepasatae*(Math.log((secondarySector+1)/tertiarySector)*tertiarySector)*(((buildings[0]*3)+buildings[3]+(buildings[6]*2)+(buildings[9]*2)+buildings[11])+buildings[16]/10); //we'll make it a bit more complex later
-productionTech = ((tertiarySector/secondarySector) + 0.1)*((1+buildings[11])/2);
+productionTech = 10*(tertiarySector/secondarySector) + 0.1; //eventually we'll make this a part of research
 
 if ((primarySector+secondarySector) > population)
 	secondarySector = population-primarySector;
@@ -266,7 +263,6 @@ else if ((primarySector+secondarySector+tertiarySector) > population)
 	
 production = secondarySector*productionTech;
 
-var unemployment = (population-(primarySector+secondarySector+tertiarySector))/population;
 baseStability = 30*(health+unemployment)+20*(food/population);
 if (battleStability > 0)
 	battleStability -= 8*horaepasatae;
@@ -299,6 +295,7 @@ changeHTML("mineral",parseInt(mineral));
 	else
 		changeHTML("fuel",  Math.floor(fuel) + " (-" + parseInt((secondarySector/2)-fuel) + " shortage!)").style.color = "red";
 	
+	
 changeHTML("NW", "<b>" + blockTypes[blocks[0].type] + "</b><br />" + blockImprovements[blocks[0].improvement] + "<br />Level&nbsp;" + blocks[0].level).style.backgroundImage="url(" + blockGraphics[blocks[0].type] + ")";
 changeHTML("N", "<b>" + blockTypes[blocks[1].type] + "</b><br />" + blockImprovements[blocks[1].improvement] + "<br />Level&nbsp;" + blocks[1].level).style.backgroundImage="url(" + blockGraphics[blocks[1].type] + ")";
 changeHTML("NE",  "<b>" + blockTypes[blocks[2].type] + "</b><br />" + blockImprovements[blocks[2].improvement] + "<br />Level&nbsp;" + blocks[2].level).style.backgroundImage="url(" + blockGraphics[blocks[2].type] + ")";
@@ -308,8 +305,10 @@ changeHTML("E",  "<b>" + blockTypes[blocks[5].type] + "</b><br />" + blockImprov
 changeHTML("SW",  "<b>" + blockTypes[blocks[6].type] + "</b><br />" + blockImprovements[blocks[6].improvement] + "<br />Level&nbsp;" + blocks[6].level).style.backgroundImage="url(" + blockGraphics[blocks[6].type] + ")";
 changeHTML("S",  "<b>" + blockTypes[blocks[7].type] + "</b><br />" + blockImprovements[blocks[7].improvement] + "<br />Level&nbsp;" + blocks[7].level).style.backgroundImage="url(" + blockGraphics[blocks[7].type] + ")";
 changeHTML("SE", "<b>" + blockTypes[blocks[8].type] + "</b><br />" + blockImprovements[blocks[8].improvement] + "<br />Level&nbsp;" + blocks[8].level).style.backgroundImage="url(" + blockGraphics[blocks[8].type] + ")";
+
 changeHTML("stability", Math.round(stability));
 changeHTML("health", Math.round(health*100));
+changeHTML("unemployment", parseInt(100*unemployment) + "");
 
 var itemsdiv = document.getElementById("items");
 itemsdiv.innerHTML = '';
@@ -326,9 +325,7 @@ for (what in buildings) {
 	if (potesseAedifacere(what)){
 		var buildingdiv = document.createElement("div");
 		buildingdiv.innerHTML = "<b>" + buildingnames[what] + "</b>:&nbsp;Level " + buildings[what];
-		buildingdiv.innerHTML += '&nbsp;<button onclick="upgradeBuilding(' + what + ', 2);update();">Upgrade</button>';
-		if (buildings[what] != 0)
-			buildingdiv.innerHTML += '<button onclick="upgradeBuilding(' + what + ', 0);">Downgrade</button>';
+		buildingdiv.innerHTML += '&nbsp;<button onclick="upgradeBuilding(' + what + ');update();">Upgrade</button>';
 		buildingdiv.innerHTML += '<br />&nbsp;&nbsp;&nbsp;Cost to upgrade:&nbsp;';
 			buildingdiv.innerHTML += '<img src="http://forums.civfanatics.com/images/smilies/civ4/food.gif" alt="Food"/>&nbsp;';
 			buildingdiv.innerHTML += parseInt(buildingcosts[what][0]*Math.pow(1.25,buildingTargets[what]));
@@ -368,7 +365,8 @@ Change city name: <input type="text" onblur="cityName=this.value;" />
 <span id="fuel"></span>&nbsp;|&nbsp;
 <img src="http://cdn2.tribalwars.net/graphic/eisen.png?0e9e5" alt="Minerals" />
 <span id="mineral" style="color:green;"></span>
-<div>Stability: <span id="stability"></span>% | Health: <span id="health"></span>% </div>
+<div>Stability: <span id="stability"></span>% | Health: <span id="health"></span>%
+&nbsp;| Unemployment: <span id="unemployment"></span>%</div>
 
 <p><b>Resource</b> production employs <b><span id="primary"></span> workers</b><br />
 <b>Industrial</b> production employs <b><span id="secondary"></span> workers</b><br />
@@ -399,7 +397,6 @@ Change city name: <input type="text" onblur="cityName=this.value;" />
 	<option value="7">South</option>
 	<option value="8">Southeast</option>
 </select> block:
-<br />
 <button onclick="upgradeBlock('simple');update();">Upgrade</button>
 <br /><button onclick="upgradeBlock('change');update()">Change to</button><select id="typechoices">
 	<option value="0">Farm</option>
