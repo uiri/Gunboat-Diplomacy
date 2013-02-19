@@ -18,7 +18,7 @@ City/map system:
       
       Water and mountain (impassable)
       
-        Water yields food (Fisher)
+        Water yields food (Fishery)
         
         Mountains yield mineral (Mine), less fuel (Coal Mine)
         
@@ -342,7 +342,7 @@ Religion
       
         "Now the Catholic Faith is this: We worship One God in Trinity and Trinity in Unity, neither confounding the Persons nor dividing the substance."
         
-        Fanatic: Crusader (bonus for Tanks, city attack)
+        Fanatic: Crusader (bonus for Tanks)
         
       Protestant (symbol: ✞)
       
@@ -354,19 +354,19 @@ Religion
       
         "I testify that there is no god but God, and Muhammad is the messenger of God."
        
-        Fanatic: Mujahadin (bonus for anti-aircraft)
+        Fanatic: Mujahadin (bonus for anti-aircraft, city attack)
       
       Shia (symbol: ☫)
       
         "There is no god but God, and Mohammad is the messenger of God, and Ali is the viceregent of God."
       
-        Fanatic: Assassin (bonus for Artillary)
+        Fanatic: Assassin (bonus for Motor Rifle)
         
       Buddhist (symbol: ☸)
         
         "Suffering exists. There is a cause for suffering. There is an end to suffering. In order to end suffering, you must follow the Eightfold Path."
         
-        Fanatic: Shaolin Monk (bonus for city defense)
+        Fanatic: Shaolin Monk (bonus for Militia)
         
       Sikh (symbol: ☬)
       
