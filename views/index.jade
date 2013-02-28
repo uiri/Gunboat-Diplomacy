@@ -1,0 +1,135 @@
+html
+  head
+    meta(http-equiv="Content-Type", content="text/html;", charset="UTF-8")
+    style
+      .mapblock {
+          width:100px;
+          float:left;
+          height:100px;
+          text-align:center;
+      }
+      
+      #cityblock {
+          border:solid 2px;
+          height:96px;
+          width:96px;
+      }
+      
+      #queue {
+          float:right;
+          padding-right:25%;
+      }
+      
+      body {
+          visibility: hidden;
+      }
+      .padten {
+          padding-top:10px;
+      }
+
+      .divbr {
+          visibility:hidden;
+          clear:left;
+      }
+    title.
+      My City
+  body
+    noscript Sorry, we're using javascript for this game
+    #wrapper
+      #topbar
+        - if (everyauth.loggedIn)
+          a(href="javascript:saveCity();") Save
+        - else
+          a(href='/login') Log In
+          | &nbsp;&nbsp;|&nbsp;&nbsp;
+          a(href='/signup') Register
+      h1(id="name")
+      | Change city name:
+      input(type="text", onblur="city.name=this.value")
+      #queue
+        b(id="queuestatus")
+        h2.
+          Industry Contracts
+        button(onclick="city.queue[0].cancel();city.queue.push();update();") Cancel
+        span#items
+        button(onclick="city.queue[(city.queue.length-1)].cancel();city.queue.pop();update();") Cancel
+      p#population
+      img(src="/food.gif", alt="Food")
+      |  
+      span#food
+      | &nbsp;|&nbsp;
+      img(src="/fuel.gif", alt="Fuel")
+      |  
+      span#fuel
+      | &nbsp;|&nbsp;
+      img(src="/mineral.gif", alt="Minerals")
+      |  
+      span#mineral
+      div
+        | Stability: 
+        span#stability
+        | % | Health: 
+        span#health
+        | %&nbsp;| Unemployment: 
+        span#unemployment
+        | %
+      p
+        b Resource
+        |  production employs 
+        b
+          span#primary
+          |  workers
+        br
+        b Industrial
+        |  production employs 
+        b
+          span#secondary
+          |  workers
+        br
+        b Businesses
+        |  and services employ 
+        b
+          span#tertiary
+          |  workers
+        br
+      div.divbr.padten
+      #NW.mapblock
+      #N.mapblock
+      #NE.mapblock
+      div.divbr
+      #W.mapblock
+      #cityblock.mapblock
+      #E.mapblock
+      div.divbr
+      #SW.mapblock
+      #S.mapblock
+      #SE.mapblock
+      div.divbr.padten
+      | Block: 
+      select#blockchoices
+        option(value="0") Northwest
+        option(value="1") North
+        option(value="2") Northeast
+        option(value="3") West
+        option(value="4") Center
+        option(value="5") East
+        option(value="6") Southwest
+        option(value="7") South
+        option(value="8") Southeast
+      |  
+      button(onclick="upgradeBlock('simple');update();") Upgrade
+      br
+      button(onclick="upgradeBlock('change');update();") Change to
+      |  
+      select#typechoices
+        option(value="0") Farm
+        option(value="1") Mine
+        option(value="2") Oil Well
+        option(value="3") Fishery
+        option(value="4") Quarry
+        option(value="5") Coal Mine
+        option(value="6") Pasture
+      a(name="buildings")
+        h2 Infrastructure
+        #buildlevels
+    script(type="text/javascript", src="/game.js")

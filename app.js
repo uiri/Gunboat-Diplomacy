@@ -160,6 +160,10 @@ app.post('/save', function(req, res) {
     });
 });
 
+app.get('/', function(req, res) {
+    res.render('index.jade');
+});
+
 app.use(express.static(__dirname + '/public'));
 var port = 4012;
 if (configfile.listenport)
