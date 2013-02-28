@@ -161,4 +161,10 @@ app.post('/save', function(req, res) {
 });
 
 app.use(express.static(__dirname + '/public'));
-app.listen(4012);
+var port = 4012;
+if (configfile.listenport)
+    port = configfile.listenport;
+var addr = '0.0.0.0';
+if (configfile.listenaddr)
+    addr = configfile.listenaddr;
+app.listen(port, addr);

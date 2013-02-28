@@ -5,6 +5,7 @@
 				"everyauth" : "*",
 				"nano" : "*",
 				"express" : "*",
-				"jade" : "*"
+				"jade" : "*",
+				"password-hash" : "*"
 			 }
 }
