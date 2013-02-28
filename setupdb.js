@@ -10,3 +10,4 @@ nano.db.create('gbd', function() {
     users.last_id = 0;
     db.insert(users, 'users', insertCallback); 
 });
+nano.db.create('gbd-sessions');

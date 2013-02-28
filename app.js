@@ -1,4 +1,5 @@
 var express = require('express')
+  , ConnectCouchDB = require('connect-couchdb')(express)
   , passhash = require('password-hash')
   , everyauth = require('everyauth')
   , configfile = require('./config.js')
@@ -119,7 +120,7 @@ everyauth.password
 
 app.use(express.bodyParser());
 app.use(express.cookieParser());
-app.use(express.session({'secret': configfile.appsecret}));
+app.use(express.session({'store': new ConnectCouchDB({ 'name' : 'gbd-sessions'}), 'secret': configfile.appsecret}));
 app.set('view engine', 'jade');
 app.use(everyauth.middleware(app));
 app.use(app.router);
