@@ -6,6 +6,7 @@
 				"nano" : "*",
 				"express" : "*",
 				"jade" : "*",
-				"password-hash" : "*"
+				"password-hash" : "git://github.com/bnoguchi/everyauth.git#express3",
+				"connect-couchdb": "*"
 			 }
 }
