@@ -20,7 +20,7 @@ html
           padding-right:25%;
       }
       
-      body {
+      body, .hidden-building {
           visibility: hidden;
       }
       .padten {
@@ -62,7 +62,7 @@ html
       |  
       span#fuel
       | &nbsp;|&nbsp;
-      img(src="/mineral.gif", alt="Minerals")
+      img(src="/mineral.png", alt="Minerals")
       |  
       span#mineral
       div
@@ -132,4 +132,22 @@ html
       a(name="buildings")
         h2 Infrastructure
         #buildlevels
+        #school.hidden-building
+        #barracks.hidden-building
+        #fortifications.hidden-building
+        #municipalworks.hidden-building
+        #hospital.hidden-building
+        #transportation.hidden-building
+        #broadcasttower.hidden-building
+        #workshop.hidden-building
+        #foundry.hidden-building
+        #airport.hidden-building
+        #shipyard.hidden-building
+        #laboratory.hidden-building
+        #ethanolplant.hidden-building
+        #hydroponicsplant.hidden-building
+        #recyclingplant.hidden-building
+        #nuclearplant.hidden-building
+        #supercomputer.hidden-building
+        #spacecenter.hidden-building
     script(type="text/javascript", src="/game.js")

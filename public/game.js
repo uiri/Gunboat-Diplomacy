@@ -1,10 +1,12 @@
 //lrn2latin uirifag - significat anglice "hours passed"
 var horaepasatae, city, health, unemployment, foodProduction, fuelProduction
-  , mineralProduction, buildingnames, buildingcosts, production, productionTech
+  , mineralProduction, buildingcosts, production, productionTech
   , stability;
 var blockTypes = ["Plains", "Hills", "Desert", "Water", "Mountain"]; //hardcoded
 var blockImprovements = ["Farm", "Mine", "Oil Well", "Fishery", "Quarry", "Coal Mine", "Pasture"];
 var blockGraphics = ["http://kingbushido95.ki.funpic.de/ModernDS/graphic/map/gras1.png", "http://kingbushido95.ki.funpic.de/ModernDS/graphic/map/berg2.png", "http://i.imgur.com/CqMI5.png", "http://i.imgur.com/cWv4h.png", "http://i.imgur.com/cE9RQ.png"];
+var buildingnames = ["School", "Barracks", "Fortifications", "Municipal Works", "Hospital", "Transportation", "Broadcast Tower", "Workshop", "Foundry", "Airport", "Shipyard","Laboratory","Ethanol Plant","Hydroponics Plant","Recycling Plant","Nuclear Plant","Supercomputer","Space Center"];
+var buildingids = ["school", "barracks", "fortifications", "municipalworks", "hospital", "transportation", "broadcasttower", "workshop", "foundry", "airport", "shipyard", "laboratory", "ethanolplant", "hydroponicsplant", "recyclingplant", "nuclearplant", "supercomputer", "spacecenter"];
 
 function QueueItem(foodcost,fuelcost,mineralcost,productioncost,task,description,onCancel) {
 this.cancel = function() { eval(onCancel);}
@@ -290,21 +292,42 @@ for (item in city.queue) {
 	itemsdiv.appendChild(queuediv);
 }
 
-var buildingsdiv = document.getElementById("buildlevels");
-buildingsdiv.innerHTML = "";
 for (what in city.buildings) {
 	if (potesseAedifacere(what)){
-		var buildingdiv = document.createElement("div");
-		buildingdiv.innerHTML = "<b>" + buildingnames[what] + "</b>:&nbsp;Level " + city.buildings[what];
-		buildingdiv.innerHTML += '&nbsp;<button onclick="upgradeBuilding(' + what + ');update();">Upgrade</button>';
-		buildingdiv.innerHTML += '<br />&nbsp;&nbsp;&nbsp;Cost to upgrade:&nbsp;';
-			buildingdiv.innerHTML += '<img src="http://forums.civfanatics.com/images/smilies/civ4/food.gif" alt="Food"/>&nbsp;';
-			buildingdiv.innerHTML += parseInt(buildingcosts[what][0]*Math.pow(1.25,city.buildingTargets[what]));
-			buildingdiv.innerHTML += '&nbsp;<img src="http://forums.civfanatics.com/images/smilies/civ4/science.gif" alt="Fuel"/>&nbsp;';
-			buildingdiv.innerHTML += parseInt(buildingcosts[what][1]*Math.pow(1.275,city.buildingTargets[what]));
-			buildingdiv.innerHTML += '&nbsp;<img src="http://cdn2.tribalwars.net/graphic/eisen.png?0e9e5" alt="Minerals"/>&nbsp;';			
-			buildingdiv.innerHTML += parseInt(buildingcosts[what][2]*Math.pow(1.245,city.buildingTargets[what]));
-			buildingsdiv.appendChild(buildingdiv);
+	    var htmlidtags = ["-level", "-food", "-fuel", "-mineral"];
+	    var buildingdiv = document.getElementById(buildingids[what]);
+	    var buildcosts = [
+		city.buildings[what],
+		parseInt(buildingcosts[what][0]*Math.pow(1.25,city.buildingTargets[what])),
+		parseInt(buildingcosts[what][1]*Math.pow(1.275,city.buildingTargets[what])),
+		parseInt(buildingcosts[what][2]*Math.pow(1.245,city.buildingTargets[what]))
+	    ];
+	    if (buildingdiv.className == "hidden-building") {
+		buildingdiv.className = "";
+		buildingdiv.innerHTML = "<b>" + buildingnames[what] + "</b>:";
+		buildingdiv.innerHTML += "&nbsp;Level ";
+		buildingdiv.innerHTML += "<span id='"+buildingids[what]+htmlidtags[0]+"'>";
+		buildingdiv.innerHTML += "</span>";
+		buildingdiv.innerHTML += '&nbsp;<button onclick="upgradeBuilding(' + what + ');update();">Upgrade';
+		buildingdiv.innerHTML += '</button><br>&nbsp;&nbsp;&nbsp;Cost to upgrade:&nbsp;';
+		buildingdiv.innerHTML += '<img src="/food.gif" alt="Food"/>&nbsp;';
+		buildingdiv.innerHTML += '<span id="'+buildingids[what]+htmlidtags[1]+'">'
+		buildingdiv.innerHTML += buildcosts[1]+'</span>' + '&nbsp;';
+		buildingdiv.innerHTML += '<img src="/fuel.gif" alt="Fuel"/>&nbsp;';
+		buildingdiv.innerHTML += '<span id="'+buildingids[what]+htmlidtags[2]+'">'
+		buildingdiv.innerHTML += buildcosts[2] + '</span>&nbsp;';
+		buildingdiv.innerHTML += '<img src="/mineral.png" alt="Minerals"/>&nbsp;';
+		buildingdiv.innerHTML += "<span id='"+buildingids[what]+htmlidtags[3]+"'>"+buildcosts[3];
+		buildingdiv.innerHTML += "</span>";
+	    } else {
+		var curdiv, k;
+		for (k in htmlidtags) {
+		    curdiv = document.getElementById(buildingids[what]+htmlidtags[k]);
+		    if (curdiv.innerHTML !== buildcosts[k]) {
+			curdiv.innerHTML = buildcosts[k];
+		    }
+		}
+	    }
 	}
 }
 
@@ -326,7 +349,6 @@ function loadCity() {
 	    foodProduction = 500; // formula from city stats here
 	    fuelProduction = 500; // formula from city stats here
 	    mineralProduction = 500; // formula from city stats here
-	    buildingnames = ["School", "Barracks", "Fortifications", "Municipal Works", "Hospital", "Transportation", "Broadcast Tower", "Workshop", "Foundry", "Airport", "Shipyard","Laboratory","Ethanol Plant","Hydroponics Plant","Recycling Plant","Nuclear Plant","Supercomputer","Space Center"];
 	    buildingcosts = [new Array(900,800,700,750),new Array(2000,1700,900,1500),new Array(500,1000,200,3000),new Array(450,400,300,1000),new Array(1600,2000,500,750),new Array(2000,2000,2000,3000),new Array(2200,1800,2400,1000),new Array(2700,2400,2600,5000),new Array(3000,2400,2600,5000),new Array(5000,10000,12500,17000),new Array(7500,15000,5000,50000)]; //hardcoded
 	    //still have to add costs to hightechs
 	    production = 1000; // formula from city stats here
