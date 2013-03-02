@@ -132,27 +132,25 @@ city.queue.push(new QueueItem(foodcost,fuelcost,mineralcost,productioncost,targe
 
 //lrn2latin uirifag - significat anglice "can build"
 function potesseAedifacere(numerus) {
-if (city.buildings[numerus] > 0)
+    if (city.buildings[numerus] > 0)
 	return true;
-//we should probably tweak some of these requirements later
-else if (numerus == 4 && (city.buildings[0] < 1 || city.buildings[3] < 1))
-	return false;
-else if (numerus == 6 && ((city.buildings[0] < 1) || (city.buildings[3] < 5)))
-	return false;
-else if (numerus == 7 && (city.buildings[1] < 5 || city.buildings[5] < 5))
-	return false;
-else if (numerus == 8 && (city.buildings[5] < 5 || city.buildings[7] < 10))
-	return false;
-else if (numerus == 9 && (city.buildings[5] < 20 || city.buildings[8] < 10))
-	return false;
-else if (numerus == 10 && (city.buildings[5] < 20 || city.buildings[8] < 20))
-	return false;
-else if (numerus == 11 && (city.buildings[0] < 10 || city.buildings[7] < 5))
-	return false;
-else if (numerus > 11 && (!city.buildings[11]/*|| science < buildingcosts[numerus][4]*/))
+    var idklol = [
+	[4,  0,  1, 3,  1],
+	[6,  0,  1, 5,  5],
+	[7,  1,  5, 5,  5],
+	[8,  5,  5, 7, 10],
+	[9,  5, 20, 8, 10],
+	[10, 5, 20, 8, 20],
+	[11, 0, 10, 7,  5]]
+      , j;
+    for (j in idklol)
+	if (numerus == idklol[j][0] && 
+	    (city.buildings[idklol[j][1]] < idklol[j][2] || 
+	     city.buildings[idklol[j][3]] < idklol[j][4]))
+	    return false;
+    if (numerus > 11 && (!city.buildings[11]/*|| science < buildingcosts[numerus][4]*/))
 	return false; //all science buildings - will edit when we add the playerwide science system 
-else
-	return true;
+    return true;
 }//fin functionis "potesseAedifacere"; nolite illam futuere!
 
 function update(){
@@ -277,7 +275,7 @@ changeHTML("mineral",parseInt(city.mineral));
     directions = ["NW", "N", "NE", "W", "cityblock", "E", "SW", "S", "SE"];
     var i;
     for (i in directions)
-	changeHTML(directions[i], "<b>" + blockTypes[city.blocks[i].type] + "</b><br>"+blockImprovements[city.blocks[i].improvement] + "<br>Level&nbsp;" + city.blocks[0].level).style.backgroundImage = "url(" + blockGraphics[city.blocks[i].type] + ")";
+	changeHTML(directions[i], "<b>" + blockTypes[city.blocks[i].type] + "</b><br>"+blockImprovements[city.blocks[i].improvement] + "<br>Level&nbsp;" + city.blocks[i].level).style.backgroundImage = "url(" + blockGraphics[city.blocks[i].type] + ")";
 
     changeHTML("stability", Math.round(stability));
     changeHTML("health", Math.round(health*100));
