@@ -70,6 +70,7 @@ function City() {
     this.tertiarySector = 1000;
     this.baseStability = 100;
     this.battleStability = 0;
+    this.blocks = null;
 }
 
 everyauth.everymodule.findUserById( function(id, callback) {

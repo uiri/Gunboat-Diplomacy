@@ -1,36 +1,12 @@
 //lrn2latin uirifag - significat anglice "hours passed"
-var horaepasatae;
-var city;
-
-// also change this stuff server side. kthnx
-function City() {
-    this.update = new Date();
-    this.name = "New City";
-    this.owner = "";
-    this.x = 0;
-    this.y = 0;
-    this.population = 100000;
-    this.queue = new Array();
-    this.food = 55000;
-    this.fuel = 50000;
-    this.mineral = 5000;
-    this.buildings = new Array();
-    this.buildingTargets = new Array();
-    var i;
-    while (i < 17) {
-	this.buildings[i] = 0;
-	this.buildingTargets[i++] = 0;
-    }
-    this.buildings[2] = 1;
-    this.buildings[3] = 1;
-    this.buildingTargets[2] = 1;
-    this.buildingTargets[3] = 1;
-    this.primarySector = 1686;
-    this.secondarySector = 90000;
-    this.tertiarySector = 1000;
-    this.baseStability = 100;
-    this.battleStability = 0;
-}
+var horaepasatae, city, health, unemployment, foodProduction, fuelProduction
+  , mineralProduction, buildingcosts, production, productionTech
+  , stability;
+var blockTypes = ["Plains", "Hills", "Desert", "Water", "Mountain"]; //hardcoded
+var blockImprovements = ["Farm", "Mine", "Oil Well", "Fishery", "Quarry", "Coal Mine", "Pasture"];
+var blockGraphics = ["http://kingbushido95.ki.funpic.de/ModernDS/graphic/map/gras1.png", "http://kingbushido95.ki.funpic.de/ModernDS/graphic/map/berg2.png", "http://i.imgur.com/CqMI5.png", "http://i.imgur.com/cWv4h.png", "http://i.imgur.com/cE9RQ.png"];
+var buildingnames = ["School", "Barracks", "Fortifications", "Municipal Works", "Hospital", "Transportation", "Broadcast Tower", "Workshop", "Foundry", "Airport", "Shipyard","Laboratory","Ethanol Plant","Hydroponics Plant","Recycling Plant","Nuclear Plant","Supercomputer","Space Center"];
+var buildingids = ["school", "barracks", "fortifications", "municipalworks", "hospital", "transportation", "broadcasttower", "workshop", "foundry", "airport", "shipyard", "laboratory", "ethanolplant", "hydroponicsplant", "recyclingplant", "nuclearplant", "supercomputer", "spacecenter"];
 
 function QueueItem(foodcost,fuelcost,mineralcost,productioncost,task,description,onCancel) {
 this.cancel = function() { eval(onCancel);}
@@ -48,22 +24,6 @@ this.target = level; //for queue purposes
 this.city = null;
 
 return this.type;
-}
-
-function loadCity() {
-    var req = new XMLHttpRequest();
-    req.open("GET", "/city");
-    req.onreadystatechange = function() {
-	if (req.readyState == 4) {
-	    if (req.status == 200) {
-		city = JSON.parse(req.response);
-		city.update = new Date(city.update);
-	    } else {
-		city = new City();
-	    }
-	}
-    }
-    req.send();
 }
 
 function explicitySaveCity() {
@@ -89,34 +49,11 @@ function explicitySaveCity() {
     req.send(JSON.stringify(city));
 }
 
-
 function saveCity() {
     var req = new XMLHttpRequest();
     req.open("POST", "/save");
     req.send(JSON.stringify(city));
 }
-
-//all of these city properties should go into the django model (unless marked otherwise)
-city = new City();
-loadCity();
-	var health = 0.1; // formula from city stats here
-	var unemploymeny = 0; // formula from city stats here
-    var foodProduction = 500; // formula from city stats here
-	var fuelProduction = 500; // formula from city stats here
-	var mineralProduction = 500; // formula from city stats here
-	var buildingnames = ["School", "Barracks", "Fortifications", "Municipal Works", "Hospital", "Transportation", "Broadcast Tower", "Workshop", "Foundry", "Airport", "Shipyard","Laboratory","Ethanol Plant","Hydroponics Plant","Recycling Plant","Nuclear Plant","Supercomputer","Space Center"];
-	var buildingcosts = [new Array(700,800,900,750),new Array(800,450,1000,1500),new Array(500,200,7500,3000),new Array(400,300,450,1000),new Array(800,250,1000,750),new Array(2000,2000,2000,3000),new Array(2200,1800,2400,1000),new Array(2700,2400,2600,5000),new Array(3000,2400,2600,5000),new Array(5000,10000,12500,17000),new Array(7500,15000,5000,50000)]; //hardcoded
-	//still have to add costs to hightechs
-	var production = 1000; // formula from city stats here
-	var productionTech = 1; // formula from city stats here
-	var stability = city.baseStability = city.battleStability; 
-
-// it goes NW, N, NE, W, city's own, E, SW, W, SE; derived from block DB
-// something like /square/x/y for a URL scheme?
-var blocks = [new Block(0,0,5), new Block(0,4,5), new Block(1,1,5), new Block(1,5,5), new Block(2,2,5), new Block(2,6,5), new Block(3,3,5), new Block(4,1,5), new Block(4,5,5)]; //dummy values, normally we'd get from ajax
-var blockTypes = ["Plains", "Hills", "Desert", "Water", "Mountain"]; //hardcoded
-var blockImprovements = ["Farm", "Mine", "Oil Well", "Fishery", "Quarry", "Coal Mine", "Pasture"];
-var blockGraphics = ["http://kingbushido95.ki.funpic.de/ModernDS/graphic/map/gras1.png", "http://kingbushido95.ki.funpic.de/ModernDS/graphic/map/berg2.png", "http://i.imgur.com/CqMI5.png", "http://i.imgur.com/cWv4h.png", "http://i.imgur.com/cE9RQ.png"];
 
 function changeHTML(id, changeTo){
     if (changeTo && document.getElementById(id).innerHTML != changeTo)
@@ -126,11 +63,11 @@ return document.getElementById(id);
 
 function upgradeBlock(thingytype) {
 var targetNum = document.getElementById("blockchoices").selectedIndex;
-var targetBlock = blocks[targetNum];
+var targetBlock = city.blocks[targetNum];
 	targetBlock.target += 1;
 var targetTask = "";
 var targetName = "";
-var cancellation = "blocks[" + targetNum + "].target -= 1;";
+var cancellation = "city.blocks[" + targetNum + "].target -= 1;";
 
 var foodcost = 250*Math.pow(1.25,targetBlock.target);
 var fuelcost = 300*Math.pow(1.275,targetBlock.target);
@@ -138,7 +75,7 @@ var mineralcost = 200*Math.pow(1.245,targetBlock.target);
 var productioncost = 250*Math.pow(1.25,(targetBlock.target));
 	
 if (thingytype=='simple') {
-	targetTask = "blocks[" + targetNum + "].level+=1;";
+	targetTask = "city.blocks[" + targetNum + "].level+=1;";
 	targetName = "Upgrade&nbsp;" + blockImprovements[targetBlock.improvement];	
 } else {
 	var targetType = document.getElementById("typechoices").selectedIndex;
@@ -168,13 +105,13 @@ if (thingytype=='simple') {
 		return false;
 		}
 
-	targetTask = "blocks[" + targetNum + "].improvement=" + targetType + "; blocks[" + targetNum + "].level=1;";
+	targetTask = "city.blocks[" + targetNum + "].improvement=" + targetType + "; city.blocks[" + targetNum + "].level=1;";
 	targetName = "Change " + blockImprovements[targetBlock.improvement] + " to " + blockImprovements[targetType];
 }
 	
 city.queue.push(new QueueItem(foodcost,fuelcost,mineralcost,productioncost,targetTask,targetName,cancellation));
 }
-	
+
 function upgradeBuilding(targetBuilding) {
 var targetName = "Upgrade&nbsp;" + buildingnames[targetBuilding];
 var targetTask = "";
@@ -197,29 +134,26 @@ city.queue.push(new QueueItem(foodcost,fuelcost,mineralcost,productioncost,targe
 
 //lrn2latin uirifag - significat anglice "can build"
 function potesseAedifacere(numerus) {
-if (city.buildings[numerus] > 0)
+    if (city.buildings[numerus] > 0)
 	return true;
-//we should probably tweak some of these requirements later
-else if (numerus == 4 && (city.buildings[0] < 1 || city.buildings[3] < 1))
-	return false;
-else if (numerus == 6 && ((city.buildings[0] < 1) || (city.buildings[3] < 5)))
-	return false;
-else if (numerus == 7 && (city.buildings[1] < 5 || city.buildings[5] < 5))
-	return false;
-else if (numerus == 8 && (city.buildings[5] < 5 || city.buildings[7] < 10))
-	return false;
-else if (numerus == 9 && (city.buildings[5] < 20 || city.buildings[8] < 10))
-	return false;
-else if (numerus == 10 && (city.buildings[5] < 20 || city.buildings[8] < 20))
-	return false;
-else if (numerus == 11 && (city.buildings[0] < 10 || city.buildings[7] < 5))
-	return false;
-else if (numerus > 11 && (!city.buildings[11]/*|| science < buildingcosts[numerus][4]*/))
+    var idklol = [
+	[4,  0,  1, 3,  1],
+	[6,  0,  1, 5,  5],
+	[7,  1,  5, 5,  5],
+	[8,  5,  5, 7, 10],
+	[9,  5, 20, 8, 10],
+	[10, 5, 20, 8, 20],
+	[11, 0, 10, 7,  5]]
+      , j;
+    for (j in idklol)
+	if (numerus == idklol[j][0] && 
+	    (city.buildings[idklol[j][1]] < idklol[j][2] || 
+	     city.buildings[idklol[j][3]] < idklol[j][4]))
+	    return false;
+    if (numerus > 11 && (!city.buildings[11]/*|| science < buildingcosts[numerus][4]*/))
 	return false; //all science buildings - will edit when we add the playerwide science system 
-else
-	return true;
+    return true;
 }//fin functionis "potesseAedifacere"; nolite illam futuere!
-
 
 function update(){
 var iam = new Date();
@@ -243,38 +177,22 @@ if (city.queue.length) {
 }
 
 
-for (number in blocks) {
-		switch (blocks[number].type){
-			case 0: {
-			city.food += horaepasatae*(foodProduction*Math.pow(1.163118,(blocks[number].level - 1)));
-			break;
-			}
-			case 1: {
-			city.mineral += horaepasatae*(mineralProduction*Math.pow(1.163118,(blocks[number].level - 1)));
-			break;
-			}
-			case 2: {
-			city.fuel += horaepasatae*(fuelProduction*Math.pow(1.163118,(blocks[number].level - 1)));
-			break;
-			}
-			case 3: {
-			city.food += horaepasatae*(foodProduction*Math.pow(1.163118,(blocks[number].level - 1)));
-			break;
-			}
-			case 4: {
-			city.mineral += 0.5*horaepasatae*(mineralProduction*Math.pow(1.163118,(blocks[number].level - 1)));
-			break;
-			}
-			case 5: {
-			city.fuel += 0.5*horaepasatae*(fuelProduction*Math.pow(1.163118,(blocks[number].level - 1)));
-			break;
-			}
-			case 6: {
-			city.food += 0.5*horaepasatae*(foodProduction*Math.pow(1.163118,(blocks[number].level - 1)));
-			break;
-			}
-		}
-	}
+for (number in city.blocks) {
+    var k=1;
+    if (city.blocks[number].type > 3)
+	k=0.5;
+    if (city.blocks[number].type%3 == 0)
+	city.food += k*horaepasatae*(
+	    foodProduction*Math.pow(1.63118, (city.blocks[number].level - 1)));
+    else if (city.blocks[number].type%3 == 1)
+	city.mineral += k*horaepasatae*(
+	    mineralProduction*Math.pow(163118, (city.blocks[number].level - 1)));
+    else if (city.blocks[number].type%3 == 2)
+	city.fuel += k*horaepasatae*(
+	    fuelProduction*Math.pow(163118, (city.blocks[number].level - 1)));
+    else
+	console.log("Houston we have a problem in for (number in city.blocks)");
+}
 
 if (city.food < 1)
 	city.food = 1;
@@ -292,8 +210,8 @@ city.population += health*horaepasatae*(Math.log((city.food+(city.population/2))
 unemployment = (city.population-(city.primarySector+city.secondarySector+city.tertiarySector))/city.population;
 
 city.primarySector = 0;
-	for (primary in blocks)
-	city.primarySector += 100*Math.pow(1.17,(blocks[primary].level - 1));
+	for (primary in city.blocks)
+	city.primarySector += 100*Math.pow(1.17,(city.blocks[primary].level - 1));
 city.secondarySector += horaepasatae*(Math.log((city.fuel+(city.secondarySector/2))/city.secondarySector)*city.secondarySector)*((city.buildings[3]+(city.buildings[5]*2)+(city.buildings[7]*2)+(city.buildings[8]*3)+(city.buildings[10]*2))/10);
 city.tertiarySector += horaepasatae*(Math.log((city.secondarySector+1)/city.tertiarySector)*city.tertiarySector)*(((city.buildings[0]*3)+city.buildings[3]+(city.buildings[6]*2)+(city.buildings[9]*2)+city.buildings[11])+city.buildings[16]/10); //we'll make it a bit more complex later
 productionTech = 10*(city.tertiarySector/city.secondarySector) + 0.1; //eventually we'll make this a part of research
@@ -316,13 +234,13 @@ writeStats();
 city.update = new Date();
 } //end up update function don't f with this {
 
-function writeStats(){
+function writeStats() {
     doctitle = city.name + " | Gunship Diplomacy";
     if (document.title != doctitle)
 	document.title = doctitle;
 
 changeHTML("name", city.name);
-changeHTML("cityblock", "<h3>" + city.name + "</h3>" + blockTypes[blocks[4].type] + "<br />" + blockImprovements[blocks[4].improvement]);
+changeHTML("cityblock", "<h3>" + city.name + "</h3>" + blockTypes[city.blocks[4].type] + "<br />" + blockImprovements[city.blocks[4].improvement]);
 changeHTML("population", parseInt(city.population) + " citizens");
 
 changeHTML("primary",parseInt(city.primarySector));
@@ -339,20 +257,16 @@ changeHTML("mineral",parseInt(city.mineral));
 	else
 		changeHTML("fuel",  Math.floor(city.fuel) + " (-" + parseInt((city.secondarySector/2)-city.fuel) + " shortage!)").style.color = "red";
 	
-	
-changeHTML("NW", "<b>" + blockTypes[blocks[0].type] + "</b><br />" + blockImprovements[blocks[0].improvement] + "<br />Level&nbsp;" + blocks[0].level).style.backgroundImage="url(" + blockGraphics[blocks[0].type] + ")";
-changeHTML("N", "<b>" + blockTypes[blocks[1].type] + "</b><br />" + blockImprovements[blocks[1].improvement] + "<br />Level&nbsp;" + blocks[1].level).style.backgroundImage="url(" + blockGraphics[blocks[1].type] + ")";
-changeHTML("NE",  "<b>" + blockTypes[blocks[2].type] + "</b><br />" + blockImprovements[blocks[2].improvement] + "<br />Level&nbsp;" + blocks[2].level).style.backgroundImage="url(" + blockGraphics[blocks[2].type] + ")";
-changeHTML("W",  "<b>" + blockTypes[blocks[3].type] + "</b><br />" + blockImprovements[blocks[3].improvement] + "<br />Level&nbsp;" + blocks[3].level).style.backgroundImage="url(" + blockGraphics[blocks[3].type] + ")";
-changeHTML("cityblock", "<b>" + city.name + "</b><br />" + blockTypes[blocks[4].type] + "<br />" + blockImprovements[blocks[4].improvement] + "<br />Level&nbsp;" + blocks[4].level).style.backgroundImage = "url(" + blockGraphics[blocks[4].type] + ")"; // please ensure the similar line in writeStats() matches
-changeHTML("E",  "<b>" + blockTypes[blocks[5].type] + "</b><br />" + blockImprovements[blocks[5].improvement] + "<br />Level&nbsp;" + blocks[5].level).style.backgroundImage="url(" + blockGraphics[blocks[5].type] + ")";
-changeHTML("SW",  "<b>" + blockTypes[blocks[6].type] + "</b><br />" + blockImprovements[blocks[6].improvement] + "<br />Level&nbsp;" + blocks[6].level).style.backgroundImage="url(" + blockGraphics[blocks[6].type] + ")";
-changeHTML("S",  "<b>" + blockTypes[blocks[7].type] + "</b><br />" + blockImprovements[blocks[7].improvement] + "<br />Level&nbsp;" + blocks[7].level).style.backgroundImage="url(" + blockGraphics[blocks[7].type] + ")";
-changeHTML("SE", "<b>" + blockTypes[blocks[8].type] + "</b><br />" + blockImprovements[blocks[8].improvement] + "<br />Level&nbsp;" + blocks[8].level).style.backgroundImage="url(" + blockGraphics[blocks[8].type] + ")";
+    // medi you are a retard
+    directions = ["NW", "N", "NE", "W", "cityblock", "E", "SW", "S", "SE"];
+    var i;
+    for (i in directions)
+	changeHTML(directions[i], "<b id='blocktype"+i+"'>" + blockTypes[city.blocks[i].type] + "</b><br>"+blockImprovements[city.blocks[i].improvement] + "<br>Level&nbsp;" + city.blocks[i].level).style.backgroundImage = "url(" + blockGraphics[city.blocks[i].type] + ")";
+    changeHTML("blocktype4", city.name);
 
-changeHTML("stability", Math.round(stability));
-changeHTML("health", Math.round(health*100));
-changeHTML("unemployment", parseInt(100*unemployment) + "");
+    changeHTML("stability", Math.round(stability));
+    changeHTML("health", Math.round(health*100));
+    changeHTML("unemployment", parseInt(100*unemployment) + "");
 
 var itemsdiv = document.getElementById("items");
 itemsdiv.innerHTML = '';
@@ -363,26 +277,79 @@ for (item in city.queue) {
 	itemsdiv.appendChild(queuediv);
 }
 
-var buildingsdiv = document.getElementById("buildlevels");
-buildingsdiv.innerHTML = "";
 for (what in city.buildings) {
 	if (potesseAedifacere(what)){
-		var buildingdiv = document.createElement("div");
-		buildingdiv.innerHTML = "<b>" + buildingnames[what] + "</b>:&nbsp;Level " + city.buildings[what];
-		buildingdiv.innerHTML += '&nbsp;<button onclick="upgradeBuilding(' + what + ');update();">Upgrade</button>';
-		buildingdiv.innerHTML += '<br />&nbsp;&nbsp;&nbsp;Cost to upgrade:&nbsp;';
-			buildingdiv.innerHTML += '<img src="http://forums.civfanatics.com/images/smilies/civ4/food.gif" alt="Food"/>&nbsp;';
-			buildingdiv.innerHTML += parseInt(buildingcosts[what][0]*Math.pow(1.25,city.buildingTargets[what]));
-			buildingdiv.innerHTML += '&nbsp;<img src="http://forums.civfanatics.com/images/smilies/civ4/science.gif" alt="Fuel"/>&nbsp;';
-			buildingdiv.innerHTML += parseInt(buildingcosts[what][1]*Math.pow(1.275,city.buildingTargets[what]));
-			buildingdiv.innerHTML += '&nbsp;<img src="http://cdn2.tribalwars.net/graphic/eisen.png?0e9e5" alt="Minerals"/>&nbsp;';			
-			buildingdiv.innerHTML += parseInt(buildingcosts[what][2]*Math.pow(1.245,city.buildingTargets[what]));
-			buildingsdiv.appendChild(buildingdiv);
+	    var htmlidtags = ["-level", "-food", "-fuel", "-mineral"];
+	    var buildingdiv = document.getElementById(buildingids[what]);
+	    var buildcosts = [
+		city.buildings[what],
+		parseInt(buildingcosts[what][0]*Math.pow(1.25,city.buildingTargets[what])),
+		parseInt(buildingcosts[what][1]*Math.pow(1.275,city.buildingTargets[what])),
+		parseInt(buildingcosts[what][2]*Math.pow(1.245,city.buildingTargets[what]))
+	    ];
+	    if (buildingdiv.className == "hidden-building") {
+		buildingdiv.className = "";
+		buildingdiv.innerHTML = "<b>" + buildingnames[what] + "</b>:";
+		buildingdiv.innerHTML += "&nbsp;Level ";
+		buildingdiv.innerHTML += "<span id='"+buildingids[what]+htmlidtags[0]+"'>";
+		buildingdiv.innerHTML += "</span>";
+		buildingdiv.innerHTML += '&nbsp;<button onclick="upgradeBuilding(' + what + ');update();">Upgrade';
+		buildingdiv.innerHTML += '</button><br>&nbsp;&nbsp;&nbsp;Cost to upgrade:&nbsp;';
+		buildingdiv.innerHTML += '<img src="/food.gif" alt="Food"/>&nbsp;';
+		buildingdiv.innerHTML += '<span id="'+buildingids[what]+htmlidtags[1]+'">'
+		buildingdiv.innerHTML += buildcosts[1]+'</span>' + '&nbsp;';
+		buildingdiv.innerHTML += '<img src="/fuel.gif" alt="Fuel"/>&nbsp;';
+		buildingdiv.innerHTML += '<span id="'+buildingids[what]+htmlidtags[2]+'">'
+		buildingdiv.innerHTML += buildcosts[2] + '</span>&nbsp;';
+		buildingdiv.innerHTML += '<img src="/mineral.png" alt="Minerals"/>&nbsp;';
+		buildingdiv.innerHTML += "<span id='"+buildingids[what]+htmlidtags[3]+"'>"+buildcosts[3];
+		buildingdiv.innerHTML += "</span>";
+	    } else {
+		var curdiv, k;
+		for (k in htmlidtags) {
+		    curdiv = document.getElementById(buildingids[what]+htmlidtags[k]);
+		    if (curdiv.innerHTML !== buildcosts[k]) {
+			curdiv.innerHTML = buildcosts[k];
+		    }
+		}
+	    }
 	}
 }
 
 }//end of write function don't f with this }
 
-update();
-document.body.style.visibility = 'visible';
-window.setInterval(update, 1000);
+function loadCity() {
+    var req = new XMLHttpRequest();
+    req.open("GET", "/city");
+    req.onreadystatechange = function() {
+	if (req.readyState == 4) {
+	    if (req.status == 200) {
+		city = JSON.parse(req.response);
+		city.update = new Date(city.update);
+		health = 0.1; // formula from city stats here
+		unemployment = 0; // formula from city stats here
+		foodProduction = 500; // formula from city stats here
+		fuelProduction = 500; // formula from city stats here
+		mineralProduction = 500; // formula from city stats here
+		buildingcosts = [new Array(900,800,700,750),new Array(2000,1700,900,1500),new Array(500,1000,200,3000),new Array(450,400,300,1000),new Array(1600,2000,500,750),new Array(2000,2000,2000,3000),new Array(2200,1800,2400,1000),new Array(2700,2400,2600,5000),new Array(3000,2400,2600,5000),new Array(5000,10000,12500,17000),new Array(7500,15000,5000,50000)]; //hardcoded
+		//still have to add costs to hightechs
+		production = 1000; // formula from city stats here
+		productionTech = 1; // formula from city stats here
+		stability = city.baseStability - city.battleStability;
+		// it goes NW, N, NE, W, city's own, E, SW, W, SE; derived from block DB
+		// something like /square/x/y for a URL scheme?
+		if (!city.blocks)
+		    city.blocks = [new Block(0,0,5), new Block(0,4,5), new Block(1,1,5), new Block(1,5,5), new Block(2,2,5), new Block(2,6,5), new Block(3,3,5), new Block(4,1,5), new Block(4,5,5)]; //default values
+		update();
+		document.body.style.visibility = 'visible';
+		window.setInterval(update, 1000);
+	    } else {
+		loadCity();
+	    }
+	}
+    }
+    req.send();
+}
+
+loadCity();
+
