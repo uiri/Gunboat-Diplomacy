@@ -285,15 +285,15 @@ changeHTML("mineral",parseInt(city.mineral));
     changeHTML("unemployment", parseInt(100*unemployment) + "");
     
     changeHTML("ethnicReligion", city.ethnicReligion);
-    changeHTML("cath", city.cath);
-    changeHTML("ortho", city.ortho);
-    changeHTML("prot", city.prot);
-    changeHTML("shii", city.shii);
-    changeHTML("sunni", city.sunni);
-    changeHTML("budd", city.budd);
-    changeHTML("sikh", city.sikh);
-    changeHTML("pagan", city.pagan); 
-    changeHTML("atheist", atheist);
+    changeHTML("cath", Math.round(city.cath*10000)/100);
+    changeHTML("ortho", Math.round(city.ortho*10000)/100);
+    changeHTML("prot", Math.round(city.prot*10000)/100);
+    changeHTML("shii", Math.round(city.shii*10000)/100);
+    changeHTML("sunni", Math.round(city.sunni*10000)/100);
+    changeHTML("budd", Math.round(city.budd*10000)/100);
+    changeHTML("sikh", Math.round(city.sikh*10000)/100);
+    changeHTML("pagan", Math.round(city.pagan*10000)/100); 
+    changeHTML("atheist", Math.round(atheist*10000)/100);
 
 
 var itemsdiv = document.getElementById("items");
