@@ -331,7 +331,7 @@ function loadCity() {
 		foodProduction = 500; // formula from city stats here
 		fuelProduction = 500; // formula from city stats here
 		mineralProduction = 500; // formula from city stats here
-		buildingcosts = [new Array(700,800,900,750),new Array(800,450,1000,1500),new Array(500,200,7500,3000),new Array(400,300,450,1000),new Array(800,250,1000,750),new Array(2000,2000,2000,3000),new Array(2200,1800,2400,1000),new Array(2700,2400,2600,5000),new Array(3000,2400,2600,5000),new Array(5000,10000,12500,17000),new Array(7500,15000,5000,50000)];
+		buildingcosts = [new Array(700,800,900,750),new Array(800,450,1000,1500),new Array(500,200,7500,3000),new Array(400,300,450,1000),new Array(800,250,1000,750),new Array(500,500,750,3000),new Array(1100,900,1200,1000),new Array(1200,1200,1350,5000),new Array(1500,1200,1300,5000),new Array(2500,5000,6250,17000),new Array(3750,2500,7500,50000)];
 		//still have to add costs to hightechs
 		production = 1000; // formula from city stats here
 		productionTech = 1; // formula from city stats here
