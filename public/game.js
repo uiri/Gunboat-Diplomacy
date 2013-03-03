@@ -178,37 +178,21 @@ if (city.queue.length) {
 
 
 for (number in city.blocks) {
-		switch (city.blocks[number].type){
-			case 0: {
-			city.food += horaepasatae*(foodProduction*Math.pow(1.163118,(city.blocks[number].level - 1)));
-			break;
-			}
-			case 1: {
-			city.mineral += horaepasatae*(mineralProduction*Math.pow(1.163118,(city.blocks[number].level - 1)));
-			break;
-			}
-			case 2: {
-			city.fuel += horaepasatae*(fuelProduction*Math.pow(1.163118,(city.blocks[number].level - 1)));
-			break;
-			}
-			case 3: {
-			city.food += horaepasatae*(foodProduction*Math.pow(1.163118,(city.blocks[number].level - 1)));
-			break;
-			}
-			case 4: {
-			city.mineral += 0.5*horaepasatae*(mineralProduction*Math.pow(1.163118,(city.blocks[number].level - 1)));
-			break;
-			}
-			case 5: {
-			city.fuel += 0.5*horaepasatae*(fuelProduction*Math.pow(1.163118,(city.blocks[number].level - 1)));
-			break;
-			}
-			case 6: {
-			city.food += 0.5*horaepasatae*(foodProduction*Math.pow(1.163118,(city.blocks[number].level - 1)));
-			break;
-			}
-		}
-	}
+    var k=1;
+    if (city.blocks[number].type > 3)
+	k=0.5;
+    if (city.blocks[number].type%3 == 0)
+	city.food += k*horaepasatae*(
+	    foodProduction*Math.pow(1.63118, (city.blocks[number].level - 1)));
+    else if (city.blocks[number].type%3 == 1)
+	city.mineral += k*horaepasatae*(
+	    mineralProduction*Math.pow(163118, (city.blocks[number].level - 1)));
+    else if (city.blocks[number].type%3 == 2)
+	city.fuel += k*horaepasatae*(
+	    fuelProduction*Math.pow(163118, (city.blocks[number].level - 1)));
+    else
+	console.log("Houston we have a problem in for (number in city.blocks)");
+}
 
 if (city.food < 1)
 	city.food = 1;
@@ -277,7 +261,8 @@ changeHTML("mineral",parseInt(city.mineral));
     directions = ["NW", "N", "NE", "W", "cityblock", "E", "SW", "S", "SE"];
     var i;
     for (i in directions)
-	changeHTML(directions[i], "<b>" + blockTypes[city.blocks[i].type] + "</b><br>"+blockImprovements[city.blocks[i].improvement] + "<br>Level&nbsp;" + city.blocks[i].level).style.backgroundImage = "url(" + blockGraphics[city.blocks[i].type] + ")";
+	changeHTML(directions[i], "<b id='blocktype"+i+"'>" + blockTypes[city.blocks[i].type] + "</b><br>"+blockImprovements[city.blocks[i].improvement] + "<br>Level&nbsp;" + city.blocks[i].level).style.backgroundImage = "url(" + blockGraphics[city.blocks[i].type] + ")";
+    changeHTML("blocktype4", city.name);
 
     changeHTML("stability", Math.round(stability));
     changeHTML("health", Math.round(health*100));
