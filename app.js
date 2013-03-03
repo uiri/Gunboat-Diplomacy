@@ -71,6 +71,15 @@ function City() {
     this.baseStability = 100;
     this.battleStability = 0;
     this.blocks = null;
+    this.ethnicReligion = 'Shen';
+    	this.cath = 0.2273;
+    	this.ortho = 0.0267;
+    	this.prot = 0.1178;
+    	this.shii = 0.0287;
+    	this.sunni = 0.1595;
+    	this.budd = 0.0931;
+    	this.sikh = 0.0031;
+    	this.pagan = 0.1634;
 }
 
 everyauth.everymodule.findUserById( function(id, callback) {
