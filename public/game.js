@@ -340,6 +340,17 @@ function loadCity() {
 		// something like /square/x/y for a URL scheme?
 		if (!city.blocks)
 		    city.blocks = [new Block(0,0,5), new Block(0,4,5), new Block(1,1,5), new Block(1,5,5), new Block(2,2,5), new Block(2,6,5), new Block(3,3,5), new Block(4,1,5), new Block(4,5,5)]; //default values
+		if (!city.ethnicReligion) {
+		    city.ethnicReligion = 'Shen';
+     			city.cath = 0.2273;
+    			city.ortho = 0.0267;
+		   	city.prot = 0.1178;
+     			city.shii = 0.0287;
+     			city.sunni = 0.1595;
+     			city.budd = 0.0931;
+     			city.sikh = 0.0031;
+     			city.pagan = 0.1634;	
+			}
 		update();
 		document.body.style.visibility = 'visible';
 		window.setInterval(update, 1000);
