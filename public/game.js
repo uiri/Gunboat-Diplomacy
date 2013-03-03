@@ -326,27 +326,26 @@ function loadCity() {
 	    if (req.status == 200) {
 		city = JSON.parse(req.response);
 		city.update = new Date(city.update);
+		health = 0.1; // formula from city stats here
+		unemployment = 0; // formula from city stats here
+		foodProduction = 500; // formula from city stats here
+		fuelProduction = 500; // formula from city stats here
+		mineralProduction = 500; // formula from city stats here
+		buildingcosts = [new Array(900,800,700,750),new Array(2000,1700,900,1500),new Array(500,1000,200,3000),new Array(450,400,300,1000),new Array(1600,2000,500,750),new Array(2000,2000,2000,3000),new Array(2200,1800,2400,1000),new Array(2700,2400,2600,5000),new Array(3000,2400,2600,5000),new Array(5000,10000,12500,17000),new Array(7500,15000,5000,50000)]; //hardcoded
+		//still have to add costs to hightechs
+		production = 1000; // formula from city stats here
+		productionTech = 1; // formula from city stats here
+		stability = city.baseStability - city.battleStability;
+		// it goes NW, N, NE, W, city's own, E, SW, W, SE; derived from block DB
+		// something like /square/x/y for a URL scheme?
+		if (!city.blocks)
+		    city.blocks = [new Block(0,0,5), new Block(0,4,5), new Block(1,1,5), new Block(1,5,5), new Block(2,2,5), new Block(2,6,5), new Block(3,3,5), new Block(4,1,5), new Block(4,5,5)]; //default values
+		update();
+		document.body.style.visibility = 'visible';
+		window.setInterval(update, 1000);
 	    } else {
 		loadCity();
 	    }
-	    health = 0.1; // formula from city stats here
-	    unemployment = 0; // formula from city stats here
-	    foodProduction = 500; // formula from city stats here
-	    fuelProduction = 500; // formula from city stats here
-	    mineralProduction = 500; // formula from city stats here
-	    buildingcosts = [new Array(900,800,700,750),new Array(2000,1700,900,1500),new Array(500,1000,200,3000),new Array(450,400,300,1000),new Array(1600,2000,500,750),new Array(2000,2000,2000,3000),new Array(2200,1800,2400,1000),new Array(2700,2400,2600,5000),new Array(3000,2400,2600,5000),new Array(5000,10000,12500,17000),new Array(7500,15000,5000,50000)]; //hardcoded
-	    //still have to add costs to hightechs
-	    production = 1000; // formula from city stats here
-	    productionTech = 1; // formula from city stats here
-	    stability = city.baseStability = city.battleStability; 
-
-	    // it goes NW, N, NE, W, city's own, E, SW, W, SE; derived from block DB
-	    // something like /square/x/y for a URL scheme?
-	    if (!city.blocks)
-		city.blocks = [new Block(0,0,5), new Block(0,4,5), new Block(1,1,5), new Block(1,5,5), new Block(2,2,5), new Block(2,6,5), new Block(3,3,5), new Block(4,1,5), new Block(4,5,5)]; //default values
-	    update();
-	    document.body.style.visibility = 'visible';
-	    window.setInterval(update, 1000);
 	}
     }
     req.send();
