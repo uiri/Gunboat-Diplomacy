@@ -70,8 +70,8 @@ var targetName = "";
 var cancellation = "city.blocks[" + targetNum + "].target -= 1;";
 
 var foodcost = 250*Math.pow(1.25,targetBlock.target);
-var fuelcost = 300*Math.pow(1.275,targetBlock.target);
-var mineralcost = 200*Math.pow(1.245,targetBlock.target);
+var fuelcost = 300*Math.pow(1.245,targetBlock.target);
+var mineralcost = 200*Math.pow(1.275,targetBlock.target);
 var productioncost = 250*Math.pow(1.25,(targetBlock.target));
 	
 if (thingytype=='simple') {
@@ -186,10 +186,10 @@ for (number in city.blocks) {
 	    foodProduction*Math.pow(1.63118, (city.blocks[number].level - 1)));
     else if (city.blocks[number].type%3 == 1)
 	city.mineral += k*horaepasatae*(
-	    mineralProduction*Math.pow(163118, (city.blocks[number].level - 1)));
+	    mineralProduction*Math.pow(1.63118, (city.blocks[number].level - 1)));
     else if (city.blocks[number].type%3 == 2)
 	city.fuel += k*horaepasatae*(
-	    fuelProduction*Math.pow(163118, (city.blocks[number].level - 1)));
+	    fuelProduction*Math.pow(1.63118, (city.blocks[number].level - 1)));
     else
 	console.log("Houston we have a problem in for (number in city.blocks)");
 }
