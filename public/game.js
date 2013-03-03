@@ -117,7 +117,7 @@ var targetName = "Upgrade&nbsp;" + buildingnames[targetBuilding];
 var targetTask = "";
 var currentLevel = city.buildingTargets[targetBuilding];
 	city.buildingTargets[targetBuilding] += 1;
-var cancellation = "buildingTargets[" + targetBuilding + "]-=1;";
+var cancellation = "city.buildingTargets[" + targetBuilding + "]-=1;";
 
 if (!currentLevel)
 	currentLevel += 1;
