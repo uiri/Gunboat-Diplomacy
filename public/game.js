@@ -267,6 +267,17 @@ changeHTML("mineral",parseInt(city.mineral));
     changeHTML("stability", Math.round(stability));
     changeHTML("health", Math.round(health*100));
     changeHTML("unemployment", parseInt(100*unemployment) + "");
+    
+    changeHTML("ethnicReligion", ethnicReligion);
+    changeHTML("cath", cath);
+    changeHTML("ortho", ortho);
+    changeHTML("prot", prot);
+    changeHTML("shii", shii);
+    changeHTML("sunni", sunni);
+    changeHTML("budd", budd);
+    changeHTML("sikh", sikh);
+    changeHTML("pagan", pagan); 
+
 
 var itemsdiv = document.getElementById("items");
 itemsdiv.innerHTML = '';
