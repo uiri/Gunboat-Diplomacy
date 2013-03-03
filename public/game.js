@@ -138,7 +138,7 @@ function potesseAedifacere(numerus) {
 	return true;
     var idklol = [
 	[4,  0,  1, 3,  1],
-	[6,  0,  1, 5,  5],
+	[6,  0,  1, 3,  5],
 	[7,  1,  5, 5,  5],
 	[8,  5,  5, 7, 10],
 	[9,  5, 20, 8, 10],
@@ -331,7 +331,7 @@ function loadCity() {
 		foodProduction = 500; // formula from city stats here
 		fuelProduction = 500; // formula from city stats here
 		mineralProduction = 500; // formula from city stats here
-		buildingcosts = [new Array(900,800,700,750),new Array(2000,1700,900,1500),new Array(500,1000,200,3000),new Array(450,400,300,1000),new Array(1600,2000,500,750),new Array(2000,2000,2000,3000),new Array(2200,1800,2400,1000),new Array(2700,2400,2600,5000),new Array(3000,2400,2600,5000),new Array(5000,10000,12500,17000),new Array(7500,15000,5000,50000)]; //hardcoded
+		buildingcosts = [new Array(700,800,900,750),new Array(800,450,1000,1500),new Array(500,200,7500,3000),new Array(400,300,450,1000),new Array(800,250,1000,750),new Array(2000,2000,2000,3000),new Array(2200,1800,2400,1000),new Array(2700,2400,2600,5000),new Array(3000,2400,2600,5000),new Array(5000,10000,12500,17000),new Array(7500,15000,5000,50000)];
 		//still have to add costs to hightechs
 		production = 1000; // formula from city stats here
 		productionTech = 1; // formula from city stats here
