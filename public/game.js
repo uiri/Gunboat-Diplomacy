@@ -296,11 +296,11 @@ for (what in city.buildings) {
 		buildingdiv.innerHTML += '&nbsp;<button onclick="upgradeBuilding(' + what + ');update();">Upgrade';
 		buildingdiv.innerHTML += '</button><br>&nbsp;&nbsp;&nbsp;Cost to upgrade:&nbsp;';
 		buildingdiv.innerHTML += '<img src="/food.gif" alt="Food"/>&nbsp;';
-		buildingdiv.innerHTML += '<span id="'+buildingids[what]+htmlidtags[1]+'">'
-		buildingdiv.innerHTML += buildcosts[1]+'</span>' + '&nbsp;';
+		buildingdiv.innerHTML += '<span id="'+buildingids[what]+htmlidtags[1]+'">' + buildcosts[1];
+		buildingdiv.innerHTML += '</span>&nbsp;';
 		buildingdiv.innerHTML += '<img src="/fuel.gif" alt="Fuel"/>&nbsp;';
-		buildingdiv.innerHTML += '<span id="'+buildingids[what]+htmlidtags[2]+'">'
-		buildingdiv.innerHTML += buildcosts[2] + '</span>&nbsp;';
+		buildingdiv.innerHTML += '<span id="'+buildingids[what]+htmlidtags[2]+'">' + buildcosts[2];
+		buildingdiv.innerHTML += '</span>&nbsp;';
 		buildingdiv.innerHTML += '<img src="/mineral.png" alt="Minerals"/>&nbsp;';
 		buildingdiv.innerHTML += "<span id='"+buildingids[what]+htmlidtags[3]+"'>"+buildcosts[3];
 		buildingdiv.innerHTML += "</span>";
