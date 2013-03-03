@@ -7,6 +7,7 @@ var blockImprovements = ["Farm", "Mine", "Oil Well", "Fishery", "Quarry", "Coal 
 var blockGraphics = ["http://kingbushido95.ki.funpic.de/ModernDS/graphic/map/gras1.png", "http://kingbushido95.ki.funpic.de/ModernDS/graphic/map/berg2.png", "http://i.imgur.com/CqMI5.png", "http://i.imgur.com/cWv4h.png", "http://i.imgur.com/cE9RQ.png"];
 var buildingnames = ["School", "Barracks", "Fortifications", "Municipal Works", "Hospital", "Transportation", "Broadcast Tower", "Workshop", "Foundry", "Airport", "Shipyard","Laboratory","Ethanol Plant","Hydroponics Plant","Recycling Plant","Nuclear Plant","Supercomputer","Space Center"];
 var buildingids = ["school", "barracks", "fortifications", "municipalworks", "hospital", "transportation", "broadcasttower", "workshop", "foundry", "airport", "shipyard", "laboratory", "ethanolplant", "hydroponicsplant", "recyclingplant", "nuclearplant", "supercomputer", "spacecenter"];
+var atheist;
 
 function QueueItem(foodcost,fuelcost,mineralcost,productioncost,task,description,onCancel) {
 this.cancel = function() { eval(onCancel);}
@@ -209,6 +210,21 @@ health = 0.1;
 city.population += health*horaepasatae*(Math.log((city.food+(city.population/2))/city.population)*city.population);
 unemployment = (city.population-(city.primarySector+city.secondarySector+city.tertiarySector))/city.population;
 
+///will change when we implement gov't
+city.cath += (Math.random()-0.5)*horaepasatae;
+city.ortho += (Math.random()-0.5)*horaepasatae;
+city.prot += (Math.random()-0.5)*horaepasatae;
+city.shii += (Math.random()-0.5)*horaepasatae;
+city.sunni += (Math.random()-0.5)*horaepasatae;
+city.budd += (Math.random()-0.5)*horaepasatae;
+city.sikh += (Math.random()-0.5)*horaepasatae;
+city.pagan += (Math.random()-0.5)*horaepasatae;
+//this formula will work with free religion; however, theocracy and state atheism will cause a gradual increase in their own
+
+atheist = 1-(city.cath+city.ortho+city.prot+city.shii+city.sunni+city.budd+city.sikh+city.pagan);
+	if (atheist < 0)
+	city.pagan += atheist;
+
 city.primarySector = 0;
 	for (primary in city.blocks)
 	city.primarySector += 100*Math.pow(1.17,(city.blocks[primary].level - 1));
@@ -268,15 +284,16 @@ changeHTML("mineral",parseInt(city.mineral));
     changeHTML("health", Math.round(health*100));
     changeHTML("unemployment", parseInt(100*unemployment) + "");
     
-    changeHTML("ethnicReligion", ethnicReligion);
-    changeHTML("cath", cath);
-    changeHTML("ortho", ortho);
-    changeHTML("prot", prot);
-    changeHTML("shii", shii);
-    changeHTML("sunni", sunni);
-    changeHTML("budd", budd);
-    changeHTML("sikh", sikh);
-    changeHTML("pagan", pagan); 
+    changeHTML("ethnicReligion", city.ethnicReligion);
+    changeHTML("cath", city.cath);
+    changeHTML("ortho", city.ortho);
+    changeHTML("prot", city.prot);
+    changeHTML("shii", city.shii);
+    changeHTML("sunni", city.sunni);
+    changeHTML("budd", city.budd);
+    changeHTML("sikh", city.sikh);
+    changeHTML("pagan", city.pagan); 
+    changeHTML("atheist", atheist);
 
 
 var itemsdiv = document.getElementById("items");
