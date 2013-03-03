@@ -105,7 +105,7 @@ loadCity();
 	var fuelProduction = 500; // formula from city stats here
 	var mineralProduction = 500; // formula from city stats here
 	var buildingnames = ["School", "Barracks", "Fortifications", "Municipal Works", "Hospital", "Transportation", "Broadcast Tower", "Workshop", "Foundry", "Airport", "Shipyard","Laboratory","Ethanol Plant","Hydroponics Plant","Recycling Plant","Nuclear Plant","Supercomputer","Space Center"];
-	var buildingcosts = [new Array(900,800,700,750),new Array(2000,1700,900,1500),new Array(500,1000,200,3000),new Array(450,400,300,1000),new Array(1600,2000,500,750),new Array(2000,2000,2000,3000),new Array(2200,1800,2400,1000),new Array(2700,2400,2600,5000),new Array(3000,2400,2600,5000),new Array(5000,10000,12500,17000),new Array(7500,15000,5000,50000)]; //hardcoded
+	var buildingcosts = [new Array(700,800,900,750),new Array(800,450,1000,1500),new Array(500,200,7500,3000),new Array(400,300,450,1000),new Array(800,250,1000,750),new Array(2000,2000,2000,3000),new Array(2200,1800,2400,1000),new Array(2700,2400,2600,5000),new Array(3000,2400,2600,5000),new Array(5000,10000,12500,17000),new Array(7500,15000,5000,50000)]; //hardcoded
 	//still have to add costs to hightechs
 	var production = 1000; // formula from city stats here
 	var productionTech = 1; // formula from city stats here
@@ -202,7 +202,7 @@ if (city.buildings[numerus] > 0)
 //we should probably tweak some of these requirements later
 else if (numerus == 4 && (city.buildings[0] < 1 || city.buildings[3] < 1))
 	return false;
-else if (numerus == 6 && ((city.buildings[0] < 1) || (city.buildings[5] < 5)))
+else if (numerus == 6 && ((city.buildings[0] < 1) || (city.buildings[3] < 5)))
 	return false;
 else if (numerus == 7 && (city.buildings[1] < 5 || city.buildings[5] < 5))
 	return false;
