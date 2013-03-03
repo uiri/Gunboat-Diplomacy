@@ -203,9 +203,9 @@ if (city.mineral < 1)
 
 	
 health = 0.1;
-	health += (200*Math.pow(1.25,city.buildings[3]))/city.population;
-	health += (200*Math.pow(1.25,city.buildings[4]))/city.population;
-	health += (50*Math.pow(1.25,city.buildings[5]))/city.population;
+	health += (5000*Math.pow(1.25,city.buildings[3]))/city.population;
+	health += (5000*Math.pow(1.25,city.buildings[4]))/city.population;
+	health += (500*Math.pow(1.25,city.buildings[5]))/city.population;
 city.population += health*horaepasatae*(Math.log((city.food+(city.population/2))/city.population)*city.population);
 unemployment = (city.population-(city.primarySector+city.secondarySector+city.tertiarySector))/city.population;
 
