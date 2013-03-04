@@ -171,9 +171,10 @@ if (city.queue.length) {
 		}
 	else
 		changeHTML("queuestatus", "Requires more resources! Production halted!");
-		if (city.queue[0].prodleft < 0.01) {
-			eval(city.queue[0].task);
-			city.queue.shift();
+	if (city.queue[0].prodleft < 0.01) {
+		eval(city.queue[0].task);
+		city.queue.shift();
+		saveCity();
 		}
 }
 
@@ -401,3 +402,4 @@ function loadCity() {
 
 loadCity();
 
+window.onunload=saveCity();
