@@ -222,8 +222,17 @@ city.pagan += 0.01*(Math.random()-0.5)*horaepasatae;
 //this formula will work with free religion; however, theocracy and state atheism will cause a gradual increase in their own
 
 atheist = 1-(city.cath+city.ortho+city.prot+city.shii+city.sunni+city.budd+city.sikh+city.pagan);
-	if (atheist < 0)
-	city.pagan += atheist;
+	while (atheist < 0) {
+	city.cath -= 0.01;
+	city.ortho -= 0.01;
+	city.prot -= 0.01;
+	city.shii -= 0.01;
+	city.sunni -= 0.01;
+	city.budd -= 0.01;
+	city.sikh -= 0.01;
+	city.pagan -= 0.01;
+	atheist = 1-(city.cath+city.ortho+city.prot+city.shii+city.sunni+city.budd+city.sikh+city.pagan);
+	}
 
 city.primarySector = 0;
 	for (primary in city.blocks)
