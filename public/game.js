@@ -211,14 +211,14 @@ city.population += health*horaepasatae*(Math.log((city.food+(city.population/2))
 unemployment = (city.population-(city.primarySector+city.secondarySector+city.tertiarySector))/city.population;
 
 ///will change when we implement gov't
-city.cath += (Math.random()-0.5)*horaepasatae;
-city.ortho += (Math.random()-0.5)*horaepasatae;
-city.prot += (Math.random()-0.5)*horaepasatae;
-city.shii += (Math.random()-0.5)*horaepasatae;
-city.sunni += (Math.random()-0.5)*horaepasatae;
-city.budd += (Math.random()-0.5)*horaepasatae;
-city.sikh += (Math.random()-0.5)*horaepasatae;
-city.pagan += (Math.random()-0.5)*horaepasatae;
+city.cath += 0.01*(Math.random()-0.5)*horaepasatae;
+city.ortho += 0.01*(Math.random()-0.5)*horaepasatae;
+city.prot += 0.01*(Math.random()-0.5)*horaepasatae;
+city.shii += 0.01*(Math.random()-0.5)*horaepasatae;
+city.sunni += 0.01*(Math.random()-0.5)*horaepasatae;
+city.budd += 0.01*(Math.random()-0.5)*horaepasatae;
+city.sikh += 0.01*(Math.random()-0.5)*horaepasatae;
+city.pagan += 0.01*(Math.random()-0.5)*horaepasatae;
 //this formula will work with free religion; however, theocracy and state atheism will cause a gradual increase in their own
 
 atheist = 1-(city.cath+city.ortho+city.prot+city.shii+city.sunni+city.budd+city.sikh+city.pagan);
@@ -285,15 +285,15 @@ changeHTML("mineral",parseInt(city.mineral));
     changeHTML("unemployment", parseInt(100*unemployment) + "");
     
     changeHTML("ethnicReligion", city.ethnicReligion);
-    changeHTML("cath", Math.round(city.cath*10000)/100);
-    changeHTML("ortho", Math.round(city.ortho*10000)/100);
-    changeHTML("prot", Math.round(city.prot*10000)/100);
-    changeHTML("shii", Math.round(city.shii*10000)/100);
-    changeHTML("sunni", Math.round(city.sunni*10000)/100);
-    changeHTML("budd", Math.round(city.budd*10000)/100);
-    changeHTML("sikh", Math.round(city.sikh*10000)/100);
-    changeHTML("pagan", Math.round(city.pagan*10000)/100); 
-    changeHTML("atheist", Math.round(atheist*10000)/100);
+    changeHTML("cath", Math.round(city.cath*100);
+    changeHTML("ortho", Math.round(city.ortho*100);
+    changeHTML("prot", Math.round(city.prot*100);
+    changeHTML("shii", Math.round(city.shii*100);
+    changeHTML("sunni", Math.round(city.sunni*100);
+    changeHTML("budd", Math.round(city.budd*100);
+    changeHTML("sikh", Math.round(city.sikh*100);
+    changeHTML("pagan", Math.round(city.pagan*100); 
+    changeHTML("atheist", Math.round(atheist*100);
 
 
 var itemsdiv = document.getElementById("items");
