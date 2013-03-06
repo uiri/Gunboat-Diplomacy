@@ -249,8 +249,7 @@ city.primarySector = 0;
 	for (primary in city.blocks)
 	city.primarySector += 100*Math.pow(1.17,(city.blocks[primary].level - 1));
 city.secondarySector += hp*(Math.log((city.fuel+(city.secondarySector/2))/city.secondarySector)*city.secondarySector)*((city.buildings[3]+(city.buildings[5]*2)+(city.buildings[7]*2)+(city.buildings[8]*3)+(city.buildings[10]*2))/10);
-if (city.tertiarySector < city.secondarySector)
-	city.tertiarySector += hp*(Math.log((city.secondarySector+1)/city.tertiarySector)*city.tertiarySector)*(((city.buildings[0]*3)+city.buildings[3]+(city.buildings[6]*2)+(city.buildings[9]*2)+city.buildings[11])+city.buildings[16]/10); //we'll make it a bit more complex later
+city.tertiarySector += hp*(Math.log((city.population+1-(city.secondarySector+city.tertiarySector))/city.tertiarySector)*city.tertiarySector)*(((city.buildings[0]*3)+city.buildings[3]+(city.buildings[6]*2)+(city.buildings[9]*2)+city.buildings[11])+city.buildings[16]/10); //we'll make it a bit more complex later
 productionTech = 10*(city.tertiarySector/city.secondarySector) + 0.1; //eventually we'll make this a part of research
 
 if ((city.primarySector+city.secondarySector+city.tertiarySector) > city.population)
