@@ -1,5 +1,5 @@
 //lrn2latin uirifag - significat anglice "hours passed"
-var horaepasatae, city, health, unemployment, foodProduction, fuelProduction
+var city, health, unemployment, foodProduction, fuelProduction
   , mineralProduction, buildingcosts, production, productionTech
   , stability;
 var blockTypes = ["Plains", "Hills", "Desert", "Water", "Mountain"]; //hardcoded
@@ -158,12 +158,23 @@ function potesseAedifacere(numerus) {
 
 function update(){
 var iam = new Date();
-horaepasatae = (iam-city.update)/3600000;
+var horaepasatae = (iam-city.update)/3600000;
+
+    var hp;
+    while (horaepasatae) {
+	if (horaepasatae > 0.5) {
+	    hp = 0.5;
+	    horaepasatae -= hp;
+	} else {
+	    hp = horaepasatae;
+	    horaepasatae = 0;
+	}
+
 
 if (city.queue.length) {
-	var q = (horaepasatae*production)/city.queue[0].cost[3];
+	var q = (hp*production)/city.queue[0].cost[3];
 	if (city.queue[0].cost[0]*q < city.food && city.queue[0].cost[1]*q < city.fuel && city.queue[0].cost[2]*q < city.mineral) {
-		city.queue[0].prodleft -= production*horaepasatae;
+		city.queue[0].prodleft -= production*hp;
 		city.food -= city.queue[0].cost[0]*q;
 		city.fuel -= city.queue[0].cost[1]*q;
 		city.mineral -= city.queue[0].cost[2]*q;
@@ -184,13 +195,13 @@ for (number in city.blocks) {
     if (city.blocks[number].type > 3)
 	k=0.5;
     if (city.blocks[number].type%3 == 0)
-	city.food += k*horaepasatae*(
+	city.food += k*hp*(
 	    foodProduction*Math.pow(1.63118, (city.blocks[number].level - 1)));
     else if (city.blocks[number].type%3 == 1)
-	city.mineral += k*horaepasatae*(
+	city.mineral += k*hp*(
 	    mineralProduction*Math.pow(1.63118, (city.blocks[number].level - 1)));
     else if (city.blocks[number].type%3 == 2)
-	city.fuel += k*horaepasatae*(
+	city.fuel += k*hp*(
 	    fuelProduction*Math.pow(1.63118, (city.blocks[number].level - 1)));
     else
 	console.log("Houston we have a problem in for (number in city.blocks)");
@@ -203,23 +214,22 @@ if (city.fuel < 1)
 if (city.mineral < 1)
 	city.mineral = 1;
 
-	
-health = 0.1;
+	health = 0.1;
 	health += (5000*Math.pow(1.25,city.buildings[3]))/city.population;
 	health += (5000*Math.pow(1.25,city.buildings[4]))/city.population;
 	health += (500*Math.pow(1.25,city.buildings[5]))/city.population;
-city.population += health*horaepasatae*(Math.log((city.food+(city.population/2))/city.population)*city.population);
-unemployment = (city.population-(city.primarySector+city.secondarySector+city.tertiarySector))/city.population;
+	city.population += health*hp*(Math.log((city.food+(city.population/2))/city.population)*city.population);
+	unemployment = (city.population-(city.primarySector+city.secondarySector+city.tertiarySector))/city.population;
 
 ///will change when we implement gov't
-city.cath += 0.01*(Math.random()-0.5)*horaepasatae;
-city.ortho += 0.01*(Math.random()-0.5)*horaepasatae;
-city.prot += 0.01*(Math.random()-0.5)*horaepasatae;
-city.shii += 0.01*(Math.random()-0.5)*horaepasatae;
-city.sunni += 0.01*(Math.random()-0.5)*horaepasatae;
-city.budd += 0.01*(Math.random()-0.5)*horaepasatae;
-city.sikh += 0.01*(Math.random()-0.5)*horaepasatae;
-city.pagan += 0.01*(Math.random()-0.5)*horaepasatae;
+	city.cath += 0.01*(Math.random()-0.5)*hp;
+	city.ortho += 0.01*(Math.random()-0.5)*hp;
+	city.prot += 0.01*(Math.random()-0.5)*hp;
+	city.shii += 0.01*(Math.random()-0.5)*hp;
+	city.sunni += 0.01*(Math.random()-0.5)*hp;
+	city.budd += 0.01*(Math.random()-0.5)*hp;
+	city.sikh += 0.01*(Math.random()-0.5)*hp;
+	city.pagan += 0.01*(Math.random()-0.5)*hp;
 //this formula will work with free religion; however, theocracy and state atheism will cause a gradual increase in their own
 
 atheist = 1-(city.cath+city.ortho+city.prot+city.shii+city.sunni+city.budd+city.sikh+city.pagan);
@@ -238,8 +248,8 @@ atheist = 1-(city.cath+city.ortho+city.prot+city.shii+city.sunni+city.budd+city.
 city.primarySector = 0;
 	for (primary in city.blocks)
 	city.primarySector += 100*Math.pow(1.17,(city.blocks[primary].level - 1));
-city.secondarySector += horaepasatae*(Math.log((city.fuel+(city.secondarySector/2))/city.secondarySector)*city.secondarySector)*((city.buildings[3]+(city.buildings[5]*2)+(city.buildings[7]*2)+(city.buildings[8]*3)+(city.buildings[10]*2))/10);
-city.tertiarySector += horaepasatae*(Math.log((city.secondarySector+1)/city.tertiarySector)*city.tertiarySector)*(((city.buildings[0]*3)+city.buildings[3]+(city.buildings[6]*2)+(city.buildings[9]*2)+city.buildings[11])+city.buildings[16]/10); //we'll make it a bit more complex later
+city.secondarySector += hp*(Math.log((city.fuel+(city.secondarySector/2))/city.secondarySector)*city.secondarySector)*((city.buildings[3]+(city.buildings[5]*2)+(city.buildings[7]*2)+(city.buildings[8]*3)+(city.buildings[10]*2))/10);
+city.tertiarySector += hp*(Math.log((city.secondarySector+1)/city.tertiarySector)*city.tertiarySector)*(((city.buildings[0]*3)+city.buildings[3]+(city.buildings[6]*2)+(city.buildings[9]*2)+city.buildings[11])+city.buildings[16]/10); //we'll make it a bit more complex later
 productionTech = 10*(city.tertiarySector/city.secondarySector) + 0.1; //eventually we'll make this a part of research
 
 if ((city.primarySector+city.secondarySector) > city.population)
@@ -251,11 +261,11 @@ production = city.secondarySector*productionTech;
 
 city.baseStability = 30*(health+unemployment)+20*(city.food/city.population);
 if (city.battleStability > 0)
-	city.battleStability -= 8*horaepasatae;
+	city.battleStability -= 8*hp;
 stability = city.baseStability - city.battleStability;
 if (stability > 100)
 	stability = 100;
-	
+    }
 writeStats();
 city.update = new Date();
 } //end up update function don't f with this {
@@ -401,5 +411,3 @@ function loadCity() {
 }
 
 loadCity();
-
-window.onunload=saveCity();
