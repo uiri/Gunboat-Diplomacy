@@ -162,9 +162,9 @@ var horaepasatae = (iam-city.update)/3600000;
 
     var hp;
     while (horaepasatae) {
-	if (horaepasatae > 1) {
-	    hp = 1;
-	    horaepasatae -= 1;
+	if (horaepasatae > 0.5) {
+	    hp = 0.5;
+	    horaepasatae -= hp;
 	} else {
 	    hp = horaepasatae;
 	    horaepasatae = 0;
